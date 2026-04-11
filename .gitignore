@@ -1,0 +1,8 @@
+*.db
+
+/src/frontend/lib/*
+/src/frontend/node_modules
+/src/backend/**/obj
+/src/backend/**/bin
+/src/backend/**/.vs
+/src/backend/**/Properties
