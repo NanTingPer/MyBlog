@@ -1,10 +1,11 @@
 ﻿using Meilisearch;
 using NanTingBlog.API;
 using NanTingBlog.API.Services;
+using NanTingBlog.IdentityModel.JWTIdentity;
+using NanTingBlog.IdentityModel.RSAIdentity;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
-
 #region Log
 builder.Services.AddLogging();
 builder.Services.AddSingleton<ILogger>(services => {
@@ -38,8 +39,17 @@ builder.Services.AddSwaggerGen(options => {
     }
 });
 #endif
+builder.Services.AddJWTService(() => {
+    return new JWTServiceOptions()
+    {
+        SecurityKey = () => "awdawdawdawdawdawdawdawdawdawdawdawfho",
+    };
+});
+builder.Services.AddRSAService();
+
 
 var app = builder.Build();
+app.AddJWTMiddleware();
 #if DEBUG
 app.UseSwagger();
 app.UseSwaggerUI();

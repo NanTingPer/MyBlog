@@ -1,4 +1,5 @@
 <Solution>
   <Project Path="MeiliSearchTest/MeiliSearchTest.csproj" Id="12a3db64-68c0-4683-a96c-b1fca8dce3bb" />
   <Project Path="NanTingBlog.API/NanTingBlog.API.csproj" />
+  <Project Path="NanTingBlog.IdentityModel/NanTingBlog.IdentityModel.csproj" Id="659d8e5b-20f4-4f55-afd8-b438dbf15b9b" />
 </Solution>

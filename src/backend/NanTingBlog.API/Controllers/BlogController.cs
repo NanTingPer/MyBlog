@@ -1,10 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using NanTingBlog.API.Dtos.Blogs;
 using NanTingBlog.API.Services;
+using NanTingBlog.IdentityModel.JWTIdentity;
 using System.Text.Json.Serialization;
 
 namespace NanTingBlog.API.Controllers;
 
+/// <summary>
+/// 博文控制器
+/// </summary>
 [Route("api/blog")]
 public class BlogController(BlogService service) : ControllerBase
 {
@@ -37,6 +41,8 @@ public class BlogController(BlogService service) : ControllerBase
         return Ok(await service.Search(input.KeyWord, input.Page, input.Limit));
     }
 
+
+#pragma warning disable CS1591 // 缺少对公共可见类型或成员的 XML 注释
     public class SearchBlogInput
     {
         [JsonPropertyName("keyWord")]
@@ -46,4 +52,5 @@ public class BlogController(BlogService service) : ControllerBase
         [JsonPropertyName("page")]
         public int? Page { get; set; }
     }
+#pragma warning restore CS1591 // 缺少对公共可见类型或成员的 XML 注释
 }

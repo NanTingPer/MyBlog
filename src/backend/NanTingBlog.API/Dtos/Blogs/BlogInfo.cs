@@ -8,6 +8,7 @@ namespace NanTingBlog.API.Dtos.Blogs;
 /// </summary>
 public class BlogInfo
 {
+#pragma warning disable CS1591 // 缺少对公共可见类型或成员的 XML 注释
     [JsonPropertyName("id")]
     public string Id { get; set; } = Guid.NewGuid().ToString();
     [JsonPropertyName("name")]
@@ -21,3 +22,4 @@ public class BlogInfo
     [JsonPropertyName("content")]
     public string Content { get; set; }
 }
+#pragma warning restore CS1591 // 缺少对公共可见类型或成员的 XML 注释
