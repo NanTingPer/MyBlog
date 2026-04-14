@@ -1,3 +1,4 @@
 <Solution>
+  <Project Path="MeiliSearchTest/MeiliSearchTest.csproj" Id="12a3db64-68c0-4683-a96c-b1fca8dce3bb" />
   <Project Path="NanTingBlog.API/NanTingBlog.API.csproj" />
 </Solution>
