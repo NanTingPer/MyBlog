@@ -12,7 +12,7 @@ public class BlogInfo
     [JsonPropertyName("id")]
     public string Id { get; set; } = Guid.NewGuid().ToString();
     [JsonPropertyName("name")]
-    public string Name { get; set; }
+    public string Name { get; set; } = string.Empty;
     [JsonPropertyName("createTime")]
     public long CreateTime { get; set; }
     [JsonPropertyName("editTime")]
@@ -20,8 +20,10 @@ public class BlogInfo
     [JsonPropertyName("author")]
     public List<string> Author { get; set; } = [];
     [JsonPropertyName("content")]
-    public string Content { get; set; }
+    public string Content { get; set; } = string.Empty;
     [JsonPropertyName("tag")]
     public List<string> Tag { get; set; } = [];
+    [JsonPropertyName("drawingUrl")]
+    public string DrawingUrl { get; set; } = string.Empty;
 }
 #pragma warning restore CS1591 // 缺少对公共可见类型或成员的 XML 注释

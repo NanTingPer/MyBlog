@@ -53,7 +53,7 @@ public class BlogController(InterviewService service) : ControllerBase
         };
         var result = new BaseResult<IReadOnlyCollection<BlogInfo>>()
         {
-            Data = await service.Search(sq, "*")
+            Data = await service.Search(sq, "")
         };
         return Ok(result);
     }
@@ -74,6 +74,7 @@ public class BlogController(InterviewService service) : ControllerBase
     /// <summary>
     /// 获取给定标签的文章
     /// </summary>
+    [HttpGet("searchOnTag")]
     public async Task<ActionResult<BaseResult<IReadOnlyCollection<BlogInfo>>>> SearchOnTag(SearchBlogInput input)
     {
         var result = new BaseResult<IReadOnlyCollection<BlogInfo>>()
@@ -100,7 +101,9 @@ public class BlogController(InterviewService service) : ControllerBase
     }
 
     /// <summary>
-    /// 添加或替换(更新)
+    /// 添加或替换(更新)                            <br/>
+    /// 如果要更新一个条目，请携带Id                <br/>
+    /// 如果要创建一个条目，请不要携带Id            <br/>
     /// </summary>
 #if RELEASE
     [JWT]

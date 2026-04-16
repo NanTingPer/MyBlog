@@ -45,7 +45,7 @@ builder.Services.AddOpenApi();
 
 #if DEBUG
 builder.Services.AddSwaggerGen(options => {
-    var xmlPath = Path.Combine(AppContext.BaseDirectory, Assembly.GetExecutingAssembly().GetName().Name ?? "null", ".xml");
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, (Assembly.GetExecutingAssembly().GetName().Name ?? "null") + ".xml");
     if (File.Exists(xmlPath)) {
         options.IncludeXmlComments(xmlPath);
     }
@@ -58,7 +58,7 @@ builder.Services.AddJWTService(() => {
     };
 });
 builder.Services.AddRSAService();
-
+builder.Services.AddHostedService<WatchService>();
 
 var app = builder.Build();
 app.AddJWTMiddleware();

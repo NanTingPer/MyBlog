@@ -62,10 +62,10 @@ public class InterviewService(
             Page = 1,
             Limit = 1,
             AttributesToSearchOn = [nameof(BlogInfo.Id).ToLower()],
-            Filter = $"{nameof(BlogInfo.Id).ToLower()}=${id}"
+            Filter = $"{nameof(BlogInfo.Id).ToLower()}=\"{id}\""
         };
         var values = await Search(sq, id);
-        return values.FirstOrDefault();
+        return values?.FirstOrDefault() ?? null;
     }
 
     /// <summary>
@@ -99,7 +99,7 @@ public class InterviewService(
         var taskInfo = meilisearch.Index(Uid);
         try {
             var task = await taskInfo.SearchAsync<BlogInfo>(keyword, query);
-            return task.Hits;
+            return task.Hits ?? []; // 不然有些LINQ会阻塞
         } catch (Exception e) {
             logger.LogError($"{e.Message}\r\n{e.StackTrace}");
             return [];
