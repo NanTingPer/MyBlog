@@ -25,7 +25,15 @@ public class InterviewService(
         string keyword, 
         int? page = null, 
         int? limit = null)
-        => Search(keyword, page, limit, [nameof(BlogInfo.Content).ToLower()]);
+    {
+        var sq = new SearchQuery()
+        {
+            Page = page,
+            Limit = limit,
+            AttributesToSearchOn = [nameof(BlogInfo.Content).ToLower()]
+        };
+        return Search(sq, keyword);
+    }
 
     /// <summary>
     /// 获取包含名称的文章
@@ -34,35 +42,61 @@ public class InterviewService(
         string keyword,
         int? page = null,
         int? limit = null)
-        => Search(keyword, page, limit, attributesToSearchOn: ["name"]);
+    {
+        var sq = new SearchQuery()
+        {
+            Limit = limit,
+            Page = page,
+            AttributesToSearchOn = [nameof(BlogInfo.Name).ToLower()]
+        };
+        return Search(sq, keyword);
+    }
 
     /// <summary>
     /// 获取给定id的文章
     /// </summary>
     public async Task<BlogInfo?> SearchOnId(string id)
     {
-        var values = await Search(id, 1, 1, [nameof(BlogInfo.Id).ToLower()]);
+        var sq = new SearchQuery()
+        {
+            Page = 1,
+            Limit = 1,
+            AttributesToSearchOn = [nameof(BlogInfo.Id).ToLower()],
+            Filter = $"{nameof(BlogInfo.Id).ToLower()}=${id}"
+        };
+        var values = await Search(sq, id);
         return values.FirstOrDefault();
+    }
+
+    /// <summary>
+    /// 获取给定标签的文章
+    /// </summary>
+    public Task<IReadOnlyCollection<BlogInfo>> SearchOnTag(
+        string keyword,
+        int? page = null,
+        int? limit = null)
+    {
+        var sq = new SearchQuery()
+        {
+            Page = page,
+            Limit = limit,
+            AttributesToSearchOn = [nameof(BlogInfo.Tag).ToLower()],
+        };
+        return Search(sq, keyword);
     }
 
     /// <summary>
     /// 查询文章
     /// </summary>
     /// <param name="keyword"> 查询关键字 </param>
-    /// <param name="page"> 查询页码 </param>
-    /// <param name="limit"> 单页数量 </param>
-    /// <param name="attributesToSearchOn"> 查询字段 </param>
+    /// <param name="query"> 查询配置 </param>
     /// <returns></returns>
     public async Task<IReadOnlyCollection<BlogInfo>> Search(
-        string keyword = "*",
-        int? page = null,
-        int? limit = null,
-        IEnumerable<string>? attributesToSearchOn = null)
+        SearchQuery query,
+        string keyword = "*")
     {
         await UpdateSetting();
         var taskInfo = meilisearch.Index(Uid);
-        var query = CreateSearchQuery(limit, page);
-        query.AttributesToSearchOn = attributesToSearchOn ?? [];
         try {
             var task = await taskInfo.SearchAsync<BlogInfo>(keyword, query);
             return task.Hits;
@@ -100,11 +134,4 @@ public class InterviewService(
             FilterableAttributes = [nameof(BlogInfo.Id).ToLower(), nameof(BlogInfo.Content).ToLower(), nameof(BlogInfo.Name).ToLower()]
         });
     }
-
-    private static SearchQuery CreateSearchQuery(int? limit = null, int? page = null)
-        =>  new SearchQuery()
-            {
-                Limit = limit,
-                Page = page
-            };
 }

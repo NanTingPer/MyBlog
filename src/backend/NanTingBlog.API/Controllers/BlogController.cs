@@ -44,11 +44,16 @@ public class BlogController(InterviewService service) : ControllerBase
     /// 主页获取
     /// </summary>
     [HttpGet("search")]
-    public async Task<ActionResult<BaseResult<IReadOnlyCollection<BlogInfo>>>> Search(SearchBlogInput input)
+    public async Task<ActionResult<BaseResult<IReadOnlyCollection<BlogInfo>>>> Search(SearchBlogInput? input)
     {
+        var sq = new SearchQuery()
+        {
+            Limit = input?.Limit ?? 10,
+            Page = input?.Page ?? 1
+        };
         var result = new BaseResult<IReadOnlyCollection<BlogInfo>>()
         {
-            Data = await service.Search(input.KeyWord, input.Page, input.Limit)
+            Data = await service.Search(sq, "*")
         };
         return Ok(result);
     }
@@ -62,6 +67,18 @@ public class BlogController(InterviewService service) : ControllerBase
         var result = new BaseResult<BlogInfo>()
         {
             Data = await service.SearchOnId(input.KeyWord)
+        };
+        return Ok(result);
+    }
+
+    /// <summary>
+    /// 获取给定标签的文章
+    /// </summary>
+    public async Task<ActionResult<BaseResult<IReadOnlyCollection<BlogInfo>>>> SearchOnTag(SearchBlogInput input)
+    {
+        var result = new BaseResult<IReadOnlyCollection<BlogInfo>>()
+        {
+            Data = await service.SearchOnTag(input.KeyWord, input.Page, input.Limit)
         };
         return Ok(result);
     }
