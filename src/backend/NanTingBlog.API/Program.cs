@@ -1,9 +1,11 @@
 ﻿using Meilisearch;
 using NanTingBlog.API;
 using NanTingBlog.API.Services;
+using NanTingBlog.API.Services.Blog;
 using NanTingBlog.IdentityModel.JWTIdentity;
 using NanTingBlog.IdentityModel.RSAIdentity;
 using System.Reflection;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 #region Log
@@ -27,7 +29,17 @@ builder.Services.AddScoped<MeilisearchClient>(provider => {
 });
 #endregion
 
-builder.Services.AddScoped<BlogService>();
+#region GlobalConfigService
+builder.Services.AddSingleton(provider => {
+    if (File.Exists(GlobalConfigService.FullPath)) {
+        return JsonSerializer.Deserialize<GlobalConfigService>(File.ReadAllText(GlobalConfigService.FullPath))!;
+    } else {
+        return new GlobalConfigService();
+    }
+});
+#endregion
+
+builder.Services.AddScoped<InterviewService>();
 builder.Services.AddControllers().AddControllersAsServices();
 builder.Services.AddOpenApi();
 

@@ -1,12 +1,12 @@
 ﻿using Meilisearch;
 using NanTingBlog.API.Dtos.Blogs;
 
-namespace NanTingBlog.API.Services;
+namespace NanTingBlog.API.Services.Blog;
 
 /// <summary>
 /// 用于获取文章的服务
 /// </summary>
-public class BlogService(
+public class InterviewService(
     IConfiguration configuration, 
     IHttpClientFactory clientFactory, 
     MeilisearchClient meilisearch,
@@ -17,17 +17,33 @@ public class BlogService(
     private readonly MeilisearchClient meilisearch = meilisearch;
     private readonly ILogger logger = logger;
     private string Uid => nameof(BlogInfo).ToLower();
+
+    /// <summary>
+    /// 获取包含内容的文章
+    /// </summary>
     public Task<IReadOnlyCollection<BlogInfo>> SearchOnContent(
         string keyword, 
         int? page = null, 
         int? limit = null)
         => Search(keyword, page, limit, [nameof(BlogInfo.Content).ToLower()]);
 
+    /// <summary>
+    /// 获取包含名称的文章
+    /// </summary>
     public Task<IReadOnlyCollection<BlogInfo>> SearchOnName(
         string keyword,
         int? page = null,
         int? limit = null)
         => Search(keyword, page, limit, attributesToSearchOn: ["name"]);
+
+    /// <summary>
+    /// 获取给定id的文章
+    /// </summary>
+    public async Task<BlogInfo?> SearchOnId(string id)
+    {
+        var values = await Search(id, 1, 1, [nameof(BlogInfo.Id).ToLower()]);
+        return values.FirstOrDefault();
+    }
 
     /// <summary>
     /// 查询文章
@@ -56,13 +72,32 @@ public class BlogService(
         }
     }
 
+    /// <summary>
+    /// 添加或替换文章，依据blogInfo的uuid
+    /// </summary>
+    public Task<TaskInfo> AddOrReplace(BlogInfo blogInfo)
+    {
+        var index = meilisearch.Index(Uid);
+        return index.AddDocumentsAsync<BlogInfo>([blogInfo]);
+    }
+
+    /// <summary>
+    /// 删除给定uid的文章
+    /// </summary>
+    /// <returns></returns>
+    public async Task<TaskInfo> Delete(params string[] uid)
+    {
+        var index = meilisearch.Index(Uid);
+        return await index.DeleteDocumentsAsync(uid);
+    }
+
     private async Task UpdateSetting()
     {
         var index = meilisearch.Index(Uid);
         await index.UpdateSettingsAsync(new Settings()
         {
-            SearchableAttributes = [nameof(BlogInfo.Content).ToLower(), nameof(BlogInfo.Name).ToLower()],
-            FilterableAttributes = [nameof(BlogInfo.Content).ToLower(), nameof(BlogInfo.Name).ToLower()]
+            SearchableAttributes = [nameof(BlogInfo.Id).ToLower(), nameof(BlogInfo.Content).ToLower(), nameof(BlogInfo.Name).ToLower()],
+            FilterableAttributes = [nameof(BlogInfo.Id).ToLower(), nameof(BlogInfo.Content).ToLower(), nameof(BlogInfo.Name).ToLower()]
         });
     }
 

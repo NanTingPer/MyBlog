@@ -18,7 +18,7 @@ public class BlogInfo
     [JsonPropertyName("editTime")]
     public long EditTime { get; set; }
     [JsonPropertyName("author")]
-    public string Author { get; set; }
+    public List<string> Author { get; set; }
     [JsonPropertyName("content")]
     public string Content { get; set; }
 }
