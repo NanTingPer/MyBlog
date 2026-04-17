@@ -43,6 +43,7 @@ builder.Services.AddScoped<InterviewService>();
 builder.Services.AddControllers().AddControllersAsServices();
 builder.Services.AddOpenApi();
 
+#region swagger
 #if DEBUG
 builder.Services.AddSwaggerGen(options => {
     var xmlPath = Path.Combine(AppContext.BaseDirectory, (Assembly.GetExecutingAssembly().GetName().Name ?? "null") + ".xml");
@@ -51,16 +52,32 @@ builder.Services.AddSwaggerGen(options => {
     }
 });
 #endif
+#endregion
+
+#region JWT
 builder.Services.AddJWTService(() => {
     return new JWTServiceOptions()
     {
         SecurityKey = () => "awdawdawdawdawdawdawdawdawdawdawdawfho",
     };
 });
+#endregion
+
+#region CORS
+builder.Services.AddCors(options => {
+    options.AddPolicy("AllowAll", policy => {
+        policy.AllowAnyOrigin();
+        policy.AllowAnyHeader();
+        policy.AllowAnyMethod();
+    });
+});
+#endregion
+
 builder.Services.AddRSAService();
 builder.Services.AddHostedService<WatchService>();
 
 var app = builder.Build();
+app.UseCors("AllowAll");
 app.AddJWTMiddleware();
 #if DEBUG
 app.UseSwagger();
