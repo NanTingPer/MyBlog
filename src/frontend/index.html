@@ -1,9 +1,89 @@
 ﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的博客</title>
+    <link rel="stylesheet" href="./css/index.css">
+</head>
 <body>
-    <div id="blogs">
-    </div>     
+    <!-- 头部菜单栏 -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-blog"></i>
+                <span>我的博客</span>
+            </div>
+            <nav class="nav">
+                <a href="#" class="nav-item active">首页</a>
+                <a href="#" class="nav-item">文章</a>
+                <a href="#" class="nav-item">分类</a>
+                <a href="#" class="nav-item">标签</a>
+                <a href="#" class="nav-item">归档</a>
+            </nav>
+            <div class="header-right">
+                <button class="search-btn">
+                    <i class="fas fa-search"></i>
+                </button>
+                <button class="theme-toggle" id="themeToggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- 左部基本信息栏 -->
+        <aside class="sidebar">
+            <div class="profile">
+                <div class="avatar">
+                    <img src="" width="200px" alt="头像">
+                </div>
+                <h2 class="name">名称</h2>
+                <p class="bio">bio</p>
+            </div>
+            
+            <div class="social-links">
+                <a href="#" class="social-link" title="微博">
+                    <i class="fab fa-weibo"></i>
+                </a>
+                <a href="#" class="social-link" title="知乎">
+                    <i class="fab fa-zhihu"></i>
+                </a>
+                <a href="#" class="social-link" title="GitHub">
+                    <i class="fab fa-github"></i>
+                </a>
+                <a href="#" class="social-link" title="邮箱">
+                    <i class="fas fa-envelope"></i>
+                </a>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="#" class="sidebar-nav-item active" onclick="reanderBlogList('main-content')">
+                    <i class="fas fa-home"></i>
+                    <span>主页</span>
+                </a>
+                <a href="#" class="sidebar-nav-item">
+                    <i class="fas fa-link"></i>
+                    <span>友链</span>
+                </a>
+                <a href="#" class="sidebar-nav-item">
+                    <i class="fas fa-user"></i>
+                    <span>关于</span>
+                </a>
+            </nav>
+        </aside>
+        <h2></h2>
+        <!-- 中间内容区 -->
+        <main class="main-content" id="main-content">
+        </main>
+    </div>
+
+    <script type="module">
+        import { reanderBlogList, reanderBlog } from './lib/index.js';
+        reanderBlogList("main-content");
+        window.reanderBlog = reanderBlog;
+        window.reanderBlogList = reanderBlogList;
+    </script>
 </body>
-<script type="module">
-    import { sayHelloWorld } from './lib/index.js';
-    sayHelloWorld();
-</script>
+</html>
