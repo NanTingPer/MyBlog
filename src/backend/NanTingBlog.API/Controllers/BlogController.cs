@@ -1,5 +1,4 @@
-﻿using Meilisearch;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using NanTingBlog.API.Dtos.Blogs;
 using NanTingBlog.API.Services.Blog;
 using System.Text.Json.Serialization;
@@ -10,19 +9,19 @@ namespace NanTingBlog.API.Controllers;
 /// 博文控制器
 /// </summary>
 [Route("api/blog")]
-public class BlogController(InterviewService service) : ControllerBase
+public class BlogController(PostsService service) : ControllerBase
 {
-    private readonly InterviewService service = service;
+    private readonly PostsService service = service;
 
     /// <summary>
     /// 按照名称搜索
     /// </summary>
     [HttpGet("searchOnName")]
-    public async Task<ActionResult<BaseResult<IReadOnlyCollection<BlogInfo>>>> SearchOnName(SearchBlogInput input)
+    public async Task<ActionResult<BaseResult<IReadOnlyCollection<PostInfo>>>> SearchOnName(SearchBlogInput input)
     {
-        var result = new BaseResult<IReadOnlyCollection<BlogInfo>>()
+        var result = new BaseResult<List<PostInfo>>()
         {
-            Data = await service.SearchOnName(input.KeyWord, input.Page, input.Limit)
+            Data = service.QueryByName(input.KeyWord, input.Limit ?? 10, input.Page ?? 1)
         };
         return Ok(result);
     }
@@ -31,11 +30,11 @@ public class BlogController(InterviewService service) : ControllerBase
     /// 按照内容搜索
     /// </summary>
     [HttpGet("searchOnContent")]
-    public async Task<ActionResult<BaseResult<IReadOnlyCollection<BlogInfo>>>> SearchOnContent(SearchBlogInput input)
+    public async Task<ActionResult<BaseResult<IReadOnlyCollection<PostInfo>>>> SearchOnContent(SearchBlogInput input)
     {
-        var result = new BaseResult<IReadOnlyCollection<BlogInfo>>()
+        var result = new BaseResult<IReadOnlyCollection<PostInfo>>()
         {
-            Data = await service.SearchOnContent(input.KeyWord, input.Page, input.Limit)
+            Data = service.QueryByContent(input.KeyWord, input.Limit ?? 10, input.Page ?? 1)
         };
         return Ok(result);
     }
@@ -44,16 +43,11 @@ public class BlogController(InterviewService service) : ControllerBase
     /// 主页获取
     /// </summary>
     [HttpGet("search")]
-    public async Task<ActionResult<BaseResult<IReadOnlyCollection<BlogInfo>>>> Search(SearchBlogInput? input)
+    public async Task<ActionResult<BaseResult<IReadOnlyCollection<PostInfo>>>> Search(SearchBlogInput? input)
     {
-        var sq = new SearchQuery()
+        var result = new BaseResult<IReadOnlyCollection<PostInfo>>()
         {
-            Limit = input?.Limit ?? 10,
-            Page = input?.Page ?? 1
-        };
-        var result = new BaseResult<IReadOnlyCollection<BlogInfo>>()
-        {
-            Data = await service.Search(sq, "")
+            Data = service.Query(input?.Limit ?? 10, input?.Page ?? 1)
         };
         return Ok(result);
     }
@@ -62,11 +56,11 @@ public class BlogController(InterviewService service) : ControllerBase
     /// 使用Id获取文章，limit 和 page 参数将不会生效
     /// </summary>
     [HttpGet("searchOnId")]
-    public async Task<ActionResult<BaseResult<BlogInfo>>> SearchOnId(SearchBlogInput input)
+    public async Task<ActionResult<BaseResult<PostInfo>>> SearchOnId(SearchBlogInput input)
     {
-        var result = new BaseResult<BlogInfo>()
+        var result = new BaseResult<PostInfo>()
         {
-            Data = await service.SearchOnId(input.KeyWord)
+            Data = await service.QueryByKeyAsync(input.KeyWord)
         };
         return Ok(result);
     }
@@ -75,11 +69,11 @@ public class BlogController(InterviewService service) : ControllerBase
     /// 获取给定标签的文章
     /// </summary>
     [HttpGet("searchOnTag")]
-    public async Task<ActionResult<BaseResult<IReadOnlyCollection<BlogInfo>>>> SearchOnTag(SearchBlogInput input)
+    public async Task<ActionResult<BaseResult<IReadOnlyCollection<PostInfo>>>> SearchOnTag(SearchBlogInput input)
     {
-        var result = new BaseResult<IReadOnlyCollection<BlogInfo>>()
+        var result = new BaseResult<IReadOnlyCollection<PostInfo>>()
         {
-            Data = await service.SearchOnTag(input.KeyWord, input.Page, input.Limit)
+            Data = service.QueryByTag(input.KeyWord, input.Limit ?? 10, input.Page ?? 1)
         };
         return Ok(result);
     }
@@ -93,11 +87,8 @@ public class BlogController(InterviewService service) : ControllerBase
     [HttpPost("delete")]
     public async Task<ActionResult<BaseResult<string>>> Delete([FromBody] DeleteInput input)
     {
-        var ti = await service.Delete([.. input.Ids]);
-        return Ok(new BaseResult<string>()
-        {
-            Code = GetActionResultStatu(ti)
-        });
+        await service.DeleteByIdsAsync([.. input.Ids]);
+        return Ok();
     }
 
     /// <summary>
@@ -109,13 +100,10 @@ public class BlogController(InterviewService service) : ControllerBase
     [JWT]
 #endif
     [HttpPost("addOrReplace")]
-    public async Task<ActionResult<BaseResult<string>>> AddOrReplace([FromBody] BlogInfo blog)
+    public async Task<ActionResult<BaseResult<string>>> AddOrReplace([FromBody] PostInfo blog)
     {
-        var ti = await service.AddOrReplace(blog);
-        return Ok(new BaseResult<string>()
-        {
-            Code = GetActionResultStatu(ti)
-        });
+        await service.UpdateOrAddAsync(blog);
+        return Ok(new BaseResult<string>());
     }
 
     /// <summary>
@@ -128,17 +116,8 @@ public class BlogController(InterviewService service) : ControllerBase
     [HttpPost("deleteAll")]
     public async Task<IActionResult> DeleteAll()
     {
-        await service.DeleteAll();
+        await service.DeleteAllAsync();
         return Ok();
-    }
-
-    private static int GetActionResultStatu(TaskInfo taskInfo)
-    {
-        return taskInfo.Status switch
-        {
-            TaskInfoStatus.Failed => 502,
-            _ => 200
-        };
     }
 
 #pragma warning disable CS1591 // 缺少对公共可见类型或成员的 XML 注释
@@ -147,9 +126,9 @@ public class BlogController(InterviewService service) : ControllerBase
         [JsonPropertyName("keyWord")]
         public string KeyWord { get; set; } = "*";
         [JsonPropertyName("limit")]
-        public int? Limit { get; set; }
+        public int? Limit { get; set; } = 10;
         [JsonPropertyName("page")]
-        public int? Page { get; set; }
+        public int? Page { get; set; } = 1;
     }
 
     public class DeleteInput

@@ -1,7 +1,7 @@
-﻿using Meilisearch;
-using NanTingBlog.API;
+﻿using NanTingBlog.API;
 using NanTingBlog.API.Services;
 using NanTingBlog.API.Services.Blog;
+using NanTingBlog.API.Services.Db;
 using NanTingBlog.IdentityModel.JWTIdentity;
 using NanTingBlog.IdentityModel.RSAIdentity;
 using System.Reflection;
@@ -22,11 +22,8 @@ builder.Services.AddHttpClient(HttpClientType.Meilisearch, h => {
 });
 #endregion
 
-#region MeilisearchClient
-builder.Services.AddScoped<MeilisearchClient>(provider => {
-    var httpClientFactory = provider.GetService<IHttpClientFactory>();
-    return new MeilisearchClient(httpClientFactory!.CreateClient(HttpClientType.Meilisearch));
-});
+#region DbContext Scoped
+builder.Services.AddDbContext<BlogContext>(ServiceLifetime.Scoped);
 #endregion
 
 #region GlobalConfigService
@@ -39,7 +36,7 @@ builder.Services.AddSingleton(provider => {
 });
 #endregion
 
-builder.Services.AddScoped<InterviewService>();
+builder.Services.AddScoped<PostsService>(); // 博文服务
 builder.Services.AddControllers().AddControllersAsServices();
 builder.Services.AddOpenApi();
 

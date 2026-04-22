@@ -11,7 +11,7 @@ public class WatchService : BackgroundService
     private readonly IServiceScopeFactory factory;
     private readonly GlobalConfigService gconfig;
     private readonly FileSystemWatcher fileWatcher;
-    private readonly BlockingCollection<Func<InterviewService, Task>> uploadings;
+    private readonly BlockingCollection<Func<PostsService, Task>> uploadings;
     private readonly ConcurrentDictionary<string, string> uidToName;
     private readonly ConcurrentDictionary<string, string> nameToUid;
 
@@ -52,10 +52,10 @@ public class WatchService : BackgroundService
         // 更新文章名称
         uploadings.Add(async service => {
             UpdateName(uid, Path.GetFileNameWithoutExtension(e.Name));
-            var blogInfo = await service.SearchOnId(uid);
+            var blogInfo = await service.QueryByKeyAsync(uid);
             if(blogInfo == null) return;
             blogInfo.Name = e.Name;
-            await service.AddOrReplace(blogInfo);
+            await service.UpdateOrAddAsync(blogInfo);
         });
     }
 
@@ -69,7 +69,7 @@ public class WatchService : BackgroundService
             var fileName = Path.GetFileNameWithoutExtension(e.FullPath);
             RemoveName(fileName);
             if (TryGetUid(fileName, out string id)) {
-                await service.Delete(id); // 删除文章
+                await service.DeleteByIdAsync(id); // 删除文章
             }
         });
     }
@@ -83,14 +83,14 @@ public class WatchService : BackgroundService
         uploadings.Add(async service => {
             var fileName = Path.GetFileNameWithoutExtension(e.FullPath);
             var blogText = File.ReadAllText(e.FullPath);
-            var bi = new BlogInfo()
+            var bi = new PostInfo()
             {
                 CreateTime = DateTime.UtcNow.Ticks - DateTimeOffset.UnixEpoch.Ticks,
                 EditTime = DateTime.UtcNow.Ticks - DateTimeOffset.UnixEpoch.Ticks,
                 Name = fileName,
                 Content = blogText
             };
-            await service.AddOrReplace(bi);
+            await service.UpdateOrAddAsync(bi);
             AddName(fileName, bi.Id);
         });
     }
@@ -107,11 +107,11 @@ public class WatchService : BackgroundService
                 return;
             }
             var blogText = File.ReadAllText(e.FullPath);
-            var blog = await service.SearchOnId(id);
+            var blog = await service.QueryByKeyAsync(id);
             if(blog == null) return;
             blog.Content = blogText;
             blog.EditTime = DateTime.UtcNow.Ticks - DateTimeOffset.UnixEpoch.Ticks;
-            await service.AddOrReplace(blog);
+            await service.UpdateOrAddAsync(blog);
         });
     }
 
@@ -123,9 +123,9 @@ public class WatchService : BackgroundService
         while (!stoppingToken.IsCancellationRequested) {
             if (uploadings.TryTake(out var result, Timeout.Infinite, stoppingToken)) {
                 using (var serviceScope = factory.CreateScope()) {
-                    var interviewService = serviceScope.ServiceProvider.GetService<InterviewService>();
+                    var postsService = serviceScope.ServiceProvider.GetService<PostsService>();
                     try {
-                        await result(interviewService!);
+                        await result(postsService!);
                     } catch{}
                 }
             }
@@ -177,15 +177,10 @@ public class WatchService : BackgroundService
     private async Task InitMap()
     {
         using var serviceScope = factory.CreateScope();
-        var interviewService = serviceScope.ServiceProvider.GetService<InterviewService>();
-        int page = 1;
-        IReadOnlyCollection<BlogInfo> infos;
-        while((infos = await interviewService!.Search(new Meilisearch.SearchQuery(){ Page = page})).Count != 0) {
-            page += 1;
-            foreach (var blogInfo in infos) {
-                uidToName[blogInfo.Id] = blogInfo.Name;
-                nameToUid[blogInfo.Name] = blogInfo.Id;
-            }
+        var postsService = serviceScope.ServiceProvider.GetService<PostsService>();
+        foreach (var postInfo in postsService!.QueryAll()) {
+            uidToName[postInfo.Id] = postInfo.Name;
+            nameToUid[postInfo.Name] = postInfo.Id;
         }
 
         // 上面是从数据库同步数据
@@ -204,14 +199,14 @@ public class WatchService : BackgroundService
             }
             var blogText = File.ReadAllText(fullPath);
             var fileInfo = new FileInfo(fullPath);
-            var newBlog = new BlogInfo()
+            var newBlog = new PostInfo()
             {
                 Name = blogName,
                 Content = blogText,
                 CreateTime = fileInfo.CreationTimeUtc.Ticks - DateTimeOffset.UnixEpoch.Ticks,
                 EditTime = fileInfo.LastWriteTimeUtc.Ticks - DateTimeOffset.UnixEpoch.Ticks
             };
-            await interviewService.AddOrReplace(newBlog);
+            await postsService.UpdateOrAddAsync(newBlog);
         }
     }
 
