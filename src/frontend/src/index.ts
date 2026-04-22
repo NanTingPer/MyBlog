@@ -1,6 +1,7 @@
 // 创建项目: npm install -g typescript 
 //          npm init typescript -y
 
+import { marked } from "../marked/lib/marked.js";
 import { BaseRequestModel } from "./types/BaseRquestModel.js";
 import { BlogInfo } from "./types/blogs/BlogInfo.js";
 import { BlogAPI } from "./utils/BlogAPI.js";
@@ -46,5 +47,5 @@ export async function reanderBlog(mountId: string, blogId: string) {
     let requestValue = (await response.json()) as BaseRequestModel<BlogInfo>;
     if (requestValue.code != 200 || requestValue.data == undefined) return;
     let element = document.getElementById(mountId);
-    element!.innerHTML = requestValue.data.content;
+    element!.innerHTML = await marked.parse(requestValue.data.content);;
 }
