@@ -3,7 +3,7 @@
         <h2 class="section-title">最新文章</h2>
         <div class="articles-list">
             <div v-for="article in articles" :key="article.id" class="article-card">
-                <img :src="article.drawingUrl" :alt="article.name" class="article-image" />
+                <img v-show="article.drawingUrl != ''" :src="article.drawingUrl" :alt="article.name" class="article-image" />
                 <div class="article-content">
                     <h3 class="article-title">{{ article.name }}</h3>
                     <p class="article-description">{{ article.content.substring(0, 90) + '...' }}</p>
