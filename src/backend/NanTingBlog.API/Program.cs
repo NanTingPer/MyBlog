@@ -1,4 +1,5 @@
-﻿using NanTingBlog.API;
+﻿using Markdig;
+using NanTingBlog.API;
 using NanTingBlog.API.Services;
 using NanTingBlog.API.Services.Blog;
 using NanTingBlog.API.Services.Db;
@@ -8,6 +9,19 @@ using System.Reflection;
 using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var markdown = new MarkdownPipelineBuilder();
+var markdownPipeline = markdown
+    .UseAdvancedExtensions() // 高级扩展
+    .UseCitations() // 正文引用
+    .UseDefinitionLists() // dl dt dd列表
+    .UseMathematics()
+    .Build()
+    ; // 内联数学
+
+builder.Services.AddSingleton<MarkdownPipeline>(op => markdownPipeline);
+builder.Services.AddSingleton<MarkdownService>();
+
 #region Log
 builder.Services.AddLogging();
 builder.Services.AddSingleton<ILogger>(services => {

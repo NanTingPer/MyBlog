@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using NanTingBlog.API.Dtos.Blogs;
+using NanTingBlog.API.Services;
 using NanTingBlog.API.Services.Blog;
 using System.Text.Json.Serialization;
 
@@ -9,9 +10,10 @@ namespace NanTingBlog.API.Controllers;
 /// 博文控制器
 /// </summary>
 [Route("api/blog")]
-public class BlogController(PostsService service) : ControllerBase
+public class PostsController(PostsService service, MarkdownService markdown) : ControllerBase
 {
     private readonly PostsService service = service;
+    private readonly MarkdownService markdown;
 
     /// <summary>
     /// 按照名称搜索
@@ -114,10 +116,25 @@ public class BlogController(PostsService service) : ControllerBase
     [JWT]
 #endif
     [HttpPost("deleteAll")]
-    public async Task<IActionResult> DeleteAll()
+    public async Task<ActionResult<BaseResult<string>>> DeleteAll()
     {
         await service.DeleteAllAsync();
-        return Ok();
+        return Ok(new BaseResult<string>());
+    }
+
+    /// <summary>
+    /// 获取给定id文章的markdownToHtml
+    /// </summary>
+    [HttpGet("postHTML")]
+    public async Task<ActionResult<BaseResult<string>>> PostHTML(PostHTMLInput input)
+    {
+        var result = new BaseResult<string>();
+        if (string.IsNullOrEmpty(input.Id)) {
+            return Ok(result);
+        }
+        var post = await service.QueryByKeyAsync(input.Id);
+        result.Data = markdown.ToHTML(post?.Content ?? "");
+        return Ok(result);
     }
 
 #pragma warning disable CS1591 // 缺少对公共可见类型或成员的 XML 注释
@@ -135,6 +152,12 @@ public class BlogController(PostsService service) : ControllerBase
     {
         [JsonPropertyName("ids")]
         public List<string> Ids { get; set; } = [];
+    }
+
+    public class PostHTMLInput
+    {
+        [JsonPropertyName("id")]
+        public string Id { get; set; } = string.Empty;
     }
 #pragma warning restore CS1591 // 缺少对公共可见类型或成员的 XML 注释
 }
