@@ -4,15 +4,15 @@
       <div class="header-content">
         <div class="logo">Mellow</div>
         <nav class="nav">
-          <a href="#" class="nav-link active">首页</a>
-          <a href="#" class="nav-link">文章</a>
+          <router-link to="/" class="nav-link" active-class="active">首页</router-link>
+          <router-link to="/" class="nav-link" active-class="active">文章</router-link>
           <a href="#" class="nav-link">关于</a>
         </nav>
       </div>
     </header>
 
     <main class="main-content">
-      <LatestArticles />
+      <router-view />
     </main>
 
     <footer class="footer">
@@ -22,7 +22,6 @@
 </template>
 
 <script setup lang="ts">
-import LatestArticles from './components/LatestArticles.vue';
 </script>
 
 <style scoped>

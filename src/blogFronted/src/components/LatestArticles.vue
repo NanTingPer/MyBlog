@@ -2,7 +2,12 @@
     <div class="latest-articles">
         <h2 class="section-title">最新文章</h2>
         <div class="articles-list">
-            <div v-for="article in articles" :key="article.id" class="article-card">
+            <div 
+                v-for="article in articles" 
+                :key="article.id" 
+                class="article-card"
+                @click="goToPost(article.id)"
+            >
                 <img v-show="article.drawingUrl != ''" :src="article.drawingUrl" :alt="article.name" class="article-image" />
                 <div class="article-content">
                     <h3 class="article-title">{{ article.name }}</h3>
@@ -21,9 +26,11 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import type { BlogInfo } from '../ts/types/blogs/BlogInfo';
 import { BlogAPI } from '../ts/utils/BlogAPI';
 
+const router = useRouter();
 const articles = ref<BlogInfo[]>([]);
 
 const formatDate = (timestamp: number): string => {
@@ -33,6 +40,10 @@ const formatDate = (timestamp: number): string => {
         return '未知日期';
     }
     return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
+};
+
+const goToPost = (id: string) => {
+    router.push(`/post/${id}`);
 };
 
 onMounted(async () => {
@@ -88,6 +99,7 @@ onMounted(async () => {
     overflow: hidden;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
     transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
 }
 
 .article-card:hover {
