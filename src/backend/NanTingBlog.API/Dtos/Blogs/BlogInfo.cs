@@ -14,9 +14,9 @@ public class BlogInfo
     [JsonPropertyName("name")]
     public string Name { get; set; } = string.Empty;
     [JsonPropertyName("createTime")]
-    public long CreateTime { get; set; }
+    public long CreateTime { get; set; } = DateTime.UtcNow.Ticks - DateTimeOffset.UnixEpoch.Ticks;
     [JsonPropertyName("editTime")]
-    public long EditTime { get; set; }
+    public long EditTime { get; set; } = DateTime.UtcNow.Ticks - DateTimeOffset.UnixEpoch.Ticks;
     [JsonPropertyName("author")]
     public List<string> Author { get; set; } = [];
     [JsonPropertyName("content")]

@@ -1,4 +1,4 @@
-﻿import { type SearchBlogInput } from "../types/blogs/SearchBlogInput.js";
+﻿import { type SearchBlogInput } from "../types/blogs/SearchBlogInput.ts";
 
 export class BlogAPI {
     private readonly url: string;

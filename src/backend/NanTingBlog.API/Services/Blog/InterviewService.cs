@@ -125,6 +125,14 @@ public class InterviewService(
         return await index.DeleteDocumentsAsync(uid);
     }
 
+    /// <summary>
+    /// 删除全部文章
+    /// </summary>
+    public async Task<TaskInfo> DeleteAll()
+    {
+        var index = meilisearch.Index(Uid);
+        return await index.DeleteAllDocumentsAsync();
+    }
     private async Task UpdateSetting()
     {
         var index = meilisearch.Index(Uid);

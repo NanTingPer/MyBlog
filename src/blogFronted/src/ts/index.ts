@@ -1,9 +1,9 @@
 // 创建项目: npm install -g typescript 
 //          npm init typescript -y
 
-import { marked } from "../marked/lib/marked.js";
-import { BaseRequestModel } from "./types/BaseRquestModel.js";
-import { BlogInfo } from "./types/blogs/BlogInfo.js";
+import { marked } from "marked";
+import { type BaseRequestModel } from "./types/BaseRquestModel.ts";
+import { type BlogInfo } from "./types/blogs/BlogInfo.ts";
 import { BlogAPI } from "./utils/BlogAPI.js";
 import { DateTimeFormat } from "./utils/DateTimeFormat.js";
 

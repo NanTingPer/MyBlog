@@ -84,8 +84,8 @@ public class WatchService : BackgroundService
             var fileName = Path.GetFileNameWithoutExtension(e.FullPath);
             var bi = new BlogInfo()
             {
-                CreateTime = DateTime.UtcNow.Ticks,
-                EditTime = DateTime.UtcNow.Ticks,
+                CreateTime = DateTime.UtcNow.Ticks - DateTimeOffset.UnixEpoch.Ticks,
+                EditTime = DateTime.UtcNow.Ticks - DateTimeOffset.UnixEpoch.Ticks,
                 Name = fileName
             };
             await service.AddOrReplace(bi);
@@ -108,7 +108,7 @@ public class WatchService : BackgroundService
             var blog = await service.SearchOnId(id);
             if(blog == null) return;
             blog.Content = blogText;
-            blog.EditTime = DateTime.UtcNow.Ticks;
+            blog.EditTime = DateTime.UtcNow.Ticks - DateTimeOffset.UnixEpoch.Ticks;
             await service.AddOrReplace(blog);
         });
     }
@@ -206,8 +206,8 @@ public class WatchService : BackgroundService
             {
                 Name = blogName,
                 Content = blogText,
-                CreateTime = fileInfo.CreationTimeUtc.Ticks,
-                EditTime = fileInfo.LastWriteTimeUtc.Ticks
+                CreateTime = fileInfo.CreationTimeUtc.Ticks - DateTimeOffset.UnixEpoch.Ticks,
+                EditTime = fileInfo.LastWriteTimeUtc.Ticks - DateTimeOffset.UnixEpoch.Ticks
             };
             await interviewService.AddOrReplace(newBlog);
         }

@@ -118,6 +118,20 @@ public class BlogController(InterviewService service) : ControllerBase
         });
     }
 
+    /// <summary>
+    /// 删除全部条目
+    /// </summary>
+    /// <returns></returns>
+#if RELEASE
+    [JWT]
+#endif
+    [HttpPost("deleteAll")]
+    public async Task<IActionResult> DeleteAll()
+    {
+        await service.DeleteAll();
+        return Ok();
+    }
+
     private static int GetActionResultStatu(TaskInfo taskInfo)
     {
         return taskInfo.Status switch
