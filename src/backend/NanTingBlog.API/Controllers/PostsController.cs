@@ -13,7 +13,7 @@ namespace NanTingBlog.API.Controllers;
 public class PostsController(PostsService service, MarkdownService markdown) : ControllerBase
 {
     private readonly PostsService service = service;
-    private readonly MarkdownService markdown;
+    private readonly MarkdownService markdown = markdown;
 
     /// <summary>
     /// 按照名称搜索
