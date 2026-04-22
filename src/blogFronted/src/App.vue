@@ -22,6 +22,15 @@
 </template>
 
 <script setup lang="ts">
+import { watch } from 'vue'
+import { useRouter } from 'vue-router';
+const router = useRouter();
+watch(() => router.currentRoute.value.path, async () => {
+    setTimeout(() => eval('Prism.highlightAll();'), 1000);
+    console.log('update');
+}, {
+    immediate: true
+});
 </script>
 
 <style scoped>

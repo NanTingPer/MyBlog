@@ -1,13 +1,36 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>blogfronted</title>
-  </head>
-  <body>
+    <link rel="stylesheet" href="/src/assets/prism.css" />
+</head>
+
+<body>
     <div id="app"></div>
     <script type="module" src="/src/main.ts"></script>
-  </body>
+    <script src="/src/assets/prism.js"></script>
+</body>
+<style>
+    pre[class*="language-"] {
+        white-space: pre !important;
+        word-wrap: normal !important;
+        overflow-x: auto;
+        tab-size: 4;
+    }
+
+    code[class*="language-"] {
+        white-space: pre !important;
+        display: block;
+    }
+
+    .token {
+        display: inline !important;
+        white-space: inherit;
+    }
+</style>
+
 </html>

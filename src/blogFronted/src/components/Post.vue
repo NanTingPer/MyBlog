@@ -27,11 +27,15 @@ onMounted(async () => {
 
 <style scoped>
 .post-container {
-    max-width: 800px;
+    max-width: 80%;
     margin: 0 auto;
     padding: 40px 20px;
     background: #fff;
     border-radius: 16px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.h1 {
+    color: black;
 }
 </style>
