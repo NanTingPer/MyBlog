@@ -82,11 +82,13 @@ public class WatchService : BackgroundService
 
         uploadings.Add(async service => {
             var fileName = Path.GetFileNameWithoutExtension(e.FullPath);
+            var blogText = File.ReadAllText(e.FullPath);
             var bi = new BlogInfo()
             {
                 CreateTime = DateTime.UtcNow.Ticks - DateTimeOffset.UnixEpoch.Ticks,
                 EditTime = DateTime.UtcNow.Ticks - DateTimeOffset.UnixEpoch.Ticks,
-                Name = fileName
+                Name = fileName,
+                Content = blogText
             };
             await service.AddOrReplace(bi);
             AddName(fileName, bi.Id);

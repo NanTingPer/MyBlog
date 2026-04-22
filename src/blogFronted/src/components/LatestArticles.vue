@@ -27,7 +27,11 @@ import { BlogAPI } from '../ts/utils/BlogAPI';
 const articles = ref<BlogInfo[]>([]);
 
 const formatDate = (timestamp: number): string => {
-    const date = new Date(timestamp);
+    let ms = Number(timestamp.toString().substring(0, 13));
+    const date = new Date(ms);
+    if (isNaN(date.getTime()) || date.getFullYear() < 2000 || date.getFullYear() > 2100) {
+        return '未知日期';
+    }
     return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
 };
 
