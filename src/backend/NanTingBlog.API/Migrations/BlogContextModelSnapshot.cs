@@ -22,6 +22,53 @@ namespace NanTingBlog.API.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("NanTingBlog.API.Dtos.Blogs.Friendslink", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text")
+                        .HasColumnName("id")
+                        .HasJsonPropertyName("id");
+
+                    b.Property<string>("Avatar")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("avatar")
+                        .HasJsonPropertyName("avatar");
+
+                    b.Property<string>("CreateTime")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("createTime")
+                        .HasJsonPropertyName("createTime");
+
+                    b.Property<long>("CreateUnixEpochTick")
+                        .HasColumnType("bigint")
+                        .HasColumnName("createUnixEpochTick")
+                        .HasJsonPropertyName("createUnixEpochTick");
+
+                    b.Property<string>("Dictum")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("dictum")
+                        .HasJsonPropertyName("dictum");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("name")
+                        .HasJsonPropertyName("name");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("url")
+                        .HasJsonPropertyName("url");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("friendslink");
+                });
+
             modelBuilder.Entity("NanTingBlog.API.Dtos.Blogs.PostInfo", b =>
                 {
                     b.Property<string>("Id")
