@@ -4,7 +4,7 @@
     </div>
 </template>
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, nextTick } from 'vue';
 import { useRoute } from 'vue-router';
 
 const route = useRoute();
@@ -13,11 +13,17 @@ const content = ref('');
 onMounted(async () => {
     const id = route.params.id as string;
     try {
-        const response = await fetch(`http://localhost:5162/api/blog/postHTML?id=${id}`, {
+        fetch(`http://localhost:5162/api/blog/postHTML?id=${id}`, {
             method: "GET"
+        }).then(response => {
+            if(response.status != 200)
+                return;
+            
+            response.json().then(json => {
+                content.value = json.data;
+                nextTick(() => eval('Prism.highlightAll();'));
+            })
         });
-        const json = await response.json();
-        content.value = json.data;
     } catch (error) {
         console.error('Failed to fetch post:', error);
         content.value = '<p>获取文章内容失败</p>';

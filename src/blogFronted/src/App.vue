@@ -6,6 +6,7 @@
         <nav class="nav">
           <router-link to="/" class="nav-link" active-class="active">首页</router-link>
           <router-link to="/" class="nav-link" active-class="active">文章</router-link>
+          <router-link to="/" class="nav-link" active-class="active">友链</router-link>
           <a href="#" class="nav-link">关于</a>
         </nav>
       </div>
@@ -20,18 +21,6 @@
     </footer>
   </div>
 </template>
-
-<script setup lang="ts">
-import { watch } from 'vue'
-import { useRouter } from 'vue-router';
-const router = useRouter();
-watch(() => router.currentRoute.value.path, async () => {
-    setTimeout(() => eval('Prism.highlightAll();'), 1000);
-    console.log('update');
-}, {
-    immediate: true
-});
-</script>
 
 <style scoped>
 .app-container {
