@@ -4,21 +4,11 @@
             <h1 class="friendlink-title">友情链接</h1>
             <p class="friendlink-subtitle">那些温暖而有趣的角落，是互联网上的星光</p>
         </div>
-        
+
         <div class="friendlink-list">
-            <a 
-                v-for="link in friendlinks" 
-                :key="link.id" 
-                :href="link.url"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="friendlink-card"
-            >
-                <img 
-                    :src="link.avatar" 
-                    :alt="link.name" 
-                    class="friendlink-avatar"
-                />
+            <a v-for="link in friendlinks" :key="link.id" :href="link.url" target="_blank" rel="noopener noreferrer"
+                class="friendlink-card">
+                <img :src="link.avatar" :alt="link.name" class="friendlink-avatar" />
                 <div class="friendlink-info">
                     <h3 class="friendlink-name">{{ link.name }}</h3>
                     <p class="friendlink-dictum">{{ link.dictum }}</p>

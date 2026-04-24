@@ -16,11 +16,11 @@ onMounted(async () => {
     try {
         apiFetch(`/api/blog/postHTML?id=${id}`, {
             method: "GET",
-            
+
         }).then(response => {
-            if(response.status != 200)
+            if (response.status != 200)
                 return;
-            
+
             response.json().then(json => {
                 content.value = json.data;
                 nextTick(() => eval('Prism.highlightAll();'));
