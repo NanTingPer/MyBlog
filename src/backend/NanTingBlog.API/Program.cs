@@ -46,6 +46,7 @@ builder.Services.AddSingleton(provider => {
 #endregion
 
 builder.Services.AddScoped<PostsService>(); // 博文服务
+builder.Services.AddScoped<FriendslinkService>(); // 友链服务
 builder.Services.AddControllers().AddControllersAsServices();
 builder.Services.AddOpenApi();
 

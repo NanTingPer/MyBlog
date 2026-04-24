@@ -3,13 +3,16 @@ using NanTingBlog.API.Dtos.Blogs;
 using NanTingBlog.API.Services;
 using NanTingBlog.API.Services.Blog;
 using System.Text.Json.Serialization;
+#if RELEASE
 using NanTingBlog.IdentityModel.JWTIdentity;
+#endif
 
 namespace NanTingBlog.API.Controllers;
 
 /// <summary>
 /// 博文控制器
 /// </summary>
+[ApiController]
 [Route("api/blog")]
 public class PostsController(PostsService service, MarkdownService markdown) : ControllerBase
 {

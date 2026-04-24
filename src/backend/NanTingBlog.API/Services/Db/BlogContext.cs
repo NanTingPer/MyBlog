@@ -14,9 +14,14 @@ namespace NanTingBlog.API.Services.Db;
 public class BlogContext : DbContext
 {
     /// <summary>
-    /// 博文库
+    /// 博文表
     /// </summary>
     public DbSet<PostInfo> Blogs { get; set; }
+
+    /// <summary>
+    /// 友链表
+    /// </summary>
+    public DbSet<Friendslink> Friendslinks { get; set; }
 
     /// <summary>
     /// </summary>
@@ -31,5 +36,8 @@ public class BlogContext : DbContext
     {
         modelBuilder.Entity<PostInfo>()
             .HasKey(b => b.Id);
+
+        modelBuilder.Entity<Friendslink>()
+            .HasKey(f => f.Id);
     }
 }

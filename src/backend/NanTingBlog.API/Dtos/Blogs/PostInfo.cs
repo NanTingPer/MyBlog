@@ -12,33 +12,23 @@ namespace NanTingBlog.API.Dtos.Blogs;
 public class PostInfo
 {
 #pragma warning disable CS1591 // 缺少对公共可见类型或成员的 XML 注释
-    [Key]
-    [Column("id")]
-    [JsonPropertyName("id")]
+    [JsonPropertyName("id"), Column("id"), Key]
     public string Id { get; set; } = Guid.NewGuid().ToString();
-    [Column("name")]
-    [JsonPropertyName("name")]
+    [JsonPropertyName("name"), Column("name")]
     public string Name { get; set; } = string.Empty;
-    [Column("createTime")]
-    [JsonPropertyName("createTime")]
+    [JsonPropertyName("createTime"), Column("createTime")]
     public long CreateTime { get; set; } = DateTime.UtcNow.Ticks - DateTimeOffset.UnixEpoch.Ticks;
-    [Column("editTime")]
-    [JsonPropertyName("editTime")]
+    [JsonPropertyName("editTime"), Column("editTime")]
     public long EditTime { get; set; } = DateTime.UtcNow.Ticks - DateTimeOffset.UnixEpoch.Ticks;
-    [Column("author")]
-    [JsonPropertyName("author")]
+    [JsonPropertyName("author"), Column("author")]
     public List<string> Author { get; set; } = [];
-    [Column("content")]
-    [JsonPropertyName("content")]
+    [JsonPropertyName("content"), Column("content")]
     public string Content { get; set; } = string.Empty;
-    [Column("tag")]
-    [JsonPropertyName("tag")]
+    [JsonPropertyName("tag"), Column("tag")]
     public List<string> Tag { get; set; } = [];
-    [Column("drawingUrl")]
-    [JsonPropertyName("drawingUrl")]
+    [JsonPropertyName("drawingUrl"), Column("drawingUrl")]
     public string DrawingUrl { get; set; } = string.Empty;
-    [Column("html")]
-    [JsonPropertyName("html")]
+    [JsonPropertyName("html"), Column("html")]
     public string HTML { get; set; } = string.Empty;
 }
 #pragma warning restore CS1591 // 缺少对公共可见类型或成员的 XML 注释

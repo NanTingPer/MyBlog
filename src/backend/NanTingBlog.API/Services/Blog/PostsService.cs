@@ -8,38 +8,15 @@ namespace NanTingBlog.API.Services.Blog;
 /// <summary>
 /// 文章服务
 /// </summary>
-public class PostsService(BlogContext context)
+public class PostsService(BlogContext context) : 
+    BaseQuery<PostInfo, string>(context)
 {
     private readonly BlogContext context = context;
-    
-    /// <summary>
-    /// 添加
-    /// </summary>
-    public async Task AddAsync(PostInfo info)
-    {
-        context.Blogs.Add(info);
-        await context.SaveChangesAsync();
-    }
 
     /// <summary>
-    /// 更新获添加
+    /// 取key
     /// </summary>
-    public async Task UpdateOrAddAsync(PostInfo newInfo)
-    {
-        var oldInfo = context.Blogs.AsNoTracking().FirstOrDefault(binfo => binfo.Id == newInfo.Id);
-        if (oldInfo == null) {
-            await AddAsync(newInfo);
-            return;
-        }
-        oldInfo.Tag = newInfo.Tag;
-        oldInfo.Author = newInfo.Author;
-        oldInfo.DrawingUrl = newInfo.DrawingUrl;
-        oldInfo.CreateTime = newInfo.CreateTime;
-        oldInfo.EditTime = newInfo.EditTime;
-        oldInfo.Content = newInfo.Content;
-        context.Blogs.Update(newInfo);
-        await context.SaveChangesAsync();
-    }
+    public override Expression<Func<PostInfo, string>> KeyExpression { get => field; init; } = f => f.Name;
 
     /// <summary>
     /// 查询全部
@@ -78,23 +55,9 @@ public class PostsService(BlogContext context)
     /// </summary>
     public IEnumerable<PostInfo> QueryAll()
     {
-        foreach (var post in context.Blogs) {
+        foreach (var post in context.Blogs.AsNoTracking()) {
             yield return post;
         }
-    }
-
-    /// <summary>
-    /// 删除自Id
-    /// </summary>
-    public async Task DeleteByIdAsync(string id)
-    {
-        var targetBlog = await context.Blogs.AsNoTracking().FirstOrDefaultAsync(f => f.Id == id);
-        if(targetBlog == null) {
-            return;
-        }
-
-        context.Blogs.Remove(targetBlog);
-        await context.SaveChangesAsync();
     }
 
     /// <summary>
@@ -104,7 +67,7 @@ public class PostsService(BlogContext context)
     {
         List<PostInfo> blogs = [];
         foreach (var id in ids) {
-            var targetBlog = await context.Blogs.AsNoTracking().FirstOrDefaultAsync(b => b.Id == id);
+            var targetBlog = await context.Blogs.FirstOrDefaultAsync(b => b.Id == id);
             if(targetBlog != null) {
                 blogs.Add(targetBlog);
             }
@@ -121,7 +84,7 @@ public class PostsService(BlogContext context)
     /// </summary>
     public async Task DeleteAllAsync()
     {
-        var blogs = context.Blogs.AsNoTracking().ToArray();
+        var blogs = context.Blogs.ToArray();
         foreach (var item in blogs) {
             context.Blogs.Remove(item);
         }
@@ -133,6 +96,5 @@ public class PostsService(BlogContext context)
         var startIndex = limit * (page - 1);
         if (startIndex < 0) startIndex = 0;
         return [.. context.Blogs.AsNoTracking().Where(query).Skip(startIndex).Take(limit)];
-
     }
 }
