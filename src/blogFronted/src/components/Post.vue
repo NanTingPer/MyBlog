@@ -6,6 +6,7 @@
 <script setup lang="ts">
 import { ref, onMounted, nextTick } from 'vue';
 import { useRoute } from 'vue-router';
+import { apiFetch } from '../ts/config/apiConfig';
 
 const route = useRoute();
 const content = ref('');
@@ -13,7 +14,7 @@ const content = ref('');
 onMounted(async () => {
     const id = route.params.id as string;
     try {
-        fetch(`http://localhost:5162/api/blog/postHTML?id=${id}`, {
+        apiFetch(`/api/blog/postHTML?id=${id}`, {
             method: "GET"
         }).then(response => {
             if(response.status != 200)
