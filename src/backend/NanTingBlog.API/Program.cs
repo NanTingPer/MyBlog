@@ -1,5 +1,6 @@
 ﻿using Markdig;
 using NanTingBlog.API;
+using NanTingBlog.API.Middlewares;
 using NanTingBlog.API.Services;
 using NanTingBlog.API.Services.Blog;
 using NanTingBlog.API.Services.Db;
@@ -27,12 +28,6 @@ builder.Services.AddLogging();
 builder.Services.AddSingleton<ILogger>(services => {
     var logFactory = services.GetService<ILoggerFactory>();
     return logFactory!.CreateLogger("global");
-});
-#endregion
-
-#region meilisearch HttpClient
-builder.Services.AddHttpClient(HttpClientType.Meilisearch, h => {
-    h.BaseAddress = new Uri("http://localhost:7700");
 });
 #endregion
 
@@ -87,7 +82,13 @@ builder.Services.AddCors(options => {
 builder.Services.AddRSAService();
 builder.Services.AddHostedService<WatchService>();
 
+#region SpeedMiddleware And Hosted
+builder.Services.AddSingleton<SpeedMiddleware>();
+builder.Services.AddHostedService(provider => provider.GetService<SpeedMiddleware>()!);
+#endregion
+
 var app = builder.Build();
+app.UseMiddleware<SpeedMiddleware>();
 app.UseCors("AllowAll");
 app.AddJWTMiddleware();
 #if DEBUG
