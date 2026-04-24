@@ -17,6 +17,7 @@ var markdownPipeline = markdown
     .UseCitations() // 正文引用
     .UseDefinitionLists() // dl dt dd列表
     .UseMathematics()
+    .UseYamlFrontMatter()
     .Build()
     ; // 内联数学
 

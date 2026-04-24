@@ -15,7 +15,8 @@ onMounted(async () => {
     const id = route.params.id as string;
     try {
         apiFetch(`/api/blog/postHTML?id=${id}`, {
-            method: "GET"
+            method: "GET",
+            
         }).then(response => {
             if(response.status != 200)
                 return;

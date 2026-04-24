@@ -23,7 +23,7 @@ public class PostsController(PostsService service, MarkdownService markdown) : C
     /// 按照名称搜索
     /// </summary>
     [HttpGet("searchOnName")]
-    public async Task<ActionResult<BaseResult<IReadOnlyCollection<PostInfo>>>> SearchOnName(SearchBlogInput input)
+    public async Task<ActionResult<BaseResult<IReadOnlyCollection<PostInfo>>>> SearchOnName([FromQuery] SearchBlogInput input)
     {
         var result = new BaseResult<List<PostInfo>>()
         {
@@ -36,7 +36,7 @@ public class PostsController(PostsService service, MarkdownService markdown) : C
     /// 按照内容搜索
     /// </summary>
     [HttpGet("searchOnContent")]
-    public async Task<ActionResult<BaseResult<IReadOnlyCollection<PostInfo>>>> SearchOnContent(SearchBlogInput input)
+    public async Task<ActionResult<BaseResult<IReadOnlyCollection<PostInfo>>>> SearchOnContent([FromQuery] SearchBlogInput input)
     {
         var result = new BaseResult<IReadOnlyCollection<PostInfo>>()
         {
@@ -49,7 +49,7 @@ public class PostsController(PostsService service, MarkdownService markdown) : C
     /// 主页获取
     /// </summary>
     [HttpGet("search")]
-    public async Task<ActionResult<BaseResult<IReadOnlyCollection<PostInfo>>>> Search(SearchBlogInput? input)
+    public async Task<ActionResult<BaseResult<IReadOnlyCollection<PostInfo>>>> Search([FromQuery] SearchBlogInput? input)
     {
         var result = new BaseResult<IReadOnlyCollection<PostInfo>>()
         {
@@ -62,7 +62,7 @@ public class PostsController(PostsService service, MarkdownService markdown) : C
     /// 使用Id获取文章，limit 和 page 参数将不会生效
     /// </summary>
     [HttpGet("searchOnId")]
-    public async Task<ActionResult<BaseResult<PostInfo>>> SearchOnId(SearchBlogInput input)
+    public async Task<ActionResult<BaseResult<PostInfo>>> SearchOnId([FromQuery] SearchBlogInput input)
     {
         var result = new BaseResult<PostInfo>()
         {
@@ -75,7 +75,7 @@ public class PostsController(PostsService service, MarkdownService markdown) : C
     /// 获取给定标签的文章
     /// </summary>
     [HttpGet("searchOnTag")]
-    public async Task<ActionResult<BaseResult<IReadOnlyCollection<PostInfo>>>> SearchOnTag(SearchBlogInput input)
+    public async Task<ActionResult<BaseResult<IReadOnlyCollection<PostInfo>>>> SearchOnTag([FromQuery] SearchBlogInput input)
     {
         var result = new BaseResult<IReadOnlyCollection<PostInfo>>()
         {
@@ -130,7 +130,7 @@ public class PostsController(PostsService service, MarkdownService markdown) : C
     /// 获取给定id文章的markdownToHtml
     /// </summary>
     [HttpGet("postHTML")]
-    public async Task<ActionResult<BaseResult<string>>> PostHTML(PostHTMLInput input)
+    public async Task<ActionResult<BaseResult<string>>> PostHTML([FromQuery] PostHTMLInput input)
     {
         var result = new BaseResult<string>();
         if (string.IsNullOrEmpty(input.Id)) {
