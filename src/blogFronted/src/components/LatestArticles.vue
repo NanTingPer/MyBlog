@@ -25,6 +25,7 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import type { BlogInfo } from '../ts/types/blogs/BlogInfo';
 import { BlogAPI } from '../ts/utils/BlogAPI';
+import { API_BASE_URL } from '../ts/config/apiConfig';
 
 const router = useRouter();
 const articles = ref<BlogInfo[]>([]);
@@ -44,7 +45,7 @@ const goToPost = (id: string) => {
 
 onMounted(async () => {
     try {
-        const api = new BlogAPI('http://localhost:5162');
+        const api = new BlogAPI(API_BASE_URL);
         const response = await api.Search();
         const data = await response.json();
         articles.value = data.data || [];

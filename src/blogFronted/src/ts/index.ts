@@ -6,11 +6,13 @@ import { type BaseRequestModel } from "./types/BaseRquestModel.ts";
 import { type BlogInfo } from "./types/blogs/BlogInfo.ts";
 import { BlogAPI } from "./utils/BlogAPI.js";
 import { DateTimeFormat } from "./utils/DateTimeFormat.js";
+import { API_BASE_URL } from "./config/apiConfig.js";
 
 // 运行项目: npm install -g http-server
 //          http-server -p 80
+
 export async function reanderBlogList(mountId: string) {
-    var blogAPI = new BlogAPI("http://localhost:5162");
+    var blogAPI = new BlogAPI(API_BASE_URL);
     let searchResponse = await blogAPI.Search();
     if(searchResponse.status != 200) {
         return;
@@ -41,7 +43,7 @@ export async function reanderBlogList(mountId: string) {
 }
 
 export async function reanderBlog(mountId: string, blogId: string) {
-    let blogAPI = new BlogAPI("http://localhost:5162");
+    let blogAPI = new BlogAPI(API_BASE_URL);
     let response = await blogAPI.SearchOnId({ keyWord: blogId });
     if (response.status != 200) return;
     let requestValue = (await response.json()) as BaseRequestModel<BlogInfo>;

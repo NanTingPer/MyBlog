@@ -4,8 +4,8 @@
             <div class="header-content">
                 <div class="logo">Mellow</div>
                 <nav class="nav">
-                    <router-link to="/" class="nav-link" active-class="active">首页</router-link>
-                    <router-link to="/" class="nav-link" active-class="active">文章</router-link>
+                    <router-link to="/latest" class="nav-link" active-class="active">首页</router-link>
+                    <router-link to="/latest" class="nav-link" active-class="active">文章</router-link>
                     <router-link to="/friendlink" class="nav-link" active-class="active">友链</router-link>
                     <a href="#" class="nav-link">关于</a>
                     <a href="/admin.html" class="nav-link" target="_blank">后台管理</a>

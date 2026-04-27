@@ -1,5 +1,8 @@
 ﻿<template>
-    <div class="admin-container">
+    <div v-if="isLoginPage" class="login-page">
+        <router-view />
+    </div>
+    <div v-else class="admin-container">
         <aside class="sidebar">
             <div class="sidebar-header">
                 <div class="logo">Mellow</div>
@@ -32,6 +35,14 @@
         </main>
     </div>
 </template>
+
+<script setup lang="ts">
+import { computed } from 'vue';
+
+const isLoginPage = computed(() => {
+    return window.location.hash === '#/login' || window.location.hash === '';
+});
+</script>
 
 <style scoped>
 .admin-container {
@@ -136,5 +147,9 @@
 .main-content {
     flex: 1;
     overflow: auto;
+}
+
+.login-page {
+    min-height: 100vh;
 }
 </style>

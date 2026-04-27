@@ -59,8 +59,7 @@ public class GlobalConfigService
     private readonly Lock fileLock = new ();
     private JsonSerializerOptions options = new JsonSerializerOptions()
     {
-        WriteIndented = true,
-        Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+        WriteIndented = true
     };
     /// <summary>
     /// 保存配置到本地路径<see cref="FullPath"/>

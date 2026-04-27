@@ -6,7 +6,11 @@ import FriendLink from '../components/FriendLink.vue';
 const routes = [
   {
     path: '/',
-    name: 'home',
+    redirect: '/latest'
+  },
+  {
+    path: '/latest',
+    name: 'latest',
     component: LatestArticles
   },
   {
