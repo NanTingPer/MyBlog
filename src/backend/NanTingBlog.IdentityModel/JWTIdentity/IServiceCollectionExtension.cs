@@ -4,16 +4,18 @@ namespace NanTingBlog.IdentityModel.JWTIdentity;
 
 public static class IServiceCollectionExtension
 {
-    public static IServiceCollection AddJWTService(this IServiceCollection services, Func<JWTServiceOptions>? options = null)
+    public static IServiceCollection AddJWTService(this IServiceCollection services, Func<IServiceProvider, JWTServiceOptions>? options = null)
     {
         var jwtm = new JWTMiddleware();
-        if(options != null) {
-            var opt = options.Invoke();
-            if(opt != null){
-                jwtm.options = opt;
+        services.AddSingleton<JWTMiddleware>(serviceProvider => {
+            if (options != null) {
+                var opt = options.Invoke(serviceProvider);
+                if (opt != null) {
+                    jwtm.options = opt;
+                }
             }
-        }
-        services.AddSingleton<JWTMiddleware>(jwtm);
+            return jwtm;
+        });
         return services;
     }
 }

@@ -25,7 +25,22 @@ public class GlobalConfigService
     /// <summary>
     /// 博文保存路径
     /// </summary>
-    public string BlogSaveDir { get; set; } = Path.Combine(AppContext.BaseDirectory, "posts");
+    public string BlogSaveDir { get; set { field = value; Save(); } } = Path.Combine(AppContext.BaseDirectory, "posts");
+
+    /// <summary>
+    /// 监听端口
+    /// </summary>
+    public List<string> Ports { get; set { field = value; Save(); } } = ["7777"];
+
+    /// <summary>
+    /// 登录密码
+    /// </summary>
+    public string LoginPassword { get; set { field = value; Save(); } } = "qwertyuiopasdfghjklzxcvbnm123";
+
+    /// <summary>
+    /// 数据库链接字符串
+    /// </summary>
+    public string BlogDbConnectionString { get; set { field = value; Save(); } } = @"Host=127.0.0.1:5432;Username=postgres;Password=123456;Database=blog";
     #endregion
 
     /// <summary>
@@ -42,6 +57,11 @@ public class GlobalConfigService
     public static readonly string fileName = "global.conf";
 
     private readonly Lock fileLock = new ();
+    private JsonSerializerOptions options = new JsonSerializerOptions()
+    {
+        WriteIndented = true,
+        Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+    };
     /// <summary>
     /// 保存配置到本地路径<see cref="FullPath"/>
     /// </summary>
@@ -50,7 +70,7 @@ public class GlobalConfigService
         lock (fileLock) {
             try {
                 using var fileStream = File.OpenWrite(FullPath);
-                var thisText = JsonSerializer.Serialize(this);
+                var thisText = JsonSerializer.Serialize(this, options);
                 var bytes = Encoding.UTF8.GetBytes(thisText);
                 fileStream.Write(bytes);
             } catch {

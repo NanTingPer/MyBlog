@@ -39,7 +39,9 @@ builder.Services.AddDbContext<BlogContext>(ServiceLifetime.Scoped);
 #region GlobalConfigService
 builder.Services.AddSingleton(provider => {
     if (File.Exists(GlobalConfigService.FullPath)) {
-        return JsonSerializer.Deserialize<GlobalConfigService>(File.ReadAllText(GlobalConfigService.FullPath))!;
+        var gcs = JsonSerializer.Deserialize<GlobalConfigService>(File.ReadAllText(GlobalConfigService.FullPath))!;
+        gcs.Save();
+        return gcs;
     } else {
         return new GlobalConfigService();
     }
@@ -63,10 +65,11 @@ builder.Services.AddSwaggerGen(options => {
 #endregion
 
 #region JWT
-builder.Services.AddJWTService(() => {
+builder.Services.AddJWTService(serviceProvice => {
+    var gcs = serviceProvice.GetService<GlobalConfigService>()!;
     return new JWTServiceOptions()
     {
-        SecurityKey = () => "awdawdawdawdawdawdawdawdawdawdawdawfho",
+        SecurityKey = () => gcs.LoginPassword,
     };
 });
 #endregion
@@ -102,10 +105,16 @@ app.UseSwaggerUI();
 if (app.Environment.IsDevelopment()) {
     app.MapOpenApi();
 }
-
+var gcs = app.Services.GetService<GlobalConfigService>();
+var ports = gcs!.Ports;
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
+app.Urls.Clear();
+foreach (var port in ports) {
+    string url = $"http://127.0.0.1:{port}";
+    app.Urls.Add(url);
+}
 app.Run();
 
 /// <summary>

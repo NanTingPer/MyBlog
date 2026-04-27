@@ -11,7 +11,7 @@ namespace NanTingBlog.API.Services.Db;
 /// <summary>
 /// 博客数据库上下文
 /// </summary>
-public class BlogContext : DbContext
+public class BlogContext(GlobalConfigService gcs) : DbContext
 {
     /// <summary>
     /// 博文表
@@ -27,7 +27,7 @@ public class BlogContext : DbContext
     /// </summary>
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseNpgsql(@"Host=127.0.0.1:5432;Username=postgres;Password=123456;Database=blog");
+        optionsBuilder.UseNpgsql(gcs.BlogDbConnectionString);
     }
 
     /// <summary>
