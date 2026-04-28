@@ -2,7 +2,7 @@
     <div class="login-container">
         <div class="login-card">
             <div class="login-header">
-                <h1 class="logo">Mellow</h1>
+                <h1 class="logo">南亭</h1>
                 <p class="subtitle">欢迎回来，请输入密码登录</p>
             </div>
             <form class="login-form" @submit.prevent="handleLogin">

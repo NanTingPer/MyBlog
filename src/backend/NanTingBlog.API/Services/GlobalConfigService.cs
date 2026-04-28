@@ -30,7 +30,7 @@ public class GlobalConfigService
     /// <summary>
     /// 监听端口
     /// </summary>
-    public List<string> Ports { get; set { field = value; Save(); } } = ["7777"];
+    public List<string> Ports { get; set { field = value; Save(); } } = ["6999"];
 
     /// <summary>
     /// 登录密码

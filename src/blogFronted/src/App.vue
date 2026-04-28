@@ -2,7 +2,7 @@
     <div class="app-container">
         <header class="header">
             <div class="header-content">
-                <div class="logo">Mellow</div>
+                <div class="logo">南亭</div>
                 <nav class="nav">
                     <router-link to="/latest" class="nav-link" active-class="active">首页</router-link>
                     <router-link to="/latest" class="nav-link" active-class="active">文章</router-link>
@@ -18,7 +18,7 @@
         </main>
 
         <footer class="footer">
-            <p class="copyright">© 2025 Mellow · 用心生活，温柔设计</p>
+            <p class="copyright">Vue3 + ASP.NET 10 强力驱动</p>
         </footer>
     </div>
 </template>

@@ -1,4 +1,4 @@
-﻿import { createRouter, createWebHistory } from 'vue-router';
+﻿import { createRouter, createWebHashHistory } from 'vue-router';
 import AdminFriendLink from '../components/AdminFriendLink.vue';
 import Login from '../components/Login.vue';
 import { sessionStore } from '../ts/utils/sessionStore';
@@ -24,7 +24,7 @@ const routes = [
 ];
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHashHistory(),
   routes
 });
 

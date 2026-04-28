@@ -5,7 +5,7 @@
     <div v-else class="admin-container">
         <aside class="sidebar">
             <div class="sidebar-header">
-                <div class="logo">Mellow</div>
+                <div class="logo">南亭</div>
                 <span class="admin-label">Admin</span>
             </div>
             <nav class="sidebar-nav">
