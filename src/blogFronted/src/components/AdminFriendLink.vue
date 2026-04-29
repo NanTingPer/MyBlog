@@ -1,12 +1,14 @@
 ﻿<template>
     <div class="friendlink-container">
         <div class="page-header">
-            <h1 class="page-title">友链管理</h1>
+            <h1 class="page-title">友链</h1>
             <button class="btn-add" @click="showAddForm">+ 添加友链</button>
+            <button class="btn-add-mobile" @click="showAddForm">+</button>
         </div>
 
         <div v-show="!isEditing" class="list-section">
             <div class="search-bar">
+                <span class="search-icon"></span>
                 <input type="text" v-model="searchKeyword" placeholder="搜索友链名称..." class="search-input"
                     @input="handleSearch" />
             </div>
@@ -54,6 +56,33 @@
                         <button class="pagination-btn active">{{ currentPage }}</button>
                         <button class="pagination-btn" :disabled="currentPage >= totalPages">›</button>
                     </div>
+                </div>
+            </div>
+
+            <div class="mobile-list">
+                <div v-for="link in filteredLinks" :key="link.id" class="mobile-card">
+                    <div class="avatar" :style="{ background: getAvatarColor(link.name) }">
+                        <img v-if="link.avatar" :src="link.avatar" alt="" class="avatar-img">
+                        <span v-else>{{ link.name?.charAt(0) }}</span>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-name">{{ link.name }}</h3>
+                        <p class="card-url">{{ link.url }}</p>
+                        <p class="card-dictum">{{ link.dictum }}</p>
+                        <p class="card-date">{{ formatDate(link.createTime) }}</p>
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn-edit-mobile" @click="showEditForm(link)">编辑</button>
+                        <button class="btn-delete-mobile" @click="deleteFriendlink(link.id)">删除</button>
+                    </div>
+                </div>
+
+                <div v-if="filteredLinks.length === 0" class="empty-state-mobile">
+                    <p>暂无友链数据</p>
+                </div>
+
+                <div v-if="filteredLinks.length > 0" class="mobile-footer">
+                    <span class="total">共 {{ filteredLinks.length }} 条友链</span>
                 </div>
             </div>
         </div>
@@ -504,5 +533,269 @@ loadFriendlinks();
 
 .btn-cancel:hover {
     background: #f5f5f5;
+}
+
+@media (max-width: 768px) {
+    .friendlink-container {
+        padding: 16px;
+        min-height: 100vh;
+        background: #f5f5f5;
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+        padding: 12px 16px;
+        border-radius: 8px;
+        position: sticky;
+        top: 0;
+    }
+
+    .btn-back-mobile {
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: #333;
+        padding: 4px 8px;
+        display: block;
+    }
+
+    .page-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #333;
+        margin: 0;
+        flex: 1;
+        text-align: center;
+    }
+
+    .btn-add {
+        display: none;
+    }
+
+    .btn-add-mobile {
+        display: block;
+        background: #4caf50;
+        color: #fff;
+        border: none;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        font-size: 20px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .search-bar {
+        display: flex;
+        align-items: center;
+        background: #fff;
+        padding: 8px 16px;
+        border-radius: 24px;
+        margin-bottom: 16px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .search-icon {
+        margin-right: 8px;
+        font-size: 14px;
+        color: #999;
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 8px 0;
+        border: none;
+        font-size: 14px;
+        outline: none;
+        background: transparent;
+    }
+
+    .table-container {
+        display: none;
+    }
+
+    .mobile-list {
+        display: block;
+    }
+
+    .mobile-card {
+        display: flex;
+        align-items: center;
+        background: #fff;
+        padding: 16px;
+        border-radius: 12px;
+        margin-bottom: 12px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-size: 18px;
+        font-weight: 500;
+        overflow: hidden;
+        flex-shrink: 0;
+    }
+
+    .avatar-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .card-content {
+        flex: 1;
+        margin-left: 16px;
+        overflow: hidden;
+    }
+
+    .card-name {
+        font-size: 16px;
+        font-weight: 600;
+        color: #333;
+        margin: 0 0 4px 0;
+    }
+
+    .card-url {
+        font-size: 12px;
+        color: #666;
+        margin: 0 0 4px 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .card-dictum {
+        font-size: 13px;
+        color: #999;
+        margin: 0 0 4px 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .card-date {
+        font-size: 12px;
+        color: #bbb;
+        margin: 0;
+    }
+
+    .card-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-left: 16px;
+    }
+
+    .btn-edit-mobile {
+        background: #4caf50;
+        color: #fff;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 4px;
+        font-size: 12px;
+        cursor: pointer;
+    }
+
+    .btn-delete-mobile {
+        background: #fff;
+        color: #e53935;
+        border: 1px solid #e53935;
+        padding: 6px 12px;
+        border-radius: 4px;
+        font-size: 12px;
+        cursor: pointer;
+    }
+
+    .empty-state-mobile {
+        padding: 48px 16px;
+        text-align: center;
+        color: #999;
+    }
+
+    .mobile-footer {
+        padding: 16px;
+        text-align: center;
+        color: #999;
+        font-size: 13px;
+    }
+
+    .form-section {
+        max-width: 100%;
+        padding: 16px;
+    }
+
+    .friendlink-form {
+        background: #fff;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .form-group label {
+        font-size: 14px;
+        font-weight: 500;
+        color: #333;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 14px;
+        border: 1px solid #e8e8e8;
+        border-radius: 8px;
+        font-size: 14px;
+        box-sizing: border-box;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 24px;
+    }
+
+    .btn-save,
+    .btn-cancel {
+        flex: 1;
+        padding: 14px;
+        border-radius: 8px;
+        font-size: 14px;
+    }
+
+    .btn-back {
+        display: none;
+    }
+
+    .form-header {
+        justify-content: center;
+    }
+}
+
+@media (min-width: 769px) {
+    .btn-back-mobile {
+        display: none;
+    }
+
+    .btn-add-mobile {
+        display: none;
+    }
+
+    .mobile-list {
+        display: none;
+    }
+
+    .search-icon {
+        display: none;
+    }
 }
 </style>
