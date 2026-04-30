@@ -46,16 +46,51 @@ public class PostsController(PostsService service, MarkdownService markdown) : C
     }
 
     /// <summary>
-    /// 主页获取
+    /// 获取最新的文章
     /// </summary>
     [HttpGet("search")]
     public async Task<ActionResult<BaseResult<IReadOnlyCollection<PostInfo>>>> Search([FromQuery] SearchBlogInput? input)
     {
+        var postResults = service.QueryByLast(5, 1);
+        var simplePostResults = postResults.Select(post =>
+        {
+            post.Content = post.Content[0..20];
+            return post;
+        }).ToList();
+
         var result = new BaseResult<IReadOnlyCollection<PostInfo>>()
         {
-            Data = service.Query(input?.Limit ?? 10, input?.Page ?? 1)
+            Data = simplePostResults
         };
         return Ok(result);
+    }
+
+    /// <summary>
+    /// 以页 获取文章
+    /// </summary>
+    [HttpGet("searchToPage")]
+    public async Task<ActionResult<BaseResult<IReadOnlyCollection<PostInfo>>>> SearchToPage([FromQuery] SearchBlogInput? input)
+    {
+        var postInfos = service.Query(input?.Limit ?? 10, input?.Page ?? 1);
+        var simplePostResults = postInfos.Select(post => {
+            post.Content = post.Content[0..20];
+            return post;
+        }).ToList();
+
+        var result = new BaseResult<IReadOnlyCollection<PostInfo>>()
+        {
+            Data = simplePostResults
+        };
+        return Ok(result);
+    }
+
+    /// <summary>
+    /// 获取页面数量
+    /// </summary>
+    [HttpGet("pageCount")]
+    public async Task<ActionResult<BaseResult<int>>> PageCount([FromQuery] int limit)
+    {
+        return Ok(BaseResult<int>.Create(await service.CountAsync() / limit));
     }
 
     /// <summary>
@@ -133,7 +168,8 @@ public class PostsController(PostsService service, MarkdownService markdown) : C
     public async Task<ActionResult<BaseResult<string>>> PostHTML([FromQuery] PostHTMLInput input)
     {
         var result = new BaseResult<string>();
-        if (string.IsNullOrEmpty(input.Id)) {
+        if (string.IsNullOrEmpty(input.Id))
+        {
             return Ok(result);
         }
         var post = await service.QueryByKeyAsync(input.Id);
@@ -144,23 +180,23 @@ public class PostsController(PostsService service, MarkdownService markdown) : C
 #pragma warning disable CS1591 // 缺少对公共可见类型或成员的 XML 注释
     public class SearchBlogInput
     {
-        [JsonPropertyName("keyWord")]
+        [JsonPropertyName("keyWord"), FromQuery(Name = "keyWord")]
         public string KeyWord { get; set; } = "*";
-        [JsonPropertyName("limit")]
+        [JsonPropertyName("limit"), FromQuery(Name = "limit")]
         public int? Limit { get; set; } = 10;
-        [JsonPropertyName("page")]
+        [JsonPropertyName("page"), FromQuery(Name = "page")]
         public int? Page { get; set; } = 1;
     }
 
     public class DeleteInput
     {
-        [JsonPropertyName("ids")]
+        [JsonPropertyName("ids"), FromQuery(Name = "ids")]
         public List<string> Ids { get; set; } = [];
     }
 
     public class PostHTMLInput
     {
-        [JsonPropertyName("id")]
+        [JsonPropertyName("id"), FromQuery(Name = "id")]
         public string Id { get; set; } = string.Empty;
     }
 #pragma warning restore CS1591 // 缺少对公共可见类型或成员的 XML 注释

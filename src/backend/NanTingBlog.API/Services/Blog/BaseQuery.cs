@@ -83,6 +83,15 @@ public abstract class BaseQuery<TModel, TKey>(BlogContext context)
         await context.SaveChangesAsync();
     }
 
+    /// <summary>
+    /// 表中的数据条数
+    /// </summary>
+    /// <returns></returns>
+    public async Task<int> CountAsync()
+    {
+        return await context.Set<TModel>().AsNoTracking().CountAsync();
+    }
+
     private Expression<Func<TModel, bool>> BuildKeyEqualExpression(TKey keyValue)
     {
         // model => model.key == target;

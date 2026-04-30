@@ -25,4 +25,16 @@ public class BaseResult<T>
     /// </summary>
     [JsonPropertyName("data")]
     public T? Data { get; set; } = default(T);
+
+    /// <summary>
+    /// 使用给定数据创建一个BaseResult
+    /// </summary>
+    /// <returns></returns>
+    public static BaseResult<T> Create(T data)
+    {
+        return new BaseResult<T>()
+        {
+            Data = data
+        };
+    }
 }

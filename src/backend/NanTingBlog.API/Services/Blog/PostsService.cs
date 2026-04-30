@@ -8,7 +8,7 @@ namespace NanTingBlog.API.Services.Blog;
 /// <summary>
 /// 文章服务
 /// </summary>
-public class PostsService(BlogContext context) : 
+public class PostsService(BlogContext context) :
     BaseQuery<PostInfo, string>(context)
 {
     private readonly BlogContext context = context;
@@ -23,6 +23,16 @@ public class PostsService(BlogContext context) :
     /// </summary>
     public List<PostInfo> Query(int limit, int page)
         => WhereQuery(f => true, limit, page);
+
+    /// <summary>
+    /// 查询最后创建的文章
+    /// </summary>
+    public List<PostInfo> QueryByLast(int limit, int page)
+    {
+        var startIndex = limit * (page - 1);
+        if (startIndex < 0) startIndex = 0;
+        return [.. context.Blogs.AsNoTracking().OrderByDescending(p => p.CreateTime).Skip(startIndex).Take(limit)];
+    }
 
     /// <summary>
     /// 以指定Key查询
@@ -55,7 +65,8 @@ public class PostsService(BlogContext context) :
     /// </summary>
     public IEnumerable<PostInfo> QueryAll()
     {
-        foreach (var post in context.Blogs.AsNoTracking()) {
+        foreach (var post in context.Blogs.AsNoTracking())
+        {
             yield return post;
         }
     }
@@ -66,13 +77,16 @@ public class PostsService(BlogContext context) :
     public async Task DeleteByIdsAsync(params string[] ids)
     {
         List<PostInfo> blogs = [];
-        foreach (var id in ids) {
+        foreach (var id in ids)
+        {
             var targetBlog = await context.Blogs.FirstOrDefaultAsync(b => b.Id == id);
-            if(targetBlog != null) {
+            if (targetBlog != null)
+            {
                 blogs.Add(targetBlog);
             }
         }
-        foreach (var item in blogs) {
+        foreach (var item in blogs)
+        {
             context.Blogs.Remove(item);
         }
         await context.SaveChangesAsync();
@@ -85,7 +99,8 @@ public class PostsService(BlogContext context) :
     public async Task DeleteAllAsync()
     {
         var blogs = context.Blogs.ToArray();
-        foreach (var item in blogs) {
+        foreach (var item in blogs)
+        {
             context.Blogs.Remove(item);
         }
         await context.SaveChangesAsync();
