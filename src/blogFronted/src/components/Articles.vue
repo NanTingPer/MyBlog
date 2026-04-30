@@ -1,0 +1,109 @@
+<template>
+    <div class="articles-page">
+        <h2 class="section-title">文章</h2>
+        <ArticleList :articles="articles" />
+        <div class="pagination" v-if="totalPages > 1">
+            <button class="page-btn" :disabled="currentPage <= 1" @click="changePage(currentPage - 1)">
+                上一页
+            </button>
+            <span class="page-info">{{ currentPage }} / {{ totalPages }}</span>
+            <button class="page-btn" :disabled="currentPage >= totalPages" @click="changePage(currentPage + 1)">
+                下一页
+            </button>
+        </div>
+    </div>
+</template>
+
+<script setup lang="ts">
+import { ref, onMounted } from "vue";
+import type { BlogInfo } from "../ts/types/blogs/BlogInfo";
+import { BlogAPI } from "../ts/utils/BlogAPI";
+import { API_BASE_URL } from "../ts/config/apiConfig";
+import ArticleList from "./ArticleList.vue";
+
+const api = new BlogAPI(API_BASE_URL);
+
+const articles = ref<BlogInfo[]>([]);
+const totalPages = ref(0);
+const currentPage = ref(1);
+const limit = 5;
+
+const fetchArticles = async (page: number) => {
+    try {
+        const response = await api.GetArticlesToPage(limit, page);
+        const data = await response.json();
+        articles.value = data.data || [];
+    } catch (error) {
+        articles.value = [];
+    }
+};
+
+const changePage = async (page: number) => {
+    if (page < 1 || page > totalPages.value) return;
+    currentPage.value = page;
+    await fetchArticles(page);
+};
+
+onMounted(async () => {
+    try {
+        const response = await api.GetPageCount(limit);
+        const data = await response.json();
+        totalPages.value = data.data || 0;
+    } catch (error) {
+        totalPages.value = 0;
+    }
+    await fetchArticles(1);
+});
+</script>
+
+<style scoped>
+.articles-page {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.section-title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 32px;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    margin-top: 40px;
+    padding-bottom: 20px;
+}
+
+.page-btn {
+    padding: 8px 16px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background: #fff;
+    color: #666;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.page-btn:hover:not(:disabled) {
+    background: #f5f5f5;
+    color: #333;
+}
+
+.page-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.page-info {
+    font-size: 14px;
+    color: #999;
+}
+</style>

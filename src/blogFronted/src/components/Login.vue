@@ -8,15 +8,10 @@
             <form class="login-form" @submit.prevent="handleLogin">
                 <div class="form-group">
                     <div class="input-wrapper">
-                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='11' width='18' height='11' rx='2' ry='2'%3E%3C/rect%3E%3Cpath d='M7 11V7a5 5 0 0 1 10 0v4'%3E%3C/path%3E%3C/svg%3E" class="input-icon" alt="密码">
-                        <input 
-                            type="password" 
-                            v-model="password" 
-                            class="password-input" 
-                            placeholder="输入密码" 
-                            required
-                            @keyup.enter="handleLogin"
-                        />
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='11' width='18' height='11' rx='2' ry='2'%3E%3C/rect%3E%3Cpath d='M7 11V7a5 5 0 0 1 10 0v4'%3E%3C/path%3E%3C/svg%3E"
+                            class="input-icon" alt="密码">
+                        <input type="password" v-model="password" class="password-input" placeholder="输入密码" required
+                            @keyup.enter="handleLogin" />
                     </div>
                 </div>
                 <button type="submit" class="login-btn" :disabled="isLoading">
@@ -50,7 +45,7 @@ const handleLogin = async () => {
 
     try {
         const response = await AuthAPI.getToken(password.value);
-        
+
         if (response && response.code === 200) {
             router.push('/friendlink');
         } else {

@@ -4,9 +4,12 @@
             <div class="header-content">
                 <div class="logo">南亭</div>
                 <nav class="nav" :class="{ 'nav-open': isNavOpen }">
-                    <router-link to="/latest" class="nav-link" active-class="active" @click="isNavOpen = false">首页</router-link>
-                    <router-link to="/latest" class="nav-link" active-class="active" @click="isNavOpen = false">文章</router-link>
-                    <router-link to="/friendlink" class="nav-link" active-class="active" @click="isNavOpen = false">友链</router-link>
+                    <router-link to="/latest" class="nav-link" active-class="active"
+                        @click="isNavOpen = false">首页</router-link>
+                    <router-link to="/articles" class="nav-link" active-class="active"
+                        @click="isNavOpen = false">文章</router-link>
+                    <router-link to="/friendlink" class="nav-link" active-class="active"
+                        @click="isNavOpen = false">友链</router-link>
                     <a href="#" class="nav-link" @click="isNavOpen = false">关于</a>
                     <a href="/admin.html" class="nav-link" target="_blank">后台管理</a>
                 </nav>
@@ -27,7 +30,11 @@
         </footer>
     </div>
 </template>
+<script setup lang="ts">
+import { ref } from "vue";
 
+const isNavOpen = ref(false);
+</script>
 <style scoped>
 .app-container {
     min-height: 100vh;
@@ -160,15 +167,15 @@
         display: flex;
     }
 
-    .nav-open + .menu-btn span:nth-child(1) {
+    .nav-open+.menu-btn span:nth-child(1) {
         transform: rotate(45deg) translate(5px, 5px);
     }
 
-    .nav-open + .menu-btn span:nth-child(2) {
+    .nav-open+.menu-btn span:nth-child(2) {
         opacity: 0;
     }
 
-    .nav-open + .menu-btn span:nth-child(3) {
+    .nav-open+.menu-btn span:nth-child(3) {
         transform: rotate(-45deg) translate(7px, -6px);
     }
 
@@ -196,9 +203,3 @@
     }
 }
 </style>
-
-<script setup lang="ts">
-import { ref } from 'vue'
-
-const isNavOpen = ref(false)
-</script>
