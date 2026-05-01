@@ -10,11 +10,11 @@
                     <div class="input-wrapper">
                         <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='11' width='18' height='11' rx='2' ry='2'%3E%3C/rect%3E%3Cpath d='M7 11V7a5 5 0 0 1 10 0v4'%3E%3C/path%3E%3C/svg%3E"
                             class="input-icon" alt="密码">
-                        <input type="password" v-model="password" class="password-input" placeholder="输入密码" required
+                        <input type="password" v-model="password" class="form-input password-input" placeholder="输入密码" required
                             @keyup.enter="handleLogin" />
                     </div>
                 </div>
-                <button type="submit" class="login-btn" :disabled="isLoading">
+                <button type="submit" class="btn-save login-btn" :disabled="isLoading">
                     <span v-if="isLoading" class="loading-spinner"></span>
                     {{ isLoading ? '登录中...' : '登录' }}
                 </button>
@@ -101,10 +101,6 @@ const handleLogin = async () => {
     flex-direction: column;
 }
 
-.form-group {
-    margin-bottom: 20px;
-}
-
 .input-wrapper {
     position: relative;
     display: flex;
@@ -120,18 +116,12 @@ const handleLogin = async () => {
 }
 
 .password-input {
-    width: 100%;
     padding: 12px 12px 12px 40px;
-    border: 1px solid #e8e8e8;
     border-radius: 8px;
-    font-size: 14px;
-    outline: none;
     transition: border-color 0.2s, box-shadow 0.2s;
-    box-sizing: border-box;
 }
 
 .password-input:focus {
-    border-color: #4caf50;
     box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
 }
 
@@ -140,23 +130,13 @@ const handleLogin = async () => {
 }
 
 .login-btn {
-    background: #4caf50;
-    color: #fff;
-    border: none;
     padding: 12px;
     border-radius: 8px;
-    font-size: 14px;
     font-weight: 500;
-    cursor: pointer;
-    transition: background 0.2s;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-}
-
-.login-btn:hover:not(:disabled) {
-    background: #43a047;
 }
 
 .login-btn:disabled {
