@@ -1,7 +1,7 @@
 <template>
     <div class="latest-articles">
         <h2 class="section-title">最新文章</h2>
-        <ArticleList :articles="articles" />
+        <PostList :articles="articles" />
     </div>
 </template>
 
@@ -10,7 +10,7 @@ import { ref, onMounted } from "vue";
 import type { BlogInfo } from "../ts/types/blogs/BlogInfo";
 import { BlogAPI } from "../ts/utils/BlogAPI";
 import { API_BASE_URL } from "../ts/config/apiConfig";
-import ArticleList from "./ArticleList.vue";
+import PostList from "./PostList.vue";
 
 const articles = ref<BlogInfo[]>([]);
 

@@ -1,7 +1,7 @@
 <template>
     <div class="articles-page">
         <h2 class="section-title">文章</h2>
-        <ArticleList :articles="articles" />
+        <PostList :articles="articles" />
         <div class="pagination" v-if="totalPages > 1">
             <button class="page-btn" :disabled="currentPage <= 1" @click="changePage(currentPage - 1)">
                 上一页
@@ -19,7 +19,7 @@ import { ref, onMounted } from "vue";
 import type { BlogInfo } from "../ts/types/blogs/BlogInfo";
 import { BlogAPI } from "../ts/utils/BlogAPI";
 import { API_BASE_URL } from "../ts/config/apiConfig";
-import ArticleList from "./ArticleList.vue";
+import PostList from "./PostList.vue";
 
 const api = new BlogAPI(API_BASE_URL);
 

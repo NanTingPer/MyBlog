@@ -1,6 +1,6 @@
 ﻿import { createRouter, createWebHistory } from "vue-router";
-import LatestArticles from "../components/LatestArticles.vue";
-import Articles from "../components/Articles.vue";
+import LatestArticles from "../components/LatestPosts.vue";
+import Articles from "../components/Posts.vue";
 import Post from "../components/Post.vue";
 import FriendLink from "../components/FriendLink.vue";
 

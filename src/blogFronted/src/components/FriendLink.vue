@@ -92,7 +92,7 @@ onMounted(async () => {
 }
 
 .friendlink-card:hover {
-    transform: translateX(4px);
+    transform: translateY(-2px);;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 }
 

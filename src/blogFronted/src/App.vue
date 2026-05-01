@@ -45,9 +45,12 @@ const isNavOpen = ref(false);
 
 .header {
     background: #f8f7f4;
-    border-bottom: 1px solid #eee;
+    /* border-bottom: 1px solid #eee; */
     padding: 0 16px;
-    position: relative;
+    /* position: relative; */
+    position: sticky;
+    top: 0;
+    z-index: 9999;
 }
 
 .header-content {
