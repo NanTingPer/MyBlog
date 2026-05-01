@@ -79,11 +79,6 @@ public class SpeedMiddleware : BackgroundService, IMiddleware
     /// </summary>
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        //Task.Run(...) 这里运行一个阻塞队列，对字典中的value进行自增操作
-        //Task.Factory.StartNew(async () => {
-
-        //}).Unwrap();
-        
         await Task.WhenAll(ClearIpCount(stoppingToken), HandleCount(stoppingToken));
     }
 
