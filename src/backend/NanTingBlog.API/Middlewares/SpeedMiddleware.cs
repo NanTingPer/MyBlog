@@ -12,7 +12,6 @@ public class SpeedMiddleware : BackgroundService, IMiddleware
 {
     private const short maxcount = 20; // max 20/min request
     private readonly ConcurrentDictionary<string, short> countIp = []; 
-    private readonly Channel<string> pendingIp = Channel.CreateUnbounded<string>();
     /// <summary>
     /// 执行
     /// </summary>
@@ -24,41 +23,23 @@ public class SpeedMiddleware : BackgroundService, IMiddleware
             return;
         }
         var ipaddrStr = remoteIpaddr.ToString();
-        if (countIp.TryGetValue(ipaddrStr, out var count)) {
-            if(count > maxcount) {
-                await ExceedSpeedWriteToResponse(context);
-                return;
-            }
-        }
 
-        if (!pendingIp.Writer.TryWrite(ipaddrStr)) {
+        var newCount = countIp.AddOrUpdate(ipaddrStr, 1, 
+            (_, old) => (old >= maxcount || old == -1) ? (short)-1 : (short)(old + 1));
+
+        if(newCount == -1) { // -1就是限流了
             await ExceedSpeedWriteToResponse(context);
             return;
         }
 
         await next.Invoke(context);
-
-        //if (remoteIpaddr.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork) {
-        //    pendingIp.Writer.TryWrite(remoteIpaddr.ToString());
-        //} else if (remoteIpaddr.AddressFamily == System.Net.Sockets.AddressFamily.InterNetworkV6) { // 不支持ipv6
-        //    if (context.Response.HasStarted) {
-        //        return;
-        //    } else {
-        //        var result = new BaseResult<string>()
-        //        {
-        //            Code = 500,
-        //            Data = "不支持Ipv6访问"
-        //        };
-        //        context.Response.StatusCode = 500;
-        //        context.Response.Body.Write(JsonSerializer.SerializeToUtf8Bytes(result));
-        //    }
-        //}
     }
 
-    private static JsonSerializerOptions options = new JsonSerializerOptions()
+    private readonly static JsonSerializerOptions options = new JsonSerializerOptions()
     {
         Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
     };
+
     private static async Task ExceedSpeedWriteToResponse(HttpContext context)
     {
         if (context.Response.HasStarted) {
@@ -79,7 +60,7 @@ public class SpeedMiddleware : BackgroundService, IMiddleware
     /// </summary>
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        await Task.WhenAll(ClearIpCount(stoppingToken), HandleCount(stoppingToken));
+        await Task.WhenAll(ClearIpCount(stoppingToken));
     }
 
     private async Task ClearIpCount(CancellationToken stoppingToken)
@@ -87,13 +68,6 @@ public class SpeedMiddleware : BackgroundService, IMiddleware
         while (!stoppingToken.IsCancellationRequested) {
             await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
             countIp.Clear();
-        }
-    }
-
-    private async Task HandleCount(CancellationToken stoppingToken)
-    {
-        await foreach (var ip in pendingIp.Reader.ReadAllAsync(stoppingToken)) {
-            countIp.AddOrUpdate(ip, 1, (k, o) => (short)(o + 1));
         }
     }
 }
