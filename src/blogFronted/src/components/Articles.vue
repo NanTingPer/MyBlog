@@ -28,6 +28,10 @@ const totalPages = ref(0);
 const currentPage = ref(1);
 const limit = 5;
 
+/**
+ * 获取给定页面的数据
+ * @param page 给定页
+ */
 const fetchArticles = async (page: number) => {
     try {
         const response = await api.GetArticlesToPage(limit, page);
@@ -38,12 +42,19 @@ const fetchArticles = async (page: number) => {
     }
 };
 
+/**
+ * 更改页数信息到给定page, 并获取给定page页的数据
+ * @param page 第几页
+ */
 const changePage = async (page: number) => {
     if (page < 1 || page > totalPages.value) return;
     currentPage.value = page;
     await fetchArticles(page);
 };
 
+/**
+ * 初始化页数，并获取一页的文章
+ */
 onMounted(async () => {
     try {
         const response = await api.GetPageCount(limit);

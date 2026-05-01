@@ -28,7 +28,7 @@
                     <tbody>
                         <tr v-for="link in filteredLinks" :key="link.id">
                             <td>
-                                <div class="avatar" :style="{ background: getAvatarColor(link.name) }">
+                                <div class="avatar">
                                     <img v-if="link.avatar" :src="link.avatar" alt="" class="avatar-img">
                                     <span v-else>{{ link.name?.charAt(0) }}</span>
                                 </div>
@@ -61,7 +61,7 @@
 
             <div class="mobile-list">
                 <div v-for="link in filteredLinks" :key="link.id" class="mobile-card">
-                    <div class="avatar" :style="{ background: getAvatarColor(link.name) }">
+                    <div class="avatar">
                         <img v-if="link.avatar" :src="link.avatar" alt="" class="avatar-img">
                         <span v-else>{{ link.name?.charAt(0) }}</span>
                     </div>
@@ -154,16 +154,6 @@ const filteredLinks = computed(() => {
 });
 
 const totalPages = computed(() => Math.ceil(filteredLinks.value.length / 10));
-
-const getAvatarColor = (name?: string): string => {
-    const colors = ['#81c784', '#ffb74d', '#64b5f6', '#a1887f'];
-    if (!name) return colors[0];
-    let hash = 0;
-    for (let i = 0; i < name.length; i++) {
-        hash = name.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    return colors[Math.abs(hash) % colors.length];
-};
 
 const formatDate = (dateStr?: string): string => {
     if (!dateStr) return '';
