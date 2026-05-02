@@ -16,7 +16,7 @@ public class PostsService(BlogContext context) :
     /// <summary>
     /// 取key
     /// </summary>
-    public override Expression<Func<PostInfo, string>> KeyExpression { get => field; init; } = f => f.Name;
+    public override Expression<Func<PostInfo, string>> KeyExpression { get => field; init; } = f => f.Id;
 
     /// <summary>
     /// 查询全部
@@ -32,14 +32,6 @@ public class PostsService(BlogContext context) :
         var startIndex = limit * (page - 1);
         if (startIndex < 0) startIndex = 0;
         return [.. context.Blogs.AsNoTracking().OrderByDescending(p => p.CreateTime).Skip(startIndex).Take(limit)];
-    }
-
-    /// <summary>
-    /// 以指定Key查询
-    /// </summary>
-    public async Task<PostInfo?> QueryByKeyAsync(string key)
-    {
-        return await context.Blogs.AsNoTracking().FirstOrDefaultAsync(b => b.Id == key);
     }
 
     /// <summary>
@@ -63,7 +55,7 @@ public class PostsService(BlogContext context) :
     /// <summary>
     /// 查询全部，懒惰返回
     /// </summary>
-    public IEnumerable<PostInfo> QueryAll()
+    public IEnumerable<PostInfo> QueryAllNoTracking()
     {
         foreach (var post in context.Blogs.AsNoTracking()) {
             yield return post;

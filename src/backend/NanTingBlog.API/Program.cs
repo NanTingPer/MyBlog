@@ -1,4 +1,4 @@
-﻿using Markdig;
+using Markdig;
 using NanTingBlog.API;
 using NanTingBlog.API.Middlewares;
 using NanTingBlog.API.Services;
@@ -50,6 +50,8 @@ builder.Services.AddSingleton(provider => {
 
 builder.Services.AddScoped<PostsService>(); // 博文服务
 builder.Services.AddScoped<FriendslinkService>(); // 友链服务
+builder.Services.AddSingleton<WatchService>();// 文章服务依赖此服务
+builder.Services.AddHostedService(services => services.GetService<WatchService>()!); 
 builder.Services.AddControllers().AddControllersAsServices();
 builder.Services.AddOpenApi();
 
@@ -85,7 +87,6 @@ builder.Services.AddCors(options => {
 #endregion
 
 builder.Services.AddRSAService();
-builder.Services.AddHostedService<WatchService>();
 
 #region SpeedMiddleware And Hosted
 builder.Services.AddSingleton<SpeedMiddleware>();

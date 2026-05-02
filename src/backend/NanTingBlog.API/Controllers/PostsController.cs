@@ -14,7 +14,7 @@ namespace NanTingBlog.API.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/blog")]
-public class PostsController(PostsService service, MarkdownService markdown) : ControllerBase
+public class PostsController(PostsService service, MarkdownService markdown, WatchService watch) : ControllerBase
 {
     private readonly PostsService service = service;
     private readonly MarkdownService markdown = markdown;
@@ -101,7 +101,7 @@ public class PostsController(PostsService service, MarkdownService markdown) : C
     {
         var result = new BaseResult<PostInfo>()
         {
-            Data = await service.QueryByKeyAsync(input.KeyWord)
+            Data = await service.QueryByKeyNoTrackingAsync(input.KeyWord)
         };
         return Ok(result);
     }
@@ -143,7 +143,28 @@ public class PostsController(PostsService service, MarkdownService markdown) : C
     [HttpPost("addOrReplace")]
     public async Task<ActionResult<BaseResult<string>>> AddOrReplace([FromBody] PostInfo blog)
     {
-        await service.UpdateOrAddAsync(blog);
+        var oldPost = await service.QueryByKeyNoTrackingAsync(blog.Id);
+        var bodyName = blog.Name;
+        var bodyContent = blog.Content;
+        var oldContent = oldPost?.Content;
+        var oldName = oldPost?.Name;
+
+        var result = await service.UpdateOrAddAsync(blog);
+        switch (result) {
+            case TaskResult.Add:
+                await watch.Create(blog);
+                break;
+
+            case TaskResult.Update:
+                if (oldPost == null) break;
+                if (oldName != bodyName) {
+                    watch.Rename(oldPost.Name, bodyName);
+                }
+                if(oldContent != bodyContent) {
+                    watch.Update(bodyName, bodyContent);
+                }
+                break;
+        }
         return Ok(new BaseResult<string>());
     }
 
@@ -194,7 +215,7 @@ public class PostsController(PostsService service, MarkdownService markdown) : C
         {
             return Ok(result);
         }
-        var post = await service.QueryByKeyAsync(input.Id);
+        var post = await service.QueryByKeyNoTrackingAsync(input.Id);
         result.Data = markdown.ToHTML(post?.Content ?? "");
         return Ok(result);
     }

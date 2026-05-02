@@ -1,5 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using NanTingBlog.API.Dtos.Blogs;
 using NanTingBlog.API.Services.Db;
 using System.Linq.Expressions;
 
@@ -31,13 +32,13 @@ public abstract class BaseQuery<TModel, TKey>(BlogContext context)
     /// <summary>
     /// 更新或添加
     /// </summary>
-    public async Task UpdateOrAddAsync(TModel newInfo)
+    public async Task<TaskResult> UpdateOrAddAsync(TModel newInfo)
     {
         ArgumentNullException.ThrowIfNull(newInfo);
         var oldInfo = await context.Set<TModel>().FirstOrDefaultAsync(BuildKeyEqualExpression(newInfo));
         if (oldInfo == null) {
             await AddAsync(newInfo);
-            return;
+            return TaskResult.Add;
         }
         var entry = context.Entry(oldInfo);
         entry.CurrentValues.SetValues(newInfo);
@@ -57,6 +58,7 @@ public abstract class BaseQuery<TModel, TKey>(BlogContext context)
         }
         ;
         await context.SaveChangesAsync();
+        return TaskResult.Update;
     }
 
     /// <summary>
@@ -72,7 +74,7 @@ public abstract class BaseQuery<TModel, TKey>(BlogContext context)
     /// <summary>
     /// 删除自Id
     /// </summary>
-    public async Task DeleteByIdAsync(TKey id)
+    public async Task DeleteByKeyAsync(TKey id)
     {
         var targetBlog = await context.Set<TModel>().FirstOrDefaultAsync(BuildKeyEqualExpression(id));
         if (targetBlog == null) {
@@ -81,6 +83,22 @@ public abstract class BaseQuery<TModel, TKey>(BlogContext context)
 
         context.Set<TModel>().Remove(targetBlog);
         await context.SaveChangesAsync();
+    }
+
+    /// <summary>
+    /// 以指定Key查询
+    /// </summary>
+    public async Task<TModel?> QueryByKeyNoTrackingAsync(TKey key)
+    {
+        return await context.Set<TModel>().AsNoTracking().FirstOrDefaultAsync(BuildKeyEqualExpression(key));
+    }
+
+    /// <summary>
+    /// 以指定Key查询
+    /// </summary>
+    public async Task<TModel?> QueryByKeyTrackingAsync(TKey key)
+    {
+        return await context.Set<TModel>().FirstOrDefaultAsync(BuildKeyEqualExpression(key));
     }
 
     /// <summary>
@@ -114,4 +132,19 @@ public abstract class BaseQuery<TModel, TKey>(BlogContext context)
         var keyV = GetKeyValue(model2);
         return BuildKeyEqualExpression(keyV);
     }
+}
+
+/// <summary>
+/// 任务结果
+/// </summary>
+public enum TaskResult
+{
+    /// <summary>
+    /// 执行了添加操作
+    /// </summary>
+    Add,
+    /// <summary>
+    /// 执行了更新操作
+    /// </summary>
+    Update
 }

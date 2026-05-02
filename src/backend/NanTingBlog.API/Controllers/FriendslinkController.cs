@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using NanTingBlog.API.Dtos.Blogs;
 using NanTingBlog.API.Services.Blog;
 #if RELEASE
@@ -41,7 +41,7 @@ public class FriendslinkController(FriendslinkService service) : ControllerBase
             result.Data = "无效的id";
             return Ok(result);
         }
-        await service.DeleteByIdAsync(input.Id);
+        await service.DeleteByKeyAsync(input.Id);
         return Ok(result);
     }
 
