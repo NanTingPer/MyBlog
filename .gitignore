@@ -1,7 +1,11 @@
 *.db
 
-/src/frontend/lib/*
-/src/frontend/node_modules
+/src/blogFronted/lib/*
+/src/blogFronted/node_modules
+/src/blogFronted/src/assets/css/prism.css
+/src/blogFronted/src/assets/js/prism.js
+/src/blogFronted/summary.md
+/src/blogFronted/swagger.json
 /src/backend/**/obj
 /src/backend/**/bin
 /src/backend/**/.vs
