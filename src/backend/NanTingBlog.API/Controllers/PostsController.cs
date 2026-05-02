@@ -170,7 +170,12 @@ public class PostsController(PostsService service, MarkdownService markdown) : C
     [HttpGet("getAllToPage")]
     public async Task<ActionResult<BaseResult<IReadOnlyCollection<PostInfo>>>> GetAllToPage([FromQuery] SearchBlogInput? input)
     {
-        var postInfos = service.Query(input?.Limit ?? 10, input?.Page ?? 1);
+        List<PostInfo> postInfos;
+        if(input?.KeyWord == null || string.IsNullOrEmpty(input.KeyWord) || input.KeyWord == "*") {
+            postInfos = service.Query(input?.Limit ?? 10, input?.Page ?? 1);
+        } else {
+            postInfos = service.QueryByName(input.KeyWord, input?.Limit ?? 10, input?.Page ?? 1);
+        }
         var result = new BaseResult<IReadOnlyCollection<PostInfo>>()
         {
             Data = postInfos
