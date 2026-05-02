@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using NanTingBlog.API.Dtos.Blogs;
 using NanTingBlog.API.Services.Db;
 using System.Linq.Expressions;
@@ -65,8 +65,7 @@ public class PostsService(BlogContext context) :
     /// </summary>
     public IEnumerable<PostInfo> QueryAll()
     {
-        foreach (var post in context.Blogs.AsNoTracking())
-        {
+        foreach (var post in context.Blogs.AsNoTracking()) {
             yield return post;
         }
     }
@@ -77,16 +76,13 @@ public class PostsService(BlogContext context) :
     public async Task DeleteByIdsAsync(params string[] ids)
     {
         List<PostInfo> blogs = [];
-        foreach (var id in ids)
-        {
+        foreach (var id in ids) {
             var targetBlog = await context.Blogs.FirstOrDefaultAsync(b => b.Id == id);
-            if (targetBlog != null)
-            {
+            if (targetBlog != null) {
                 blogs.Add(targetBlog);
             }
         }
-        foreach (var item in blogs)
-        {
+        foreach (var item in blogs) {
             context.Blogs.Remove(item);
         }
         await context.SaveChangesAsync();
@@ -99,8 +95,7 @@ public class PostsService(BlogContext context) :
     public async Task DeleteAllAsync()
     {
         var blogs = context.Blogs.ToArray();
-        foreach (var item in blogs)
-        {
+        foreach (var item in blogs) {
             context.Blogs.Remove(item);
         }
         await context.SaveChangesAsync();
