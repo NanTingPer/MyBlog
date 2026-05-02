@@ -169,10 +169,10 @@ public class WatchService : BackgroundService
     /// </summary>
     public void Update(string name, string newContent)
     {
-        if (!TryGetMarkdownFullName(name, out var fullPath)) {
-            return;
-        }
         uploadings.Add(_ => {
+            if (!TryGetMarkdownFullName(name, out var fullPath)) {
+                return Task.CompletedTask;
+            }
             var stream = File.Create(fullPath);
             stream.Write(Encoding.UTF8.GetBytes(newContent));
             stream.Dispose();
