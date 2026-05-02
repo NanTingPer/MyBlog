@@ -15,10 +15,12 @@
                     <img src="/友链图标.svg" class="nav-icon" alt="友链管理">
                     <span class="nav-text">友链管理</span>
                 </router-link>
-                <div class="nav-item disabled">
+                <router-link to="/posts" class="nav-item"
+                    :class="{ active: $route.name === 'adminPosts' }"
+                    @click="sidebarOpen = false">
                     <img src="/文章图标.svg" class="nav-icon" alt="文章管理">
                     <span class="nav-text">文章管理</span>
-                </div>
+                </router-link>
                 <div class="nav-item disabled">
                     <img src="/设置图标.svg" class="nav-icon" alt="系统设置">
                     <span class="nav-text">系统设置</span>

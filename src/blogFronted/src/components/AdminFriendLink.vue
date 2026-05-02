@@ -232,6 +232,11 @@ loadFriendlinks();
     padding: 24px;
 }
 
+.table-container {
+    border-radius: 10px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+}
 @media (max-width: 768px) {
     .friendlink-container {
         padding: 16px;

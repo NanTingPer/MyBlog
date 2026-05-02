@@ -1,13 +1,13 @@
 <template>
     <div class="articles-list">
-        <div v-for="article in articles" :key="article.id" class="card article-card" @click="goToPost(article.id)">
+        <div v-for="article in articles" :key="article.id" class="card article-card" @click="goToPost(article.id!)">
             <img v-show="article.drawingUrl != ''" :src="article.drawingUrl" :alt="article.name"
                 class="article-image" />
             <div class="article-content">
                 <h3 class="article-title">{{ article.name }}</h3>
                 <p class="article-description">{{ article.content.substring(0, 90) + '...' }}</p>
                 <div class="article-footer">
-                    <span class="article-date">{{ formatDate(article.createTime) }}</span>
+                    <span class="article-date">{{ formatDate(article.createTime!) }}</span>
                     <span v-for="tag in article.tag" :key="tag" class="article-tag tag">
                         {{ tag }}
                     </span>

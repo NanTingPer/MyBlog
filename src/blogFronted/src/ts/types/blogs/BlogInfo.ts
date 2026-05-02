@@ -1,10 +1,11 @@
 ﻿export interface BlogInfo {
-    id: string,
+    id?: string,
     name: string,
-    createTime: number,
-    editTime: number,
+    createTime?: number,
+    editTime?: number,
     author: string[],
     content: string,
     tag: string[],
-    drawingUrl: string
+    drawingUrl?: string,
+    html?: string
 }

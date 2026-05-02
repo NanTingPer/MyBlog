@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using NanTingBlog.API.Dtos.Blogs;
 using NanTingBlog.API.Services;
 using NanTingBlog.API.Services.Blog;
@@ -159,6 +159,23 @@ public class PostsController(PostsService service, MarkdownService markdown) : C
     {
         await service.DeleteAllAsync();
         return Ok(new BaseResult<string>());
+    }
+
+    /// <summary>
+    /// 以页获取文章，返回文章的全部内容
+    /// </summary>
+#if RELEASE
+    [JWT]
+#endif
+    [HttpGet("getAllToPage")]
+    public async Task<ActionResult<BaseResult<IReadOnlyCollection<PostInfo>>>> GetAllToPage([FromQuery] SearchBlogInput? input)
+    {
+        var postInfos = service.Query(input?.Limit ?? 10, input?.Page ?? 1);
+        var result = new BaseResult<IReadOnlyCollection<PostInfo>>()
+        {
+            Data = postInfos
+        };
+        return Ok(result);
     }
 
     /// <summary>
