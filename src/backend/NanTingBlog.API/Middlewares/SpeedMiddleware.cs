@@ -25,9 +25,9 @@ public class SpeedMiddleware : BackgroundService, IMiddleware
         var ipaddrStr = remoteIpaddr.ToString();
 
         var newCount = countIp.AddOrUpdate(ipaddrStr, 1, 
-            (_, old) => (old >= maxcount || old == -1) ? (short)-1 : (short)(old + 1));
+            (_, old) => old >= maxcount ? (short)22 : (short)(old + 1));
 
-        if(newCount == -1) { // -1就是限流了
+        if(newCount >= maxcount) {
             await ExceedSpeedWriteToResponse(context);
             return;
         }
