@@ -73,7 +73,11 @@ public class PostsController(PostsService service, MarkdownService markdown, Wat
     {
         var postInfos = service.Query(input?.Limit ?? 10, input?.Page ?? 1);
         var simplePostResults = postInfos.Select(post => {
-            post.Content = post.Content[0..20];
+            if (post.Content.Length <= 20) {
+                post.Content = post.Content[0.. post.Content.Length];
+            } else {
+                post.Content = post.Content[0.. 20];
+            }
             return post;
         }).ToList();
 
