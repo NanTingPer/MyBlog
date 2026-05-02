@@ -9,8 +9,7 @@
         <div v-show="!isEditing" class="list-section">
             <div class="search-bar">
                 <span class="search-icon"></span>
-                <input type="text" v-model="searchKeyword" placeholder="搜索文章名称..." class="search-input"
-                    @input="handleSearch" />
+                <input type="text" v-model="searchKeyword" placeholder="搜索文章名称..." class="search-input" />
             </div>
 
             <div class="table-container">
@@ -184,7 +183,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import type { BlogInfo } from '../ts/types/blogs/BlogInfo';
 import { AdminBlogAPI } from '../ts/utils/AdminBlogAPI';
 
@@ -227,10 +226,15 @@ const formatDate = (timestamp?: number): string => {
     return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
 };
 
-const handleSearch = () => {
-    currentPage.value = 1;
-    loadPosts();
-};
+let searchTimer: ReturnType<typeof setTimeout> | null = null;
+
+watch(searchKeyword, () => {
+    if (searchTimer) clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => {
+        currentPage.value = 1;
+        loadPosts();
+    }, 500);
+});
 
 const goToPage = (page: number) => {
     currentPage.value = page;
