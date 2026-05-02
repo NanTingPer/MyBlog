@@ -3,6 +3,7 @@ import LatestArticles from "../components/LatestPosts.vue";
 import Articles from "../components/Posts.vue";
 import Post from "../components/Post.vue";
 import FriendLink from "../components/FriendLink.vue";
+import About from "../components/About.vue";
 
 const routes = [
     {
@@ -28,6 +29,11 @@ const routes = [
         path: "/friendlink",
         name: "friendlink",
         component: FriendLink,
+    },
+    {
+        path: "/about",
+        name: "about",
+        component: About,
     },
 ];
 
