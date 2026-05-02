@@ -12,3 +12,6 @@ app.mount('#app')
 // http-server .\dist\ -p 8080
 
 // 如果在dist目录下不需要写dist 但是需要-s ，-l 用于指定端口
+
+// git reset --hard HEAD~1
+// git push --force-with-lease origin main
