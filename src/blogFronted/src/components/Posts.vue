@@ -1,5 +1,5 @@
 <template>
-    <div class="articles-page">
+    <div class="articles-page page-container">
         <h2 class="section-title">文章</h2>
         <PostList :articles="articles" />
         <div class="pagination" v-if="totalPages > 1">
@@ -69,18 +69,7 @@ onMounted(async () => {
 
 <style scoped>
 .articles-page {
-    width: 100%;
     max-width: 900px;
-    margin: 0 auto;
-    padding: 40px 20px;
-}
-
-.section-title {
-    text-align: center;
-    font-size: 24px;
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 32px;
 }
 
 .pagination {

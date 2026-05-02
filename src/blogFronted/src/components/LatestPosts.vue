@@ -1,5 +1,5 @@
 <template>
-    <div class="latest-articles">
+    <div class="latest-articles page-container">
         <h2 class="section-title">最新文章</h2>
         <PostList :articles="articles" />
     </div>
@@ -40,17 +40,6 @@ onMounted(async () => {
 
 <style scoped>
 .latest-articles {
-    width: 100%;
     max-width: 900px;
-    margin: 0 auto;
-    padding: 40px 20px;
-}
-
-.section-title {
-    text-align: center;
-    font-size: 24px;
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 32px;
 }
 </style>

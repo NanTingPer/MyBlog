@@ -1,4 +1,25 @@
-﻿html {
+﻿/* 全局重置 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background: #faf8f5;
+}
+
+#app {
+    width: 100%;
+    min-height: 100%;
+}
+
+/* 滚动条隐藏 */
+html {
     overflow: auto;
     scrollbar-width: none;
     -ms-overflow-style: none;
@@ -6,4 +27,81 @@
 
 html::-webkit-scrollbar {
     display: none;
+}
+
+/* 代码块样式 */
+pre[class*="language-"] {
+    white-space: pre !important;
+    word-wrap: normal !important;
+    overflow-x: auto;
+    tab-size: 4;
+}
+
+code[class*="language-"] {
+    white-space: pre !important;
+    display: block;
+}
+
+.token {
+    display: inline !important;
+    white-space: inherit;
+}
+
+/* 通用卡片样式 */
+.card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* 通用页面容器 */
+.page-container {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.page-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.page-title {
+    font-size: 28px;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 12px;
+}
+
+.page-subtitle {
+    font-size: 14px;
+    color: #999;
+    margin: 0;
+}
+
+/* 通用章节标题 */
+.section-title {
+    text-align: center;
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 32px;
+}
+
+/* 移动端适配 */
+@media (max-width: 768px) {
+    .page-container {
+        padding: 24px 12px;
+    }
+
+    .page-title {
+        font-size: 24px;
+    }
 }

@@ -1,12 +1,12 @@
 <template>
-    <div class="about-container">
-        <div class="about-header">
-            <h1 class="about-title">关于</h1>
-            <p class="about-subtitle">关于这个博客以及我</p>
+    <div class="page-container">
+        <div class="page-header">
+            <h1 class="page-title">关于</h1>
+            <p class="page-subtitle">关于这个博客以及我</p>
         </div>
 
         <div class="about-content">
-            <div class="about-card">
+            <div class="card about-card">
                 <h2 class="card-title">平台帐号</h2>
                 <div class="account-list">
                     <a href="https://github.com/NanTingPer" target="_blank" rel="noopener noreferrer" class="account-item">
@@ -43,31 +43,6 @@
 </script>
 
 <style scoped>
-.about-container {
-    width: 100%;
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 40px 20px;
-}
-
-.about-header {
-    text-align: center;
-    margin-bottom: 40px;
-}
-
-.about-title {
-    font-size: 28px;
-    font-weight: 600;
-    color: #333;
-    margin: 0 0 12px;
-}
-
-.about-subtitle {
-    font-size: 14px;
-    color: #999;
-    margin: 0;
-}
-
 .about-content {
     display: flex;
     flex-direction: column;
@@ -75,10 +50,7 @@
 }
 
 .about-card {
-    background: #fff;
-    border-radius: 16px;
     padding: 24px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 .card-title {
@@ -107,7 +79,7 @@
 
 .account-item:hover {
     background: #f0ede8;
-    transform: translateX(4px);
+    transform: translateY(-2px);
 }
 
 .account-icon {
@@ -148,14 +120,6 @@
 }
 
 @media (max-width: 768px) {
-    .about-container {
-        padding: 24px 12px;
-    }
-
-    .about-title {
-        font-size: 24px;
-    }
-
     .about-card {
         padding: 20px;
     }

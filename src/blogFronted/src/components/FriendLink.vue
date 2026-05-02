@@ -1,13 +1,13 @@
 ﻿<template>
-    <div class="friendlink-container">
-        <div class="friendlink-header">
-            <h1 class="friendlink-title">友情链接</h1>
-            <p class="friendlink-subtitle">那些温暖而有趣的角落，是互联网上的星光</p>
+    <div class="page-container">
+        <div class="page-header">
+            <h1 class="page-title">友情链接</h1>
+            <p class="page-subtitle">那些温暖而有趣的角落，是互联网上的星光</p>
         </div>
 
         <div class="friendlink-list">
             <a v-for="link in friendlinks" :key="link.id" :href="link.url" target="_blank" rel="noopener noreferrer"
-                class="friendlink-card">
+                class="card friendlink-card">
                 <img :src="link.avatar" :alt="link.name" class="friendlink-avatar" />
                 <div class="friendlink-info">
                     <h3 class="friendlink-name">{{ link.name }}</h3>
@@ -49,31 +49,6 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.friendlink-container {
-    width: 100%;
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 40px 20px;
-}
-
-.friendlink-header {
-    text-align: center;
-    margin-bottom: 40px;
-}
-
-.friendlink-title {
-    font-size: 28px;
-    font-weight: 600;
-    color: #333;
-    margin: 0 0 12px;
-}
-
-.friendlink-subtitle {
-    font-size: 14px;
-    color: #999;
-    margin: 0;
-}
-
 .friendlink-list {
     display: flex;
     flex-direction: column;
@@ -83,17 +58,8 @@ onMounted(async () => {
 .friendlink-card {
     display: flex;
     align-items: center;
-    background: #fff;
-    border-radius: 16px;
     padding: 20px 24px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-    transition: transform 0.2s, box-shadow 0.2s;
     text-decoration: none;
-}
-
-.friendlink-card:hover {
-    transform: translateY(-2px);;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 }
 
 .friendlink-avatar {

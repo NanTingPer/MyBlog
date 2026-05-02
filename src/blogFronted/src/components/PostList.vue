@@ -1,6 +1,6 @@
 <template>
     <div class="articles-list">
-        <div v-for="article in articles" :key="article.id" class="article-card" @click="goToPost(article.id)">
+        <div v-for="article in articles" :key="article.id" class="card article-card" @click="goToPost(article.id)">
             <img v-show="article.drawingUrl != ''" :src="article.drawingUrl" :alt="article.name"
                 class="article-image" />
             <div class="article-content">
@@ -50,17 +50,8 @@ const goToPost = (id: string) => {
 
 .article-card {
     display: flex;
-    background: #fff;
-    border-radius: 16px;
     overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-    transition: transform 0.2s, box-shadow 0.2s;
     cursor: pointer;
-}
-
-.article-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 }
 
 .article-image {
