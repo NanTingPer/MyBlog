@@ -29,7 +29,7 @@ export async function reanderBlogList(mountId: string) {
     let blogHtml = "";
     const titleClassName = "post-title";
     blogs.data?.forEach(blog => {
-        let createDate = new DateTimeFormat(blog.createTime);
+        let createDate = new DateTimeFormat(blog.createTime as number);
         // <span class="read-time">阅读时长: 2分钟</span>
         blogHtml +=  
                 `<article class="blog-post">
