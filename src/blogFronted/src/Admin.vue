@@ -49,13 +49,17 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { ref } from 'vue'; //computed, 
+import { sessionStore } from './ts/utils/sessionStore';
 
 const sidebarOpen = ref(false);
+const isLoginPage = ref(!sessionStore.isLoggedIn());
+const j = () => {
+    isLoginPage.value = !sessionStore.isLoggedIn();
+    sessionStore.removeJWTChangeCallback(j);
+};
+sessionStore.addJWTChangeCallback(j);
 
-const isLoginPage = computed(() => {
-    return window.location.hash === '#/login' || window.location.hash === '';
-});
 </script>
 
 <style scoped>
