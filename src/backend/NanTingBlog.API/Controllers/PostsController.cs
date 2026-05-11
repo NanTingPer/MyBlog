@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using NanTingBlog.API.Dtos.Blogs;
 using NanTingBlog.API.Services;
-using NanTingBlog.API.Services.Blog;
 using System.Text.Json.Serialization;
+using NanTingBlog.API.Services.Blog.Post;
+
+
 #if RELEASE
 using NanTingBlog.IdentityModel.JWTIdentity;
 #endif
@@ -14,9 +16,9 @@ namespace NanTingBlog.API.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/blog")]
-public class PostsController(PostsService service, MarkdownService markdown, WatchService watch) : ControllerBase
+public class PostsController(IPostService service, MarkdownService markdown, WatchService watch) : ControllerBase
 {
-    private readonly PostsService service = service;
+    private readonly IPostService service = service;
     private readonly MarkdownService markdown = markdown;
 
     /// <summary>
@@ -27,7 +29,7 @@ public class PostsController(PostsService service, MarkdownService markdown, Wat
     {
         var result = new BaseResult<List<PostInfo>>()
         {
-            Data = service.QueryByName(input.KeyWord, input.Limit ?? 10, input.Page ?? 1)
+            Data = await service.QueryByName(input.KeyWord, input.Limit ?? 10, input.Page ?? 1)
         };
         return Ok(result);
     }
@@ -40,7 +42,7 @@ public class PostsController(PostsService service, MarkdownService markdown, Wat
     {
         var result = new BaseResult<IReadOnlyCollection<PostInfo>>()
         {
-            Data = service.QueryByContent(input.KeyWord, input.Limit ?? 10, input.Page ?? 1)
+            Data = await service.QueryByContent(input.KeyWord, input.Limit ?? 10, input.Page ?? 1)
         };
         return Ok(result);
     }
@@ -51,7 +53,7 @@ public class PostsController(PostsService service, MarkdownService markdown, Wat
     [HttpGet("search")]
     public async Task<ActionResult<BaseResult<IReadOnlyCollection<PostInfo>>>> Search([FromQuery] SearchBlogInput? input)
     {
-        var postResults = service.QueryByLast(5, 1);
+        var postResults = await service.QueryByLast(5, 1);
         var simplePostResults = postResults.Select(post =>
         {
             post.Content = post.Content[0..20];
@@ -71,7 +73,7 @@ public class PostsController(PostsService service, MarkdownService markdown, Wat
     [HttpGet("searchToPage")]
     public async Task<ActionResult<BaseResult<IReadOnlyCollection<PostInfo>>>> SearchToPage([FromQuery] SearchBlogInput? input)
     {
-        var postInfos = service.Query(input?.Limit ?? 10, input?.Page ?? 1);
+        var postInfos = await service.Query(input?.Limit ?? 10, input?.Page ?? 1);
         var simplePostResults = postInfos.Select(post => {
             if (post.Content.Length <= 20) {
                 post.Content = post.Content[0.. post.Content.Length];
@@ -94,7 +96,9 @@ public class PostsController(PostsService service, MarkdownService markdown, Wat
     [HttpGet("pageCount")]
     public async Task<ActionResult<BaseResult<int>>> PageCount([FromQuery] int limit)
     {
-        return Ok(BaseResult<int>.Create(await service.CountAsync() / limit));
+        int totalCount = await service.CountAsync();
+        int pages = (int)Math.Ceiling((double)totalCount / limit);
+        return Ok(BaseResult<int>.Create(pages));
     }
 
     /// <summary>
@@ -118,7 +122,7 @@ public class PostsController(PostsService service, MarkdownService markdown, Wat
     {
         var result = new BaseResult<IReadOnlyCollection<PostInfo>>()
         {
-            Data = service.QueryByTag(input.KeyWord, input.Limit ?? 10, input.Page ?? 1)
+            Data = await service.QueryByTag(input.KeyWord, input.Limit ?? 10, input.Page ?? 1)
         };
         return Ok(result);
     }
@@ -132,7 +136,9 @@ public class PostsController(PostsService service, MarkdownService markdown, Wat
     [HttpPost("delete")]
     public async Task<ActionResult<BaseResult<string>>> Delete([FromBody] DeleteInput input)
     {
-        await service.DeleteByIdsAsync([.. input.Ids]);
+        foreach (var item in input.Ids) {
+            await service.DeleteByKeyAsync(item);
+        }
         return Ok();
     }
 
@@ -155,11 +161,11 @@ public class PostsController(PostsService service, MarkdownService markdown, Wat
 
         var result = await service.UpdateOrAddAsync(blog);
         switch (result) {
-            case TaskResult.Add:
+            case UpsertResult.Add:
                 await watch.Create(blog);
                 break;
 
-            case TaskResult.Update:
+            case UpsertResult.Update:
                 if (oldPost == null) break;
                 if (oldName != bodyName) {
                     watch.Rename(oldPost.Name, bodyName);
@@ -197,9 +203,9 @@ public class PostsController(PostsService service, MarkdownService markdown, Wat
     {
         List<PostInfo> postInfos;
         if(input?.KeyWord == null || string.IsNullOrEmpty(input.KeyWord) || input.KeyWord == "*") {
-            postInfos = service.Query(input?.Limit ?? 10, input?.Page ?? 1);
+            postInfos = await service.Query(input?.Limit ?? 10, input?.Page ?? 1);
         } else {
-            postInfos = service.QueryByName(input.KeyWord, input?.Limit ?? 10, input?.Page ?? 1);
+            postInfos = await service.QueryByName(input.KeyWord, input?.Limit ?? 10, input?.Page ?? 1);
         }
         var result = new BaseResult<IReadOnlyCollection<PostInfo>>()
         {

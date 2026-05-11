@@ -3,13 +3,12 @@ using NanTingBlog.API.Dtos.Blogs;
 using NanTingBlog.API.Services.Db;
 using System.Linq.Expressions;
 
-namespace NanTingBlog.API.Services.Blog;
+namespace NanTingBlog.API.Services.Blog.Post;
 
 /// <summary>
 /// 文章服务
 /// </summary>
-public class PostsService(BlogContext context) :
-    BaseQuery<PostInfo, string>(context)
+public class PostsService(BlogContext context) : BaseRepository<PostInfo, string>(context), IPostService
 {
     private readonly BlogContext context = context;
 
@@ -21,35 +20,35 @@ public class PostsService(BlogContext context) :
     /// <summary>
     /// 查询全部
     /// </summary>
-    public List<PostInfo> Query(int limit, int page)
+    public Task<List<PostInfo>> Query(int limit, int page)
         => WhereQuery(f => true, limit, page);
 
     /// <summary>
     /// 查询最后创建的文章
     /// </summary>
-    public List<PostInfo> QueryByLast(int limit, int page)
+    public Task<List<PostInfo>> QueryByLast(int limit, int page)
     {
         var startIndex = limit * (page - 1);
         if (startIndex < 0) startIndex = 0;
-        return [.. context.Blogs.AsNoTracking().OrderByDescending(p => p.CreateTime).Skip(startIndex).Take(limit)];
+        return Task.FromResult<List<PostInfo>>([.. context.Blogs.AsNoTracking().OrderByDescending(p => p.CreateTime).Skip(startIndex).Take(limit)]);
     }
 
     /// <summary>
     /// 查询自内容
     /// </summary>
-    public List<PostInfo> QueryByContent(string wordkey, int limit, int page)
+    public Task<List<PostInfo>> QueryByContent(string wordkey, int limit, int page)
         => WhereQuery(b => b.Content.Contains(wordkey), limit, page);
 
     /// <summary>
     /// 查询自标签
     /// </summary>
-    public List<PostInfo> QueryByTag(string wordkey, int limit, int page)
+    public Task<List<PostInfo>> QueryByTag(string wordkey, int limit, int page)
         => WhereQuery(b => b.Tag.Contains(wordkey), limit, page);
 
     /// <summary>
     /// 查询自名字
     /// </summary>
-    public List<PostInfo> QueryByName(string wordkey, int limit, int page)
+    public Task<List<PostInfo>> QueryByName(string wordkey, int limit, int page)
         => WhereQuery(b => b.Name.Contains(wordkey), limit, page);
 
     /// <summary>
@@ -80,23 +79,10 @@ public class PostsService(BlogContext context) :
         await context.SaveChangesAsync();
     }
 
-
-    /// <summary>
-    /// 删除全部
-    /// </summary>
-    public async Task DeleteAllAsync()
-    {
-        var blogs = context.Blogs.ToArray();
-        foreach (var item in blogs) {
-            context.Blogs.Remove(item);
-        }
-        await context.SaveChangesAsync();
-    }
-
-    private List<PostInfo> WhereQuery(Expression<Func<PostInfo, bool>> query, int limit, int page)
+    private Task<List<PostInfo>> WhereQuery(Expression<Func<PostInfo, bool>> query, int limit, int page)
     {
         var startIndex = limit * (page - 1);
         if (startIndex < 0) startIndex = 0;
-        return [.. context.Blogs.AsNoTracking().Where(query).Skip(startIndex).Take(limit)];
+        return Task.FromResult<List<PostInfo>>([.. context.Blogs.AsNoTracking().Where(query).Skip(startIndex).Take(limit)]);
     }
 }

@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using NanTingBlog.API.Dtos.Blogs;
 using NanTingBlog.API.Services.Db;
@@ -10,7 +10,7 @@ namespace NanTingBlog.API.Services.Blog;
 /// 友链服务
 /// </summary>
 public class FriendslinkService(BlogContext context)
-    : BaseQuery<Friendslink, string>(context)
+    : BaseRepository<Friendslink, string>(context)
 {
     private readonly BlogContext context = context;
 

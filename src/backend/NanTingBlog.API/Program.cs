@@ -1,8 +1,10 @@
 using Markdig;
+using Microsoft.Extensions.Caching.Memory;
 using NanTingBlog.API;
 using NanTingBlog.API.Middlewares;
 using NanTingBlog.API.Services;
 using NanTingBlog.API.Services.Blog;
+using NanTingBlog.API.Services.Blog.Post;
 using NanTingBlog.API.Services.Db;
 using NanTingBlog.IdentityModel.JWTIdentity;
 using NanTingBlog.IdentityModel.RSAIdentity;
@@ -49,6 +51,11 @@ builder.Services.AddSingleton(provider => {
 #endregion
 
 builder.Services.AddScoped<PostsService>(); // 博文服务
+builder.Services.AddScoped<IPostService>(f => {
+    var service = f.GetService<PostsService>();
+    var cache = f.GetService<IMemoryCache>();
+    return new PostsCacheService(service!, cache!);
+});
 builder.Services.AddScoped<FriendslinkService>(); // 友链服务
 builder.Services.AddSingleton<WatchService>();// 文章服务依赖此服务
 builder.Services.AddHostedService(services => services.GetService<WatchService>()!); 

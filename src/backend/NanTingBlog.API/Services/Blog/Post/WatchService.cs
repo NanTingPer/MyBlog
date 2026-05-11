@@ -2,7 +2,7 @@ using NanTingBlog.API.Dtos.Blogs;
 using System.Collections.Concurrent;
 using System.Text;
 using System.Xml.Linq;
-namespace NanTingBlog.API.Services.Blog;
+namespace NanTingBlog.API.Services.Blog.Post;
 
 /// <summary>
 /// 监听文章变化，以更新数据库

@@ -87,9 +87,17 @@ server {
    ssl_ciphers  HIGH:!aNULL:!MD5;
    ssl_prefer_server_ciphers  on;
 
-   location / {
-    proxy_pass http://127.0.0.1:1313; # http-server -p 1313
-   }
+	location = /index.html {
+        proxy_pass http://127.0.0.1:1313/;
+    }
+
+    location / {
+		proxy_pass http://127.0.0.1:1313;
+
+        proxy_intercept_errors on;
+        error_page 404 =200 /index.html;
+    }
+
 }
 ```
 
