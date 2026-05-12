@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using System.Text.Json;
 
 namespace NanTingBlog.API.Services;
@@ -31,6 +31,11 @@ public class GlobalConfigService
     /// 监听端口
     /// </summary>
     public List<string> Ports { get; set { field = value; Save(); } } = ["6999"];
+
+    /// <summary>
+    /// 每分钟的最大API访问次数
+    /// </summary>
+    public int MinuteAPIMaxVisit { get; set { field = value; Save(); } } = 50;
 
     /// <summary>
     /// 登录密码

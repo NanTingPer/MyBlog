@@ -220,7 +220,7 @@ public class PostsController(IPostService service, MarkdownService markdown, Wat
     {
         List<PostInfo> postInfos;
         if(input?.KeyWord == null || string.IsNullOrEmpty(input.KeyWord) || input.KeyWord == "*") {
-            postInfos = await service.QueryNoTracking(input?.Limit ?? 10, input?.Page ?? 1);
+            postInfos = [.. service.QueryAllNoTracking().GetPageValue(input?.Limit ?? 10, input?.Page ?? 1)];
         } else {
             postInfos = await service.QueryByName(input.KeyWord, input?.Limit ?? 10, input?.Page ?? 1);
         }

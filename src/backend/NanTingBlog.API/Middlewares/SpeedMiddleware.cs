@@ -1,4 +1,5 @@
-﻿using NanTingBlog.API.Controllers;
+using NanTingBlog.API.Controllers;
+using NanTingBlog.API.Services;
 using System.Collections.Concurrent;
 using System.Text.Json;
 using System.Threading.Channels;
@@ -8,9 +9,8 @@ namespace NanTingBlog.API.Middlewares;
 /// <summary>
 /// 限流中间件
 /// </summary>
-public class SpeedMiddleware : BackgroundService, IMiddleware
+public class SpeedMiddleware(GlobalConfigService gcf) : BackgroundService, IMiddleware
 {
-    private const short maxcount = 20; // max 20/min request
     private readonly ConcurrentDictionary<string, short> countIp = []; 
     /// <summary>
     /// 执行
@@ -25,9 +25,9 @@ public class SpeedMiddleware : BackgroundService, IMiddleware
         var ipaddrStr = remoteIpaddr.ToString();
 
         var newCount = countIp.AddOrUpdate(ipaddrStr, 1, 
-            (_, old) => old >= maxcount ? (short)22 : (short)(old + 1));
+            (_, old) => old >= gcf.MinuteAPIMaxVisit ? (short)22 : (short)(old + 1));
 
-        if(newCount >= maxcount) {
+        if(newCount >= gcf.MinuteAPIMaxVisit) {
             await ExceedSpeedWriteToResponse(context);
             return;
         }
