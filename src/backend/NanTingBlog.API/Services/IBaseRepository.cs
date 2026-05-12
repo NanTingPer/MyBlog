@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+using NanTingBlog.API.Dtos.Blogs;
 using System.Linq.Expressions;
 
 namespace NanTingBlog.API.Services;
@@ -40,6 +42,15 @@ public interface IBaseRepository<TModel, TKey>
     /// 表中的数据条数
     /// </summary>
     Task<int> CountAsync();
+
+    /// <summary>
+    /// 查询全部，懒惰返回表中数据，不跟踪
+    /// </summary>
+    IEnumerable<TModel> QueryAllNoTracking();
+    /// <summary>
+    /// 查询全部，懒惰返回表中数据，跟踪
+    /// </summary>
+    IEnumerable<TModel> QueryAllTracking();
 
 }
 /// <summary>

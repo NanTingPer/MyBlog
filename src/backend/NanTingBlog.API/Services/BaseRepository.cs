@@ -125,4 +125,20 @@ public abstract class BaseRepository<TModel, TKey>(BlogContext context) : IBaseR
         blogs.RemoveRange(models);
         await context.SaveChangesAsync();
     }
+
+    /// <inheritdoc/>
+    public IEnumerable<TModel> QueryAllNoTracking()
+    {
+        foreach (var post in context.Set<TModel>().AsNoTracking()) {
+            yield return post;
+        }
+    }
+
+    /// <inheritdoc/>
+    public IEnumerable<TModel> QueryAllTracking()
+    {
+        foreach (var post in context.Set<TModel>()) {
+            yield return post;
+        }
+    }
 }

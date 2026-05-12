@@ -133,6 +133,32 @@ public class PostsController(IPostService service, MarkdownService markdown, Wat
     }
 
     /// <summary>
+    /// 获取给定标签的数据条数，只需要传入keyWord即可，也只处理keyWord
+    /// </summary>
+    [HttpGet("tagCount")]
+    public async Task<ActionResult<BaseResult<int>>> TagCount([FromQuery] SearchBlogInput input)
+    {
+        var result = new BaseResult<int>()
+        {
+            Data = await service.CountByCriteria(new() { Tag = input.KeyWord })
+        };
+        return Ok(result);
+    }
+
+    /// <summary>
+    /// 获取全部的tag
+    /// </summary>
+    [HttpGet("tagList")]
+    public async Task<ActionResult<BaseResult<int>>> TagList()
+    {
+        var result = new BaseResult<List<string>>()
+        {
+            Data = await service.Tags()
+        };
+        return Ok(result);
+    }
+
+    /// <summary>
     /// 删除给定id的文章
     /// </summary>
 #if RELEASE

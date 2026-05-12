@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using NanTingBlog.API.Dtos.Blogs;
+using NanTingBlog.API.ServiceModels;
 using NanTingBlog.API.Services.Db;
 using System.Linq.Expressions;
 
@@ -52,16 +53,6 @@ public class PostsService(BlogContext context) : BaseRepository<PostInfo, string
         => WhereQuery(b => b.Name.Contains(wordkey), limit, page);
 
     /// <summary>
-    /// 查询全部，懒惰返回
-    /// </summary>
-    public IEnumerable<PostInfo> QueryAllNoTracking()
-    {
-        foreach (var post in context.Blogs.AsNoTracking()) {
-            yield return post;
-        }
-    }
-
-    /// <summary>
     /// 删除自Id
     /// </summary>
     public async Task DeleteByIdsAsync(params string[] ids)
@@ -84,5 +75,35 @@ public class PostsService(BlogContext context) : BaseRepository<PostInfo, string
         var startIndex = limit * (page - 1);
         if (startIndex < 0) startIndex = 0;
         return Task.FromResult<List<PostInfo>>([.. context.Blogs.AsNoTracking().Where(query).Skip(startIndex).Take(limit)]);
+    }
+
+    /// <inheritdoc/>
+    public Task<int> CountByCriteria(PostCountCriteria criteria)
+    {
+        var allPost = QueryAllNoTracking();
+        if (criteria.Tag != null) {
+            allPost = allPost.Where(f => f.Tag.Contains(criteria.Tag));
+        }
+
+        if (criteria.Content != null) {
+            allPost = allPost.Where(f => f.Content.Contains(criteria.Content));
+        }
+
+        if (criteria.Name != null) {
+            allPost = allPost.Where(f => f.Name.Contains(criteria.Name));
+        }
+        return Task.FromResult<int>(allPost.Count());
+    }
+
+    ///<inheritdoc/>
+    public Task<List<string>> Tags()
+    {
+        HashSet<string> str = [];
+        foreach (var item in QueryAllNoTracking()) {
+            foreach (var item1 in item.Tag) {
+                str.Add(item1);
+            }
+        }
+        return Task.FromResult(str.ToList());
     }
 }

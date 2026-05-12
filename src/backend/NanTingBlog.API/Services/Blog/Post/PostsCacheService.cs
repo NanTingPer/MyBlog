@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Caching.Memory;
 using NanTingBlog.API.Dtos.Blogs;
+using NanTingBlog.API.ServiceModels;
 using System.Linq.Expressions;
 
 namespace NanTingBlog.API.Services.Blog.Post;
@@ -22,6 +23,24 @@ public class PostsCacheService(PostsService service, IMemoryCache cache) : IPost
     public Task<int> CountAsync() => service.CountAsync();
 
     /// <inheritdoc/>
+    public async Task<int> CountByCriteria(PostCountCriteria criteria)
+    {
+        var allPost = (await AllPostInfoByCache()).AsEnumerable();
+        if (criteria.Tag != null) {
+            allPost = allPost.Where(f => f.Tag.Contains(criteria.Tag));
+        }
+
+        if (criteria.Content != null) {
+            allPost = allPost.Where(f => f.Content.Contains(criteria.Content));
+        }
+
+        if (criteria.Name != null) {
+            allPost = allPost.Where(f => f.Name.Contains(criteria.Name));
+        }
+        return allPost.Count();
+    }
+
+    /// <inheritdoc/>
     public Task DeleteAllAsync() => service.DeleteAllAsync();
 
     /// <inheritdoc/>
@@ -32,11 +51,23 @@ public class PostsCacheService(PostsService service, IMemoryCache cache) : IPost
         => (await AllPostInfoByCache()).GetPageValue(limit, page) ?? [];
 
     /// <inheritdoc/>
+    public IEnumerable<PostInfo> QueryAllNoTracking()
+    {
+        return service.QueryAllNoTracking();
+    }
+
+    /// <inheritdoc/>
+    public IEnumerable<PostInfo> QueryAllTracking()
+    {
+        return service.QueryAllNoTracking();
+    }
+
+    /// <inheritdoc/>
     public async Task<List<PostInfo>> QueryByContent(string wordkey, int limit, int page)
     {
         var posts = await AllPostInfoByCache();
-        var result = posts.Where(f => f.Content.Contains(wordkey));
-        return result.ToList();
+        var result = posts.Where(f => f.Content.Contains(wordkey)).GetPageValue(limit, page);
+        return [.. result];
     }
 
     /// <inheritdoc/>
@@ -63,15 +94,30 @@ public class PostsCacheService(PostsService service, IMemoryCache cache) : IPost
     /// <inheritdoc/>
     public async Task<List<PostInfo>> QueryByName(string wordkey, int limit, int page)
     {
-        var allcache = await AllPostInfoByCache();
-        return [.. allcache.Where(f => f.Name.Contains(wordkey))];
+        var allcache = (await AllPostInfoByCache());
+        return [.. allcache.Where(f => f.Name.Contains(wordkey)).GetPageValue(limit, page)];
     }
 
     /// <inheritdoc/>
     public async Task<List<PostInfo>> QueryByTag(string wordkey, int limit, int page)
     {
         var allcache = await AllPostInfoByCache();
-        return [.. allcache.Where(f => f.Tag.Contains(wordkey))];
+        return [.. allcache.Where(f => f.Tag.Contains(wordkey)).GetPageValue(limit, page)];
+    }
+
+    /// <summary>
+    /// <inheritdoc/>
+    /// </summary>
+    /// <returns></returns>
+    public async Task<List<string>> Tags()
+    {
+        HashSet<string> str = [];
+        foreach (var item in await AllPostInfoByCache()) {
+            foreach (var item1 in item.Tag) {
+                str.Add(item1);
+            }
+        }
+        return [.. str];
     }
 
     /// <inheritdoc/>
@@ -93,7 +139,7 @@ public class PostsCacheService(PostsService service, IMemoryCache cache) : IPost
 /// <summary>
 /// 扩展
 /// </summary>
-public static class ListPostExtension
+public static class ListExtension
 {
     /// <summary>
     /// 获取给定页的内容
@@ -104,5 +150,20 @@ public static class ListPostExtension
         var startIndex = limit * (page - 1);
         if (startIndex < 0) startIndex = 0;
         return [.. list.Skip(startIndex).Take(limit)];
+    }
+
+    /// <summary>
+    /// 获取给定页的内容
+    /// </summary>
+    /// <param name="ie">this</param>
+    /// <param name="limit">单页的数据条数</param>
+    /// <param name="page">第几页</param>
+    /// <returns></returns>
+    public static IEnumerable<T> GetPageValue<T>(this IEnumerable<T>? ie, int limit, int page)
+    {
+        if (ie == null) return [];
+        var startIndex = limit * (page - 1);
+        if (startIndex < 0) startIndex = 0;
+        return [.. ie.Skip(startIndex).Take(limit)];
     }
 }
