@@ -21,13 +21,13 @@ public class PostsService(BlogContext context) : BaseRepository<PostInfo, string
     /// <summary>
     /// 查询全部
     /// </summary>
-    public Task<List<PostInfo>> Query(int limit, int page)
-        => WhereQuery(f => true, limit, page);
+    public Task<List<PostInfo>> QueryNoTracking(int limit, int page)
+        => WhereQueryNoTracking(f => true, limit, page);
 
     /// <summary>
     /// 查询最后创建的文章
     /// </summary>
-    public Task<List<PostInfo>> QueryByLast(int limit, int page)
+    public Task<List<PostInfo>> QueryByLastNoTracking(int limit, int page)
     {
         var startIndex = limit * (page - 1);
         if (startIndex < 0) startIndex = 0;
@@ -38,19 +38,19 @@ public class PostsService(BlogContext context) : BaseRepository<PostInfo, string
     /// 查询自内容
     /// </summary>
     public Task<List<PostInfo>> QueryByContent(string wordkey, int limit, int page)
-        => WhereQuery(b => b.Content.Contains(wordkey), limit, page);
+        => WhereQueryNoTracking(b => b.Content.Contains(wordkey), limit, page);
 
     /// <summary>
     /// 查询自标签
     /// </summary>
-    public Task<List<PostInfo>> QueryByTag(string wordkey, int limit, int page)
-        => WhereQuery(b => b.Tag.Contains(wordkey), limit, page);
+    public Task<List<PostInfo>> QueryByTagNoTracking(string wordkey, int limit, int page)
+        => WhereQueryNoTracking(b => b.Tag.Contains(wordkey), limit, page);
 
     /// <summary>
     /// 查询自名字
     /// </summary>
     public Task<List<PostInfo>> QueryByName(string wordkey, int limit, int page)
-        => WhereQuery(b => b.Name.Contains(wordkey), limit, page);
+        => WhereQueryNoTracking(b => b.Name.Contains(wordkey), limit, page);
 
     /// <summary>
     /// 删除自Id
@@ -70,7 +70,7 @@ public class PostsService(BlogContext context) : BaseRepository<PostInfo, string
         await context.SaveChangesAsync();
     }
 
-    private Task<List<PostInfo>> WhereQuery(Expression<Func<PostInfo, bool>> query, int limit, int page)
+    private Task<List<PostInfo>> WhereQueryNoTracking(Expression<Func<PostInfo, bool>> query, int limit, int page)
     {
         var startIndex = limit * (page - 1);
         if (startIndex < 0) startIndex = 0;

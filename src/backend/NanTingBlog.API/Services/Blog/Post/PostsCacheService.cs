@@ -47,7 +47,7 @@ public class PostsCacheService(PostsService service, IMemoryCache cache) : IPost
     public Task DeleteByKeyAsync(string id) => service.DeleteByKeyAsync(id);
 
     /// <inheritdoc/>
-    public async Task<List<PostInfo>> Query(int limit, int page)
+    public async Task<List<PostInfo>> QueryNoTracking(int limit, int page)
         => (await AllPostInfoByCache()).GetPageValue(limit, page) ?? [];
 
     /// <inheritdoc/>
@@ -79,12 +79,12 @@ public class PostsCacheService(PostsService service, IMemoryCache cache) : IPost
         => service.QueryByKeyTrackingAsync(key);
 
     /// <inheritdoc/>
-    public async Task<List<PostInfo>> QueryByLast(int limit, int page)
+    public async Task<List<PostInfo>> QueryByLastNoTracking(int limit, int page)
     {
-        const string queryByLastKeyName = $"Posts_{nameof(QueryByLast)}";
+        const string queryByLastKeyName = $"Posts_{nameof(QueryByLastNoTracking)}";
         var t = cache.GetOrCreate(queryByLastKeyName, async entry => {
             entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5); // 5分
-            return await service.QueryByLast(limit, page);
+            return await service.QueryByLastNoTracking(limit, page);
         });
         if (t != null) await t;
         else return [];
@@ -99,7 +99,7 @@ public class PostsCacheService(PostsService service, IMemoryCache cache) : IPost
     }
 
     /// <inheritdoc/>
-    public async Task<List<PostInfo>> QueryByTag(string wordkey, int limit, int page)
+    public async Task<List<PostInfo>> QueryByTagNoTracking(string wordkey, int limit, int page)
     {
         var allcache = await AllPostInfoByCache();
         return [.. allcache.Where(f => f.Tag.Contains(wordkey)).GetPageValue(limit, page)];
@@ -128,7 +128,7 @@ public class PostsCacheService(PostsService service, IMemoryCache cache) : IPost
     {
         var t = cache.GetOrCreateAsync<List<PostInfo>>(postsCacheKey, async entry => {
             entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(1); // 1分钟缓存
-            return await service.Query(await service.CountAsync(), 1);
+            return await service.QueryNoTracking(await service.CountAsync(), 1);
         });
         if (t == null) return [];
         else await t;

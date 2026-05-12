@@ -53,21 +53,12 @@ public class PostsController(IPostService service, MarkdownService markdown, Wat
     [HttpGet("search")]
     public async Task<ActionResult<BaseResult<IReadOnlyCollection<PostInfo>>>> Search([FromQuery] SearchBlogInput? input)
     {
-        var postResults = await service.QueryByLast(5, 1);
-        
-        var simplePostResults = postResults.Select(post =>
-        {
-            if (post.Content.Length <= 20) {
-                post.Content = post.Content[0.. post.Content.Length];
-            } else {
-                post.Content = post.Content[0.. 20];
-            }
-            return post;
-        }).ToList();
+        var postResults = await service.QueryByLastNoTracking(5, 1);
+        ToSimplePosts(postResults);
 
         var result = new BaseResult<IReadOnlyCollection<PostInfo>>()
         {
-            Data = simplePostResults
+            Data = postResults
         };
         return Ok(result);
     }
@@ -78,19 +69,12 @@ public class PostsController(IPostService service, MarkdownService markdown, Wat
     [HttpGet("searchToPage")]
     public async Task<ActionResult<BaseResult<IReadOnlyCollection<PostInfo>>>> SearchToPage([FromQuery] SearchBlogInput? input)
     {
-        var postInfos = await service.Query(input?.Limit ?? 10, input?.Page ?? 1);
-        var simplePostResults = postInfos.Select(post => {
-            if (post.Content.Length <= 20) {
-                post.Content = post.Content[0.. post.Content.Length];
-            } else {
-                post.Content = post.Content[0.. 20];
-            }
-            return post;
-        }).ToList();
+        var postInfos = await service.QueryNoTracking(input?.Limit ?? 10, input?.Page ?? 1);
+        ToSimplePosts(postInfos);
 
         var result = new BaseResult<IReadOnlyCollection<PostInfo>>()
         {
-            Data = simplePostResults
+            Data = postInfos
         };
         return Ok(result);
     }
@@ -125,9 +109,11 @@ public class PostsController(IPostService service, MarkdownService markdown, Wat
     [HttpGet("searchOnTag")]
     public async Task<ActionResult<BaseResult<IReadOnlyCollection<PostInfo>>>> SearchOnTag([FromQuery] SearchBlogInput input)
     {
+        var list = await service.QueryByTagNoTracking(input.KeyWord, input.Limit ?? 10, input.Page ?? 1);
+        ToSimplePosts(list);
         var result = new BaseResult<IReadOnlyCollection<PostInfo>>()
         {
-            Data = await service.QueryByTag(input.KeyWord, input.Limit ?? 10, input.Page ?? 1)
+            Data = list
         };
         return Ok(result);
     }
@@ -234,7 +220,7 @@ public class PostsController(IPostService service, MarkdownService markdown, Wat
     {
         List<PostInfo> postInfos;
         if(input?.KeyWord == null || string.IsNullOrEmpty(input.KeyWord) || input.KeyWord == "*") {
-            postInfos = await service.Query(input?.Limit ?? 10, input?.Page ?? 1);
+            postInfos = await service.QueryNoTracking(input?.Limit ?? 10, input?.Page ?? 1);
         } else {
             postInfos = await service.QueryByName(input.KeyWord, input?.Limit ?? 10, input?.Page ?? 1);
         }
@@ -259,6 +245,17 @@ public class PostsController(IPostService service, MarkdownService markdown, Wat
         var post = await service.QueryByKeyNoTrackingAsync(input.Id);
         result.Data = markdown.ToHTML(post?.Content ?? "");
         return Ok(result);
+    }
+
+    private static void ToSimplePosts(List<PostInfo> posts)
+    {
+        foreach (var item in posts) {
+            if (item.Content.Length <= 20) {
+                item.Content = item.Content[0..item.Content.Length];
+            } else {
+                item.Content = item.Content[0..20];
+            }
+        }
     }
 
 #pragma warning disable CS1591 // 缺少对公共可见类型或成员的 XML 注释
