@@ -54,9 +54,14 @@ public class PostsController(IPostService service, MarkdownService markdown, Wat
     public async Task<ActionResult<BaseResult<IReadOnlyCollection<PostInfo>>>> Search([FromQuery] SearchBlogInput? input)
     {
         var postResults = await service.QueryByLast(5, 1);
+        
         var simplePostResults = postResults.Select(post =>
         {
-            post.Content = post.Content[0..20];
+            if (post.Content.Length <= 20) {
+                post.Content = post.Content[0.. post.Content.Length];
+            } else {
+                post.Content = post.Content[0.. 20];
+            }
             return post;
         }).ToList();
 
