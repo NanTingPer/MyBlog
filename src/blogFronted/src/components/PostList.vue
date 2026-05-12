@@ -8,9 +8,9 @@
                 <p class="article-description">{{ article.content.substring(0, 90) + '...' }}</p>
                 <div class="article-footer">
                     <span class="article-date">{{ formatDate(article.createTime!) }}</span>
-                    <span v-for="tag in article.tag" :key="tag" class="article-tag tag">
+                    <router-link v-for="tag in article.tag" :key="tag" :to="`/tag/${tag}`" class="article-tag tag" @click.stop>
                         {{ tag }}
-                    </span>
+                    </router-link>
                 </div>
             </div>
         </div>
@@ -102,6 +102,7 @@ const goToPost = (id: string) => {
     font-size: 12px;
     padding: 4px 10px;
     border-radius: 12px;
+    text-decoration: none;
 }
 
 .tag {

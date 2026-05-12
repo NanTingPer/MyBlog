@@ -63,4 +63,18 @@ export class BlogAPI {
             },
         );
     }
+
+    public SearchOnTag(input: SearchBlogInput): Promise<Response> {
+        return this.BaseGetSearch("searchOnTag", input);
+    }
+
+    public TagCount(input: SearchBlogInput): Promise<Response> {
+        return this.BaseGetSearch("tagCount", input);
+    }
+
+    public TagList(): Promise<Response> {
+        return fetch(`${this.url}${this.apiEndpoint}/tagList`, {
+            method: "GET",
+        });
+    }
 }

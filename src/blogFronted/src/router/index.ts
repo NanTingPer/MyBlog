@@ -2,6 +2,7 @@
 import LatestArticles from "../components/LatestPosts.vue";
 import Articles from "../components/Posts.vue";
 import Post from "../components/Post.vue";
+import Tag from "../components/Tag.vue";
 import FriendLink from "../components/FriendLink.vue";
 import About from "../components/About.vue";
 
@@ -34,6 +35,11 @@ const routes = [
         path: "/about",
         name: "about",
         component: About,
+    },
+    {
+        path: "/tag/:name",
+        name: "tag",
+        component: Tag,
     },
 ];
 
