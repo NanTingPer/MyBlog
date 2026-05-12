@@ -217,7 +217,7 @@ public class PostsController(IPostService service, MarkdownService markdown, Wat
     /// <summary>
     /// 获取给定id文章的markdownToHtml
     /// </summary>
-    [HttpGet("postHTML")]
+    [HttpGet("postHTML")]   
     public async Task<ActionResult<BaseResult<string>>> PostHTML([FromQuery] PostHTMLInput input)
     {
         var result = new BaseResult<string>();

@@ -25,6 +25,7 @@ var markdownPipeline = markdown
 
 builder.Services.AddSingleton<MarkdownPipeline>(op => markdownPipeline);
 builder.Services.AddSingleton<MarkdownService>();
+builder.Services.AddMemoryCache();
 
 #region Log
 builder.Services.AddLogging();

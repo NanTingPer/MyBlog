@@ -121,7 +121,9 @@ public class WatchService : BackgroundService
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         await Task.Delay(10, stoppingToken);
+        fileWatcher.EnableRaisingEvents = false;
         await InitMap();
+        fileWatcher.EnableRaisingEvents = true;
         while (!stoppingToken.IsCancellationRequested) {
             if (uploadings.TryTake(out var result, Timeout.Infinite, stoppingToken)) {
                 using (var serviceScope = factory.CreateScope()) {
@@ -242,7 +244,8 @@ public class WatchService : BackgroundService
         var files = RecursivelyGetFullFile(gconfig.BlogSaveDir);
         var localhostBlogs = files
             .Where(fullPath => Path.GetExtension(fullPath) == ".md")
-            .Select(fullPath => (fullPath: fullPath, blogName: Path.GetFileNameWithoutExtension(fullPath)));
+            .Select(fullPath => (fullPath: fullPath, blogName: Path.GetFileNameWithoutExtension(fullPath)))
+            .ToList();
         #endregion
 
         #region 从数据库同步到本地
@@ -251,6 +254,11 @@ public class WatchService : BackgroundService
         var serverBlogs = nameToUid.Keys;
         var localhostNotExistBlog = serverBlogs.Where(f => !localhostBlogs.Any(fb => fb.blogName == f));
         var syncByDbSavePath = Path.Combine(gconfig.BlogSaveDir, "db_sync");
+
+        if(!Directory.Exists(syncByDbSavePath)) {
+            Directory.CreateDirectory(syncByDbSavePath);
+        }
+
         DateTime baseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
         foreach (var blogName in localhostNotExistBlog) {
             if (!nameToUid.TryGetValue(blogName, out var key)) {
