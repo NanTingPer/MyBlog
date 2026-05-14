@@ -263,8 +263,7 @@ public class PostsService(BlogContext context, IMemoryCache cache) : BaseReposit
 
         var descriptionHeaderValue = header.GetValue(description);
         if (descriptionHeaderValue == null || descriptionHeaderValue.Value == null) {
-            header.AddHeader(description, "");
-            postInfo.Description = "";
+            header.AddHeader(description, postInfo.Description);
         } else {
             postInfo.Description = descriptionHeaderValue.Value;
         }

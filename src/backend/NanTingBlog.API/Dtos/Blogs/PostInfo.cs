@@ -32,7 +32,7 @@ public class PostInfo
     /// 文章显示的描述信息
     /// </summary>
     [JsonPropertyName("description"), Column("description"), Description("文章显示的描述信息")]
-    public string Description { get; set; } = string.Empty;
+    public string Description { get; set; } = "还没有说明";
     
     /// <summary>
     /// 文章的创建日期，以1970年1月1日开始

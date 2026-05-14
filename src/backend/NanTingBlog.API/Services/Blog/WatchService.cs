@@ -63,16 +63,12 @@ public class WatchService : BackgroundService
 
     private void FileDeleted(object sender, FileSystemEventArgs e)
     {
-        if (!File.Exists(e.FullPath)) {
-            return; //文件夹
-        }
-
         uploadings.Add( async service => {
             var fileName = Path.GetFileNameWithoutExtension(e.FullPath);
-            RemoveName(fileName);
             if (TryGetUid(fileName, out string id)) {
                 await service.DeleteByKeyAsync(id); // 删除文章
             }
+            RemoveName(fileName);
         });
     }
 
