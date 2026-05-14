@@ -217,7 +217,7 @@ public class PostsService(BlogContext context, IMemoryCache cache) : BaseReposit
     public async Task MigrateAllYamlHeadersAsync()
     {
         foreach (var postInfo in QueryAllTracking()) {
-            UpdateYamlHeaderAsync(postInfo);
+            SyncFileToYamlHeader(postInfo);
         }
         await context.SaveChangesAsync();
     }
@@ -227,7 +227,7 @@ public class PostsService(BlogContext context, IMemoryCache cache) : BaseReposit
     /// </summary>
     protected override Task PreAdd(PostInfo model)
     {
-        UpdateYamlHeaderAsync(model);
+        SyncFileToYamlHeader(model);
         return Task.CompletedTask;
     }
 
@@ -236,8 +236,37 @@ public class PostsService(BlogContext context, IMemoryCache cache) : BaseReposit
     /// </summary>    
     protected override Task PreUpdateSaveChanges(PostInfo oldm, PostInfo newm)
     {
-        UpdateYamlHeaderAsync(newm);
+        SyncDatabaseToYamlHeader(newm);
         return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// 将数据库的数据同步到yaml头和Content <br/>
+    /// 始终以PostInfo的值覆盖yaml头
+    /// </summary>
+    public void SyncDatabaseToYamlHeader(PostInfo postInfo)
+    {
+        const string title = nameof(title);
+        const string date = nameof(date);
+        const string tags = nameof(tags);
+        const string author = nameof(author);
+        const string description = nameof(description);
+        var header = new YamlHeaderParse(postInfo.Content);
+
+        header.AddHeader(title, postInfo.Name);
+        postInfo.Title = postInfo.Name;
+
+        header.AddHeader(description, postInfo.Description);
+
+        DateTimeOffset epoch = new(1970, 1, 1, 0, 0, 0, TimeSpan.Zero);
+        var utcTime = epoch.AddTicks(postInfo.CreateTime);
+        var chinaTime = utcTime.ToOffset(TimeSpan.FromHours(8));
+        header.AddHeader(date, chinaTime);
+
+        header.AddHeader(tags, [.. postInfo.Tag]);
+        header.AddHeader(author, [.. postInfo.Author]);
+
+        postInfo.Content = header.WriteToMarkdown();
     }
 
     /// <summary>
@@ -245,7 +274,7 @@ public class PostsService(BlogContext context, IMemoryCache cache) : BaseReposit
     /// 并回写到<see cref="PostInfo.Content"/> <br/>
     /// 如果原始内容没有Yaml头，会创建
     /// </summary>
-    public void UpdateYamlHeaderAsync(PostInfo postInfo)
+    public void SyncFileToYamlHeader(PostInfo postInfo)
     {
         const string title = nameof(title);
         const string date = nameof(date);

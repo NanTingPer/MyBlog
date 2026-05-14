@@ -89,6 +89,7 @@ public class WatchService : BackgroundService
                 Content = blogText
             };
             await service.UpdateOrAddAsync(bi);
+            File.WriteAllText(e.FullPath, bi.Content);
             AddName(fileName, bi.Id);
         });
     }
