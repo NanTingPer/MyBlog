@@ -17,15 +17,27 @@ public abstract class BaseRepository<TModel, TKey>(BlogContext context) : IBaseR
     private TKey GetKeyValue(TModel model) => GetKeyMethod(model);
 
     /// <inheritdoc/>
-    public async Task AddAsync(TModel info)
+    public virtual async Task AddAsync(TModel info)
     {
         ArgumentNullException.ThrowIfNull(info);
+        await PreAdd(info);
         context.Add(info);
         await context.SaveChangesAsync();
     }
 
+    /// <summary>
+    /// 在添加操作之前调用，传入的是还未被跟踪的实体，调用完此方法后，将会调用<see cref="DbContext.AddAsync(object, CancellationToken)"/> <br></br>
+    /// 此钩子用于修改TModel中属性值，不建议进行其他操作 <br></br>
+    /// 仅当<see cref="AddAsync(TModel)"/>未被重写时生效
+    /// </summary>
+    /// <param name="model"></param>
+    /// <returns></returns>
+    protected virtual async Task PreAdd(TModel model)
+    {
+    }
+
     /// <inheritdoc/>
-    public async Task<UpsertResult> UpdateOrAddAsync(TModel newInfo)
+    public virtual async Task<UpsertResult> UpdateOrAddAsync(TModel newInfo)
     {
         ArgumentNullException.ThrowIfNull(newInfo);
         var oldInfo = await context.Set<TModel>().FirstOrDefaultAsync(BuildKeyEqualExpression(newInfo));
@@ -50,8 +62,20 @@ public abstract class BaseRepository<TModel, TKey>(BlogContext context) : IBaseR
             }
         }
         ;
+        await PreUpdateSaveChanges(oldInfo, newInfo);
         await context.SaveChangesAsync();
         return UpsertResult.Update;
+    }
+
+    /// <summary>
+    /// 在更新操作的<see cref="DbContext.SaveChangesAsync(CancellationToken)"/>之前执行，传入被跟踪的对象 <br></br>
+    /// 此对象的属性值已经是更新后的值，如果要将更改同步到数据库，请修改<paramref name="newm"/>的值 <br></br>
+    /// 此钩子用于修改TModel中属性值，不建议进行其他操作 <br></br>
+    /// 仅当<see cref="UpdateOrAddAsync(TModel)"/>未被重写时生效
+    /// </summary>
+    /// <returns></returns>
+    protected virtual async Task PreUpdateSaveChanges(TModel oldm, TModel newm)
+    {
     }
 
     /// <summary>

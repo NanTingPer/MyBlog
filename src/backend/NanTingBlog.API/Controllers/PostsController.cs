@@ -176,12 +176,12 @@ public class PostsController(PostsService service, MarkdownService markdown, Wat
     public async Task<ActionResult<BaseResult<string>>> AddOrReplace([FromBody] PostInfo blog)
     {
         var oldPost = await service.QueryByKeyNoTrackingAsync(blog.Id);
+        var result = await service.UpdateOrAddAsync(blog);
+
         var bodyName = blog.Name;
         var bodyContent = blog.Content;
         var oldContent = oldPost?.Content;
         var oldName = oldPost?.Name;
-
-        var result = await service.UpdateOrAddAsync(blog);
         switch (result) {
             case UpsertResult.Add:
                 await watch.Create(blog);

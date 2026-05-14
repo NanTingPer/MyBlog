@@ -216,67 +216,90 @@ public class PostsService(BlogContext context, IMemoryCache cache) : BaseReposit
     /// </summary>
     public async Task MigrateAllYamlHeadersAsync()
     {
-        await Task.CompletedTask;
+        foreach (var postInfo in QueryAllTracking()) {
+            UpdateYamlHeaderAsync(postInfo);
+        }
+        await context.SaveChangesAsync();
+    }
+
+    /// <summary>
+    /// 迁移markdown的yaml头
+    /// </summary>
+    protected override Task PreAdd(PostInfo model)
+    {
+        UpdateYamlHeaderAsync(model);
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// 迁移markdown的yaml头
+    /// </summary>    
+    protected override Task PreUpdateSaveChanges(PostInfo oldm, PostInfo newm)
+    {
+        UpdateYamlHeaderAsync(newm);
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// 根据<see cref="PostInfo.Content"/>更新<see cref="PostInfo.Description"/>, <see cref="PostInfo.Author"/>, <see cref="PostInfo.Tag"/>, <see cref="PostInfo.Title"/> <br/>
+    /// 并回写到<see cref="PostInfo.Content"/> <br/>
+    /// 如果原始内容没有Yaml头，会创建
+    /// </summary>
+    public void UpdateYamlHeaderAsync(PostInfo postInfo)
+    {
         const string title = nameof(title);
         const string date = nameof(date);
         const string tags = nameof(tags);
         const string author = nameof(author);
         const string description = nameof(description);
-
-        #region 从数据库的数据中同步头
-        foreach (var postInfo in QueryAllTracking()) {
-            var header = new YamlHeaderParse(postInfo.Content);
-            var titleHeaderValue = header.GetValue(title);
-            if (titleHeaderValue == null || titleHeaderValue.Value == null) {
-                header.AddHeader(title, postInfo.Name);
-                postInfo.Title = postInfo.Name;
-            } else {
-                postInfo.Title = titleHeaderValue.Value;
-            }
-
-            var descriptionHeaderValue = header.GetValue(description);
-            if (titleHeaderValue == null || titleHeaderValue.Value == null) {
-                header.AddHeader(description, "");
-                postInfo.Description = "";
-            } else {
-                postInfo.Description = titleHeaderValue.Value;
-            }
-
-            var dateHeaderValue = header.GetValue(date);
-            if (dateHeaderValue == null) {
-                DateTimeOffset epoch = new (1970, 1, 1, 0, 0, 0, TimeSpan.Zero);
-                header.AddHeader(date, epoch.AddTicks(postInfo.CreateTime));
-            } else {
-                var yamlDateTime = dateHeaderValue.ToDateTimeValue();
-                if (yamlDateTime != null) {
-                    postInfo.CreateTime = yamlDateTime.Value.DateTime.Ticks - DateTimeOffset.UnixEpoch.Ticks;
-                }
-            }
-
-            var tagsHeaderValue = header.GetValue(tags);
-            if (tagsHeaderValue == null) {
-                header.AddHeader(tags, [.. postInfo.Tag]);
-            } else {
-                var tagArray = tagsHeaderValue.ToArrayValue();
-                if (tagArray != null) {
-                    postInfo.Tag = [.. tagArray];
-                }
-            }
-
-            var authorHeaderValue = header.GetValue(author);
-            if (authorHeaderValue == null) {
-                header.AddHeader(author, [.. postInfo.Author]);
-            } else {
-                var authorArray = authorHeaderValue.ToArrayValue();
-                if (authorArray != null) {
-                    postInfo.Author = [.. authorArray];
-                }
-            }
-
-            postInfo.Content = header.WriteToMarkdown();
+        var header = new YamlHeaderParse(postInfo.Content);
+        var titleHeaderValue = header.GetValue(title);
+        if (titleHeaderValue == null || titleHeaderValue.Value == null) {
+            header.AddHeader(title, postInfo.Name);
+            postInfo.Title = postInfo.Name;
+        } else {
+            postInfo.Title = titleHeaderValue.Value;
         }
-        #endregion
 
-        await context.SaveChangesAsync();
+        var descriptionHeaderValue = header.GetValue(description);
+        if (descriptionHeaderValue == null || descriptionHeaderValue.Value == null) {
+            header.AddHeader(description, "");
+            postInfo.Description = "";
+        } else {
+            postInfo.Description = descriptionHeaderValue.Value;
+        }
+
+        var dateHeaderValue = header.GetValue(date);
+        if (dateHeaderValue == null) {
+            DateTimeOffset epoch = new(1970, 1, 1, 0, 0, 0, TimeSpan.Zero);
+            header.AddHeader(date, epoch.AddTicks(postInfo.CreateTime));
+        } else {
+            var yamlDateTime = dateHeaderValue.ToDateTimeValue();
+            if (yamlDateTime != null) {
+                postInfo.CreateTime = yamlDateTime.Value.DateTime.Ticks - DateTimeOffset.UnixEpoch.Ticks;
+            }
+        }
+
+        var tagsHeaderValue = header.GetValue(tags);
+        if (tagsHeaderValue == null) {
+            header.AddHeader(tags, [.. postInfo.Tag]);
+        } else {
+            var tagArray = tagsHeaderValue.ToArrayValue();
+            if (tagArray != null) {
+                postInfo.Tag = [.. tagArray];
+            }
+        }
+
+        var authorHeaderValue = header.GetValue(author);
+        if (authorHeaderValue == null) {
+            header.AddHeader(author, [.. postInfo.Author]);
+        } else {
+            var authorArray = authorHeaderValue.ToArrayValue();
+            if (authorArray != null) {
+                postInfo.Author = [.. authorArray];
+            }
+        }
+
+        postInfo.Content = header.WriteToMarkdown();
     }
 }
