@@ -245,6 +245,7 @@ public class WatchService : BackgroundService
     {
         using var serviceScope = factory.CreateScope();
         var postsService = serviceScope.ServiceProvider.GetService<PostsService>();
+
         #region 从数据库同步
         foreach (var postInfo in postsService!.QueryAllNoTracking()) {
             uidToName[postInfo.Id] = postInfo.Name;
@@ -252,7 +253,6 @@ public class WatchService : BackgroundService
         }
         #endregion
 
-        // 上面是从数据库同步数据
         if (!Directory.Exists(gconfig.BlogSaveDir)) {
             Directory.CreateDirectory(gconfig.BlogSaveDir);
         }
@@ -263,38 +263,6 @@ public class WatchService : BackgroundService
             .Where(fullPath => Path.GetExtension(fullPath) == ".md")
             .Select(fullPath => (fullPath: fullPath, blogName: Path.GetFileNameWithoutExtension(fullPath)))
             .ToList();
-        #endregion
-
-        #region 从数据库同步到本地
-        // nametouid => key是name => 检查本地博文中是否存在以注册的名称 => 如果any返回true说明有
-        // 从数据库中有的，过滤出本地没有的
-        var serverBlogs = nameToUid.Keys;
-        var localhostNotExistBlog = serverBlogs.Where(f => !localhostBlogs.Any(fb => fb.blogName == f));
-        var syncByDbSavePath = Path.Combine(gconfig.BlogSaveDir, "db_sync");
-
-        if(!Directory.Exists(syncByDbSavePath)) {
-            Directory.CreateDirectory(syncByDbSavePath);
-        }
-
-        DateTime baseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        foreach (var blogName in localhostNotExistBlog) {
-            if (!nameToUid.TryGetValue(blogName, out var key)) {
-                continue;
-            }
-            var post = await postsService.QueryByKeyNoTrackingAsync(key);
-            if (post == null) {
-                continue;
-            }
-            var saveFullPath = Path.Combine(syncByDbSavePath, blogName + ".md");
-            using (var stream = File.CreateText(saveFullPath)) {
-                await stream.WriteAsync(post.Content);
-                await stream.FlushAsync();
-            }
-            var fileInfo = new FileInfo(saveFullPath)
-            {
-                CreationTime = baseTime.Add(TimeSpan.FromTicks(post.CreateTime))
-            };
-        }
         #endregion
 
         #region 从本地同步到数据库
@@ -312,6 +280,47 @@ public class WatchService : BackgroundService
                 EditTime = fileInfo.LastWriteTimeUtc.Ticks - DateTimeOffset.UnixEpoch.Ticks
             };
             await postsService.UpdateOrAddAsync(newBlog);
+        }
+        #endregion
+
+        #region 迁移YAML头
+        await postsService.MigrateAllYamlHeadersAsync();
+        #endregion
+
+        #region 从数据库全量覆盖到本地
+        // 重新加载数据库数据到映射（包含新上传的文章）
+        uidToName.Clear();
+        nameToUid.Clear();
+
+        var syncByDbSavePath = Path.Combine(gconfig.BlogSaveDir, "db_sync");
+        if(!Directory.Exists(syncByDbSavePath)) {
+            Directory.CreateDirectory(syncByDbSavePath);
+        }
+
+        DateTime baseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        foreach (var postInfo in postsService.QueryAllNoTracking()) {
+            // 更新映射
+            uidToName[postInfo.Id] = postInfo.Name;
+            nameToUid[postInfo.Name] = postInfo.Id;
+
+            // 优先查找本地已有路径，保持原路径不变
+            if (TryGetMarkdownFullName(postInfo.Name, out var existingFullPath)) {
+                using (var stream = File.CreateText(existingFullPath)) {
+                    await stream.WriteAsync(postInfo.Content);
+                    await stream.FlushAsync();
+                }
+            } else {
+                // 本地不存在则创建到 db_sync 目录
+                var saveFullPath = Path.Combine(syncByDbSavePath, postInfo.Name + ".md");
+                using (var stream = File.CreateText(saveFullPath)) {
+                    await stream.WriteAsync(postInfo.Content);
+                    await stream.FlushAsync();
+                }
+                var fileInfo = new FileInfo(saveFullPath)
+                {
+                    CreationTime = baseTime.Add(TimeSpan.FromTicks(postInfo.CreateTime))
+                };
+            }
         }
         #endregion
     }
