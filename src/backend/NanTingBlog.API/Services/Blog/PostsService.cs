@@ -271,7 +271,9 @@ public class PostsService(BlogContext context, IMemoryCache cache) : BaseReposit
         var dateHeaderValue = header.GetValue(date);
         if (dateHeaderValue == null) {
             DateTimeOffset epoch = new(1970, 1, 1, 0, 0, 0, TimeSpan.Zero);
-            header.AddHeader(date, epoch.AddTicks(postInfo.CreateTime));
+            var utcTime = epoch.AddTicks(postInfo.CreateTime);
+            var chinaTime = utcTime.ToOffset(TimeSpan.FromHours(8));
+            header.AddHeader(date, chinaTime);
         } else {
             var yamlDateTime = dateHeaderValue.ToDateTimeValue();
             if (yamlDateTime != null) {

@@ -111,7 +111,7 @@ public class YamlHeaderParse
     /// <param name="value">日期时间值</param>
     public void AddHeader(string key, DateTimeOffset value)
     {
-        _properties[key] = new YamlHeaderValue(value.ToString("o"));
+        _properties[key] = new YamlHeaderValue(value.ToString("yyyy-MM-ddTHH:mm:sszzz"));
     }
 
     /// <summary>
@@ -138,12 +138,27 @@ public class YamlHeaderParse
         }
 
         yamlBuilder.AppendLine("---");
+        yamlBuilder.AppendLine();
 
         if (IsHeader) {
-            var text = MarkdownText.TrimStart();
-            var firstSep = text.IndexOf("---", 3);
-            if (firstSep > 0) {
-                MarkdownText = yamlBuilder.ToString() + text[(firstSep + 3)..].TrimStart('\r', '\n');
+            var lines = MarkdownText.Split(["\r\n", "\n"], StringSplitOptions.None);
+            int endIndex = -1;
+            // 跳过第一行
+            for (int i = 1; i < lines.Length; i++) {
+                if (lines[i].TrimEnd() == "---") {
+                    endIndex = i;
+                    break;
+                }
+            }
+
+            if (endIndex >= 0 && endIndex + 1 < lines.Length) {
+                // 跳过结束---后的空行，取正文内容
+                var contentStart = endIndex + 1;
+                while (contentStart < lines.Length && string.IsNullOrWhiteSpace(lines[contentStart])) {
+                    contentStart++;
+                }
+                var body = string.Join("\n", lines.Skip(contentStart));
+                MarkdownText = yamlBuilder.ToString() + body;
             }
         } else {
             MarkdownText = yamlBuilder.ToString() + MarkdownText;
@@ -160,16 +175,34 @@ public class YamlHeaderParse
     private bool Parse(string markdownText)
     {
         var text = markdownText.TrimStart();
-        var parts = text.Split("---");
-        if (parts.Length < 2) {
+        var lines = text.Split(["\r\n", "\n"], StringSplitOptions.None);
+
+        // 第一行必须---
+        if (lines.Length < 3 || lines[0].TrimEnd() != "---") {
             return false;
         }
 
-        var yamlContent = parts[1];
-        var lines = yamlContent.Split(["\r\n", "\n"], StringSplitOptions.RemoveEmptyEntries);
+        // 从第二行开始查找结束的 "---"（必须是独立一行，去除行尾空白后等于 "---"）
+        int endIndex = -1;
+        for (int i = 1; i < lines.Length; i++) {
+            if (lines[i].TrimEnd() == "---") {
+                endIndex = i;
+                break;
+            }
+        }
 
-        foreach (var line in lines) {
-            var segments = line.Trim().Split(':', 2);
+        if (endIndex < 0) {
+            return false;
+        }
+
+        // 解析 YAML 内容
+        for (int i = 1; i < endIndex; i++) {
+            var line = lines[i].Trim();
+            if (string.IsNullOrEmpty(line)) {
+                continue;
+            }
+
+            var segments = line.Split(':', 2);
             if (segments.Length < 2) {
                 continue;
             }
