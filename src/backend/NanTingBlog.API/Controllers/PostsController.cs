@@ -2,7 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using NanTingBlog.API.Dtos.Blogs;
 using NanTingBlog.API.Services;
 using System.Text.Json.Serialization;
-using NanTingBlog.API.Services.Blog.Post;
+using NanTingBlog.API.Services.Blog;
+using NanTingBlog.API.Extensions;
 
 
 #if RELEASE
@@ -16,9 +17,9 @@ namespace NanTingBlog.API.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/blog")]
-public class PostsController(IPostService service, MarkdownService markdown, WatchService watch) : ControllerBase
+public class PostsController(PostsService service, MarkdownService markdown, WatchService watch) : ControllerBase
 {
-    private readonly IPostService service = service;
+    private readonly PostsService service = service;
     private readonly MarkdownService markdown = markdown;
 
     /// <summary>
@@ -27,9 +28,11 @@ public class PostsController(IPostService service, MarkdownService markdown, Wat
     [HttpGet("searchOnName")]
     public async Task<ActionResult<BaseResult<IReadOnlyCollection<PostInfo>>>> SearchOnName([FromQuery] SearchBlogInput input)
     {
+        var simple = await service.QueryByNameCacheAsync(input.KeyWord, input.Limit ?? 10, input.Page ?? 1);
+        simple.ToSimplePosts();
         var result = new BaseResult<List<PostInfo>>()
         {
-            Data = await service.QueryByName(input.KeyWord, input.Limit ?? 10, input.Page ?? 1)
+            Data = simple
         };
         return Ok(result);
     }
@@ -40,9 +43,11 @@ public class PostsController(IPostService service, MarkdownService markdown, Wat
     [HttpGet("searchOnContent")]
     public async Task<ActionResult<BaseResult<IReadOnlyCollection<PostInfo>>>> SearchOnContent([FromQuery] SearchBlogInput input)
     {
+        var simple = await service.QueryByContentNoTrackingAsync(input.KeyWord, input.Limit ?? 10, input.Page ?? 1);
+        simple.ToSimplePosts();
         var result = new BaseResult<IReadOnlyCollection<PostInfo>>()
         {
-            Data = await service.QueryByContent(input.KeyWord, input.Limit ?? 10, input.Page ?? 1)
+            Data = simple
         };
         return Ok(result);
     }
@@ -53,8 +58,8 @@ public class PostsController(IPostService service, MarkdownService markdown, Wat
     [HttpGet("search")]
     public async Task<ActionResult<BaseResult<IReadOnlyCollection<PostInfo>>>> Search([FromQuery] SearchBlogInput? input)
     {
-        var postResults = await service.QueryByLastNoTracking(5, 1);
-        ToSimplePosts(postResults);
+        var postResults = await service.QueryByLastCacheAsync(5, 1);
+        postResults.ToSimplePosts();
 
         var result = new BaseResult<IReadOnlyCollection<PostInfo>>()
         {
@@ -69,8 +74,8 @@ public class PostsController(IPostService service, MarkdownService markdown, Wat
     [HttpGet("searchToPage")]
     public async Task<ActionResult<BaseResult<IReadOnlyCollection<PostInfo>>>> SearchToPage([FromQuery] SearchBlogInput? input)
     {
-        var postInfos = await service.QueryNoTracking(input?.Limit ?? 10, input?.Page ?? 1);
-        ToSimplePosts(postInfos);
+        var postInfos = await service.QueryByCacheAsync(input?.Limit ?? 10, input?.Page ?? 1);
+        postInfos.ToSimplePosts();
 
         var result = new BaseResult<IReadOnlyCollection<PostInfo>>()
         {
@@ -85,7 +90,7 @@ public class PostsController(IPostService service, MarkdownService markdown, Wat
     [HttpGet("pageCount")]
     public async Task<ActionResult<BaseResult<int>>> PageCount([FromQuery] int limit)
     {
-        int totalCount = await service.CountAsync();
+        int totalCount = await service.CountByCacheAsync();
         int pages = (int)Math.Ceiling((double)totalCount / limit);
         return Ok(BaseResult<int>.Create(pages));
     }
@@ -109,8 +114,8 @@ public class PostsController(IPostService service, MarkdownService markdown, Wat
     [HttpGet("searchOnTag")]
     public async Task<ActionResult<BaseResult<IReadOnlyCollection<PostInfo>>>> SearchOnTag([FromQuery] SearchBlogInput input)
     {
-        var list = await service.QueryByTagNoTracking(input.KeyWord, input.Limit ?? 10, input.Page ?? 1);
-        ToSimplePosts(list);
+        var list = await service.QueryByTagCacheAsync(input.KeyWord, input.Limit ?? 10, input.Page ?? 1);
+        list.ToSimplePosts();
         var result = new BaseResult<IReadOnlyCollection<PostInfo>>()
         {
             Data = list
@@ -126,7 +131,7 @@ public class PostsController(IPostService service, MarkdownService markdown, Wat
     {
         var result = new BaseResult<int>()
         {
-            Data = await service.CountByCriteria(new() { Tag = input.KeyWord })
+            Data = await service.CountByCriteriaCacheAsync(new() { Tag = input.KeyWord })
         };
         return Ok(result);
     }
@@ -139,7 +144,7 @@ public class PostsController(IPostService service, MarkdownService markdown, Wat
     {
         var result = new BaseResult<List<string>>()
         {
-            Data = await service.Tags()
+            Data = await service.TagsCacheAsync()
         };
         return Ok(result);
     }
@@ -222,7 +227,7 @@ public class PostsController(IPostService service, MarkdownService markdown, Wat
         if(input?.KeyWord == null || string.IsNullOrEmpty(input.KeyWord) || input.KeyWord == "*") {
             postInfos = [.. service.QueryAllNoTracking().GetPageValue(input?.Limit ?? 10, input?.Page ?? 1)];
         } else {
-            postInfos = await service.QueryByName(input.KeyWord, input?.Limit ?? 10, input?.Page ?? 1);
+            postInfos = await service.QueryByNameNoTrackingAsync(input.KeyWord, input?.Limit ?? 10, input?.Page ?? 1);
         }
         var result = new BaseResult<IReadOnlyCollection<PostInfo>>()
         {
@@ -245,17 +250,6 @@ public class PostsController(IPostService service, MarkdownService markdown, Wat
         var post = await service.QueryByKeyNoTrackingAsync(input.Id);
         result.Data = markdown.ToHTML(post?.Content ?? "");
         return Ok(result);
-    }
-
-    private static void ToSimplePosts(List<PostInfo> posts)
-    {
-        foreach (var item in posts) {
-            if (item.Content.Length <= 20) {
-                item.Content = item.Content[0..item.Content.Length];
-            } else {
-                item.Content = item.Content[0..20];
-            }
-        }
     }
 
 #pragma warning disable CS1591 // 缺少对公共可见类型或成员的 XML 注释
