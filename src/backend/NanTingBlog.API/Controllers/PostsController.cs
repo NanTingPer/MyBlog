@@ -160,6 +160,7 @@ public class PostsController(PostsService service, MarkdownService markdown, Wat
     {
         foreach (var item in input.Ids) {
             await service.DeleteByKeyAsync(item);
+            watch.Delete(item);
         }
         return Ok();
     }

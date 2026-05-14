@@ -182,6 +182,23 @@ public class WatchService : BackgroundService
         });
     }
 
+    /// <summary>
+    /// 删除本地文件，不会通知数据库
+    /// </summary>
+    public void Delete(string key)
+    {
+        if (!TryGetName(key, out var name)) {
+            return;
+        }
+        if (!TryGetMarkdownFullName(name, out var fullPath)) {
+            return;
+        }
+        try {
+            File.Delete(fullPath);
+        } catch {
+        }
+    }
+
     private void UpdateName(string uid, string newName)
     {
         if (!uidToName.TryGetValue(uid, out var oldName)) {
