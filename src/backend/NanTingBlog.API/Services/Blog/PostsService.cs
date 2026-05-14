@@ -4,6 +4,7 @@ using NanTingBlog.API.Dtos.Blogs;
 using NanTingBlog.API.Extensions;
 using NanTingBlog.API.ServiceModels;
 using NanTingBlog.API.Services.Db;
+using NanTingBlog.API.Utils;
 using System.Linq.Expressions;
 
 namespace NanTingBlog.API.Services.Blog;
@@ -209,4 +210,73 @@ public class PostsService(BlogContext context, IMemoryCache cache) : BaseReposit
         return (await AllPostInfoByCacheAsync()).Count;
     }
     #endregion
+
+    /// <summary>
+    /// 迁移全部的yaml头
+    /// </summary>
+    public async Task MigrateAllYamlHeadersAsync()
+    {
+        await Task.CompletedTask;
+        const string title = nameof(title);
+        const string date = nameof(date);
+        const string tags = nameof(tags);
+        const string author = nameof(author);
+        const string description = nameof(description);
+
+        #region 从数据库的数据中同步头
+        foreach (var postInfo in QueryAllTracking()) {
+            var header = new YamlHeaderParse(postInfo.Content);
+            var titleHeaderValue = header.GetValue(title);
+            if (titleHeaderValue == null || titleHeaderValue.Value == null) {
+                header.AddHeader(title, postInfo.Name);
+                postInfo.Title = postInfo.Name;
+            } else {
+                postInfo.Title = titleHeaderValue.Value;
+            }
+
+            var descriptionHeaderValue = header.GetValue(description);
+            if (titleHeaderValue == null || titleHeaderValue.Value == null) {
+                header.AddHeader(description, "");
+                postInfo.Description = "";
+            } else {
+                postInfo.Description = titleHeaderValue.Value;
+            }
+
+            var dateHeaderValue = header.GetValue(date);
+            if (dateHeaderValue == null) {
+                DateTimeOffset epoch = new (1970, 1, 1, 0, 0, 0, TimeSpan.Zero);
+                header.AddHeader(date, epoch.AddTicks(postInfo.CreateTime));
+            } else {
+                var yamlDateTime = dateHeaderValue.ToDateTimeValue();
+                if (yamlDateTime != null) {
+                    postInfo.CreateTime = yamlDateTime.Value.DateTime.Ticks - DateTimeOffset.UnixEpoch.Ticks;
+                }
+            }
+
+            var tagsHeaderValue = header.GetValue(tags);
+            if (tagsHeaderValue == null) {
+                header.AddHeader(tags, [.. postInfo.Tag]);
+            } else {
+                var tagArray = tagsHeaderValue.ToArrayValue();
+                if (tagArray != null) {
+                    postInfo.Tag = [.. tagArray];
+                }
+            }
+
+            var authorHeaderValue = header.GetValue(author);
+            if (authorHeaderValue == null) {
+                header.AddHeader(author, [.. postInfo.Author]);
+            } else {
+                var authorArray = authorHeaderValue.ToArrayValue();
+                if (authorArray != null) {
+                    postInfo.Author = [.. authorArray];
+                }
+            }
+
+            postInfo.Content = header.WriteToMarkdown();
+        }
+        #endregion
+
+        await context.SaveChangesAsync();
+    }
 }

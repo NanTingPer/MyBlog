@@ -121,7 +121,7 @@ public class YamlHeaderParse
     /// <param name="value">布尔值</param>
     public void AddHeader(string key, bool value)
     {
-        _properties[key] = new YamlHeaderValue(value.ToString().ToLower());
+        _properties[key] = new YamlHeaderValue(value.ToString());
     }
 
     /// <summary>
@@ -187,6 +187,15 @@ public class YamlHeaderParse
             _properties[key] = new YamlHeaderValue(value);
         }
         return true;
+    }
+
+    /// <summary>
+    /// 删除一个头
+    /// </summary>
+    /// <param name="key"></param>
+    public void DeleteHeader(string key)
+    {
+        _properties.Remove(key);
     }
 }
 
