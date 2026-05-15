@@ -322,6 +322,8 @@ public class YamlHeaderValue
     /// </summary>
     private static bool DetectIsArray(string value)
     {
+        if (value == null)
+            return false;
         return value.StartsWith('[') && value.EndsWith(']');
     }
 
@@ -347,6 +349,8 @@ public class YamlHeaderValue
     /// </summary>
     private static bool DetectIsDateTime(string value)
     {
+        if (value == null)
+            return false;
         return DateTimeOffset.TryParse(value, out _);
     }
 
@@ -355,6 +359,8 @@ public class YamlHeaderValue
     /// </summary>
     private static bool DetectIsBool(string value)
     {
+        if (value == null)
+            return false;
         return bool.TryParse(value, out _);
     }
 }
