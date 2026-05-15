@@ -23,16 +23,6 @@ onMounted(async () => {
     } catch (error) {
         console.error("Failed to fetch articles:", error);
         articles.value = [
-            {
-                id: "2",
-                name: "设计中的留白，是一种温柔的呼吸",
-                createTime: Date.now() - 86400000,
-                editTime: Date.now() - 86400000,
-                author: ['作者'],
-                content: '好的设计从来不是把每一寸空间都填满，而是懂得什么时候该留白。就像呼吸一样，有呼才有吸，有留白才有焦点，有克制才有高级感。',
-                tag: ['设计'],
-                drawingUrl: 'https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=300&h=200&fit=crop'
-            }
         ];
     }
 });

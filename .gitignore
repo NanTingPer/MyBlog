@@ -10,3 +10,4 @@
 /src/backend/**/bin
 /src/backend/**/.vs
 /src/backend/**/Properties
+*.lscache

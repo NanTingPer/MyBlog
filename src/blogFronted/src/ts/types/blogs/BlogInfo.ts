@@ -1,6 +1,8 @@
 ﻿export interface BlogInfo {
     id?: string,
     name: string,
+    title: string,
+    description: string,
     createTime?: number,
     editTime?: number,
     author: string[],

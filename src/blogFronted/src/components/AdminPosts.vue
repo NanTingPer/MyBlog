@@ -103,6 +103,16 @@
                     <input type="text" v-model="formData.name" class="form-input" placeholder="请输入文章名称" required />
                 </div>
 
+                <div class="form-group">
+                    <label>标题</label>
+                    <input type="text" v-model="formData.title" class="form-input" placeholder="请输入文章标题" />
+                </div>
+
+                <div class="form-group">
+                    <label>描述</label>
+                    <input type="text" v-model="formData.description" class="form-input" placeholder="请输入文章描述" />
+                </div>
+
                 <!-- Author 列表编辑 -->
                 <div class="form-group">
                     <label>作者</label>
@@ -208,7 +218,9 @@ const formData = ref<BlogInfo>({
     name: '',
     author: [],
     content: '',
-    tag: []
+    tag: [],
+    description: "",
+    title: ""
 });
 
 const truncateContent = (content: string): string => {
@@ -252,7 +264,9 @@ const showAddForm = () => {
         name: '',
         author: [],
         content: '',
-        tag: []
+        tag: [],
+        description: '',
+        title: ''
     };
     editingAuthors.value = [];
     editingTags.value = [];

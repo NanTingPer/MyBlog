@@ -4,8 +4,8 @@
             <img v-show="article.drawingUrl != ''" :src="article.drawingUrl" :alt="article.name"
                 class="article-image" />
             <div class="article-content">
-                <h3 class="article-title">{{ article.name }}</h3>
-                <p class="article-description">{{ article.content.substring(0, 90) + '...' }}</p>
+                <h3 class="article-title">{{ article.title }}</h3>
+                <p class="article-description">{{ article.description }}</p>
                 <div class="article-footer">
                     <span class="article-date">{{ formatDate(article.createTime!) }}</span>
                     <router-link v-for="tag in article.tag" :key="tag" :to="`/tag/${tag}`" class="article-tag tag" @click.stop>
