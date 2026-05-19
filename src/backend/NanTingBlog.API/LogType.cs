@@ -15,6 +15,7 @@
 using Serilog;
 using Serilog.Core;
 using Serilog.Events;
+using Serilog.Formatting.Json;
 using System.Diagnostics.CodeAnalysis;
 
 namespace NanTingBlog.API;
@@ -33,7 +34,7 @@ namespace NanTingBlog.API;
 /// Log.Logger.Information("Hello, {Thing}!", thing);
 /// </example>
 /// <remarks>
-/// The methods on <see cref="Log"/> (and its dynamic sibling <see cref="ILogger"/>) are guaranteed
+/// The methods on <see cref="Log"/> (and its dynamic sibling <see cref="Serilog.ILogger"/>) are guaranteed
 /// never to throw exceptions. Methods on all other types may.
 /// </remarks>
 public abstract class BaseLog
@@ -43,7 +44,76 @@ public abstract class BaseLog
     /// <summary>
     /// 日志对象
     /// </summary>
-    public Serilog.ILogger Logger => _logger;
+    protected Serilog.ILogger Logger => _logger;
+
+    /// <summary> </summary>
+    public static event Action<string, object?[]?>? FatalEvent;
+
+    /// <summary> </summary>
+    public static event Action<Exception?, string, object?[]?>? FatalExEvent;
+
+    /// <summary> </summary>
+    public static event Action<string, object?[]?>? VerboseEvent;
+
+    /// <summary> </summary>
+    public static event Action<Exception?, string, object?[]?>? VerboseExEvent;
+
+    /// <summary> </summary>
+    public static event Action<string, object?[]?>? DebugEvent;
+
+    /// <summary> </summary>
+    public static event Action<Exception?, string, object?[]?>? DebugExEvent;
+
+    /// <summary> </summary>
+    public static event Action<string, object?[]?>? InformationEvent;
+
+    /// <summary> </summary>
+    public static event Action<Exception?, string, object?[]?>? InformationExEvent;
+
+    /// <summary> </summary>
+    public static event Action<string, object?[]?>? WarningEvent;
+
+    /// <summary> </summary>
+    public static event Action<Exception?, string, object?[]?>? WarningExEvent;
+
+    /// <summary> </summary>
+    public static event Action<string, object?[]?>? ErrorEvent;
+
+    /// <summary> </summary>
+    public static event Action<Exception?, string, object?[]?>? ErrorExEvent;
+
+    /// <summary> </summary>
+    public static event Action<LogEvent>? WriteLogEventEvent;
+
+    /// <summary> </summary>
+    public static event Action<LogEventLevel, string>? WriteMessageEvent;
+
+    /// <summary> </summary>
+    public static event Action<LogEventLevel, string, object?>? WriteMessageTEvent;
+
+    /// <summary> </summary>
+    public static event Action<LogEventLevel, string, object?, object?>? WriteMessageT0T1Event;
+
+    /// <summary> </summary>
+    public static event Action<LogEventLevel, string, object?, object?, object?>? WriteMessageT0T1T2Event;
+
+    /// <summary> </summary>
+    public static event Action<LogEventLevel, string, object?[]?>? WriteMessageParamsEvent;
+
+    /// <summary> </summary>
+    public static event Action<LogEventLevel, Exception?, string>? WriteExMessageEvent;
+
+    /// <summary> </summary>
+    public static event Action<LogEventLevel, Exception?, string, object?>? WriteExMessageTEvent;
+
+    /// <summary> </summary>
+    public static event Action<LogEventLevel, Exception?, string, object?, object?>? WriteExMessageT0T1Event;
+
+    /// <summary> </summary>
+    public static event Action<LogEventLevel, Exception?, string, object?, object?, object?>? WriteExMessageT0T1T2Event;
+
+    /// <summary> </summary>
+    public static event Action<LogEventLevel, Exception?, string, object?[]?>? WriteExMessageParamsEvent;
 
     /// <summary>
     /// 初始化Log
@@ -328,6 +398,7 @@ public abstract class BaseLog
     [MessageTemplateFormatMethod("messageTemplate")]
     public void Verbose(string messageTemplate, params object?[]? propertyValues)
     {
+        VerboseEvent?.Invoke(messageTemplate, propertyValues);
         Logger.Verbose(messageTemplate, propertyValues);
     }
 
@@ -405,6 +476,7 @@ public abstract class BaseLog
     [MessageTemplateFormatMethod("messageTemplate")]
     public void Verbose(Exception? exception, string messageTemplate, params object?[]? propertyValues)
     {
+        VerboseExEvent?.Invoke(exception, messageTemplate, propertyValues);
         Logger.Verbose(exception, messageTemplate, propertyValues);
     }
 
@@ -477,6 +549,7 @@ public abstract class BaseLog
     [MessageTemplateFormatMethod("messageTemplate")]
     public void Debug(string messageTemplate, params object?[]? propertyValues)
     {
+        DebugEvent?.Invoke(messageTemplate, propertyValues);
         Logger.Debug(messageTemplate, propertyValues);
     }
 
@@ -554,6 +627,7 @@ public abstract class BaseLog
     [MessageTemplateFormatMethod("messageTemplate")]
     public void Debug(Exception? exception, string messageTemplate, params object?[]? propertyValues)
     {
+        DebugExEvent?.Invoke(exception, messageTemplate, propertyValues);
         Logger.Debug(exception, messageTemplate, propertyValues);
     }
 
@@ -626,6 +700,7 @@ public abstract class BaseLog
     [MessageTemplateFormatMethod("messageTemplate")]
     public void Information(string messageTemplate, params object?[]? propertyValues)
     {
+        InformationEvent?.Invoke(messageTemplate, propertyValues);
         Logger.Information(messageTemplate, propertyValues);
     }
 
@@ -703,6 +778,7 @@ public abstract class BaseLog
     [MessageTemplateFormatMethod("messageTemplate")]
     public void Information(Exception? exception, string messageTemplate, params object?[]? propertyValues)
     {
+        InformationExEvent?.Invoke(exception, messageTemplate, propertyValues);
         Logger.Information(exception, messageTemplate, propertyValues);
     }
 
@@ -775,6 +851,7 @@ public abstract class BaseLog
     [MessageTemplateFormatMethod("messageTemplate")]
     public void Warning(string messageTemplate, params object?[]? propertyValues)
     {
+        WarningEvent?.Invoke(messageTemplate, propertyValues);
         Logger.Warning(messageTemplate, propertyValues);
     }
 
@@ -852,6 +929,7 @@ public abstract class BaseLog
     [MessageTemplateFormatMethod("messageTemplate")]
     public void Warning(Exception? exception, string messageTemplate, params object?[]? propertyValues)
     {
+        WarningExEvent?.Invoke(exception, messageTemplate, propertyValues);
         Logger.Warning(exception, messageTemplate, propertyValues);
     }
 
@@ -924,6 +1002,7 @@ public abstract class BaseLog
     [MessageTemplateFormatMethod("messageTemplate")]
     public void Error(string messageTemplate, params object?[]? propertyValues)
     {
+        ErrorEvent?.Invoke(messageTemplate, propertyValues);
         Logger.Error(messageTemplate, propertyValues);
     }
 
@@ -1001,6 +1080,7 @@ public abstract class BaseLog
     [MessageTemplateFormatMethod("messageTemplate")]
     public void Error(Exception? exception, string messageTemplate, params object?[]? propertyValues)
     {
+        ErrorExEvent?.Invoke(exception, messageTemplate, propertyValues);
         Logger.Error(exception, messageTemplate, propertyValues);
     }
 
@@ -1073,6 +1153,7 @@ public abstract class BaseLog
     [MessageTemplateFormatMethod("messageTemplate")]
     public void Fatal(string messageTemplate, params object?[]? propertyValues)
     {
+        FatalEvent?.Invoke(messageTemplate, propertyValues);
         Logger.Fatal(messageTemplate, propertyValues);
     }
 
@@ -1151,6 +1232,7 @@ public abstract class BaseLog
     public void Fatal(Exception? exception, string messageTemplate, params object?[]? propertyValues)
     {
         Logger.Fatal(exception, messageTemplate, propertyValues);
+        FatalExEvent?.Invoke(exception, messageTemplate, propertyValues);
     }
 
     /// <summary>
@@ -1194,5 +1276,222 @@ public abstract class BaseLog
     public bool BindProperty(string propertyName, object? value, bool destructureObjects, [NotNullWhen(true)] out LogEventProperty? property)
     {
         return Logger.BindProperty(propertyName, value, destructureObjects, out property);
+    }
+}
+
+/// <summary>
+/// 聚合日志
+/// </summary>
+public static class GlobalLog
+{
+    static GlobalLog()
+    {
+        var logRootDir = Path.Combine(AppContext.BaseDirectory, "logs");
+        _logger = new LoggerConfiguration()
+            .WriteTo.File(path: Path.Combine(logRootDir, "log_json_formatter.log"), formatter: new JsonFormatter(), rollingInterval: RollingInterval.Month, retainedFileCountLimit: 20)
+            .WriteTo.File(path: Path.Combine(logRootDir, "log.log"), outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}", rollingInterval: RollingInterval.Month, retainedFileCountLimit: 20)
+            .CreateLogger();
+
+        BaseLog.FatalEvent += Fatal;
+        BaseLog.FatalExEvent += Fatal;
+        BaseLog.VerboseEvent += Verbose;
+        BaseLog.VerboseExEvent += Verbose;
+        BaseLog.DebugEvent += Debug;
+        BaseLog.DebugExEvent += Debug;
+        BaseLog.InformationEvent += Information;
+        BaseLog.InformationExEvent += Information;
+        BaseLog.WarningEvent += Warning;
+        BaseLog.WarningExEvent += Warning;
+        BaseLog.ErrorEvent += Error;
+        BaseLog.ErrorExEvent += Error;
+        BaseLog.WriteLogEventEvent += Write;
+        BaseLog.WriteMessageEvent += Write;
+        BaseLog.WriteMessageTEvent += Write;
+        BaseLog.WriteMessageT0T1Event += Write;
+        BaseLog.WriteMessageT0T1T2Event += Write;
+        BaseLog.WriteMessageParamsEvent += Write;
+        BaseLog.WriteExMessageEvent += Write;
+        BaseLog.WriteExMessageTEvent += Write;
+        BaseLog.WriteExMessageT0T1Event += Write;
+        BaseLog.WriteExMessageT0T1T2Event += Write;
+        BaseLog.WriteExMessageParamsEvent += Write;
+    }
+
+    private static Serilog.ILogger _logger;
+
+    /// <summary>
+    /// 日志
+    /// </summary>
+    public static Serilog.ILogger Logger
+    {
+        get => _logger;
+        set
+        {
+            if(value != null) {
+                _logger = value;
+                return;
+            }
+            ArgumentNullException.ThrowIfNull(value);
+        }
+    }
+
+    /// <summary> </summary>
+    [MessageTemplateFormatMethod("messageTemplate")]
+    public static void Fatal(string messageTemplate, params object?[]? propertyValues)
+    {
+        Logger.Fatal(messageTemplate, propertyValues);
+    }
+
+    /// <summary> </summary>
+    [MessageTemplateFormatMethod("messageTemplate")]
+    public static void Fatal(Exception? exception, string messageTemplate, params object?[]? propertyValues)
+    {
+        Logger.Fatal(exception, messageTemplate, propertyValues);
+    }
+
+    /// <summary></summary>
+    [MessageTemplateFormatMethod("messageTemplate")]
+    public static void Verbose(string messageTemplate, params object?[]? propertyValues)
+    {
+        Logger.Verbose(messageTemplate, propertyValues);
+    }
+
+    /// <summary></summary>
+    [MessageTemplateFormatMethod("messageTemplate")]
+    public static void Verbose(Exception? exception, string messageTemplate, params object?[]? propertyValues)
+    {
+        Logger.Verbose(exception, messageTemplate, propertyValues);
+    }
+
+    /// <summary></summary>
+    [MessageTemplateFormatMethod("messageTemplate")]
+    public static void Debug(string messageTemplate, params object?[]? propertyValues)
+    {
+        Logger.Debug(messageTemplate, propertyValues);
+    }
+
+    /// <summary></summary>
+    [MessageTemplateFormatMethod("messageTemplate")]
+    public static void Debug(Exception? exception, string messageTemplate, params object?[]? propertyValues)
+    {
+        Logger.Debug(exception, messageTemplate, propertyValues);
+    }
+
+    /// <summary></summary>
+    [MessageTemplateFormatMethod("messageTemplate")]
+    public static void Information(string messageTemplate, params object?[]? propertyValues)
+    {
+        Logger.Information(messageTemplate, propertyValues);
+    }
+
+    /// <summary></summary>
+    [MessageTemplateFormatMethod("messageTemplate")]
+    public static void Information(Exception? exception, string messageTemplate, params object?[]? propertyValues)
+    {
+        Logger.Information(exception, messageTemplate, propertyValues);
+    }
+
+    /// <summary></summary>
+    [MessageTemplateFormatMethod("messageTemplate")]
+    public static void Warning(string messageTemplate, params object?[]? propertyValues)
+    {
+        Logger.Warning(messageTemplate, propertyValues);
+    }
+
+    /// <summary></summary>
+    [MessageTemplateFormatMethod("messageTemplate")]
+    public static void Warning(Exception? exception, string messageTemplate, params object?[]? propertyValues)
+    {
+        Logger.Warning(exception, messageTemplate, propertyValues);
+    }
+
+    /// <summary></summary>
+    [MessageTemplateFormatMethod("messageTemplate")]
+    public static void Error(string messageTemplate, params object?[]? propertyValues)
+    {
+        Logger.Error(messageTemplate, propertyValues);
+    }
+
+    /// <summary></summary>
+    [MessageTemplateFormatMethod("messageTemplate")]
+    public static void Error(Exception? exception, string messageTemplate, params object?[]? propertyValues)
+    {
+        Logger.Error(exception, messageTemplate, propertyValues);
+    }
+
+    /// <summary> </summary>
+    public static void Write(LogEvent logEvent)
+    {
+        Logger.Write(logEvent);
+    }
+
+    /// <summary> </summary>
+    [MessageTemplateFormatMethod("messageTemplate")]
+    public static void Write(LogEventLevel level, string messageTemplate)
+    {
+        Logger.Write(level, messageTemplate);
+    }
+
+    /// <summary> </summary>
+    [MessageTemplateFormatMethod("messageTemplate")]
+    public static void Write<T>(LogEventLevel level, string messageTemplate, T propertyValue)
+    {
+        Logger.Write(level, messageTemplate, propertyValue);
+    }
+
+    /// <summary> </summary>
+    [MessageTemplateFormatMethod("messageTemplate")]
+    public static void Write<T0, T1>(LogEventLevel level, string messageTemplate, T0 propertyValue0, T1 propertyValue1)
+    {
+        Logger.Write(level, messageTemplate, propertyValue0, propertyValue1);
+    }
+
+    /// <summary> </summary>
+    [MessageTemplateFormatMethod("messageTemplate")]
+    public static void Write<T0, T1, T2>(LogEventLevel level, string messageTemplate, T0 propertyValue0, T1 propertyValue1, T2 propertyValue2)
+    {
+        Logger.Write(level, messageTemplate, propertyValue0, propertyValue1, propertyValue2);
+    }
+
+    /// <summary> </summary>
+    [MessageTemplateFormatMethod("messageTemplate")]
+    public static void Write(LogEventLevel level, string messageTemplate, params object?[]? propertyValues)
+    {
+        Logger.Write(level, messageTemplate, propertyValues);
+    }
+
+    /// <summary> </summary>
+    [MessageTemplateFormatMethod("messageTemplate")]
+    public static void Write(LogEventLevel level, Exception? exception, string messageTemplate)
+    {
+        Logger.Write(level, exception, messageTemplate);
+    }
+
+    /// <summary> </summary>
+    [MessageTemplateFormatMethod("messageTemplate")]
+    public static void Write<T>(LogEventLevel level, Exception? exception, string messageTemplate, T propertyValue)
+    {
+        Logger.Write(level, exception, messageTemplate, propertyValue);
+    }
+
+    /// <summary> </summary>
+    [MessageTemplateFormatMethod("messageTemplate")]
+    public static void Write<T0, T1>(LogEventLevel level, Exception? exception, string messageTemplate, T0 propertyValue0, T1 propertyValue1)
+    {
+        Logger.Write(level, exception, messageTemplate, propertyValue0, propertyValue1);
+    }
+
+    /// <summary> </summary>
+    [MessageTemplateFormatMethod("messageTemplate")]
+    public static void Write<T0, T1, T2>(LogEventLevel level, Exception? exception, string messageTemplate, T0 propertyValue0, T1 propertyValue1, T2 propertyValue2)
+    {
+        Logger.Write(level, exception, messageTemplate, propertyValue0, propertyValue1, propertyValue2);
+    }
+
+    /// <summary> </summary>
+    [MessageTemplateFormatMethod("messageTemplate")]
+    public static void Write(LogEventLevel level, Exception? exception, string messageTemplate, params object?[]? propertyValues)
+    {
+        Logger.Write(level, exception, messageTemplate, propertyValues);
     }
 }
