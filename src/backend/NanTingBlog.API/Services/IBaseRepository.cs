@@ -33,11 +33,7 @@ public interface IBaseRepository<TModel, TKey>
     /// <summary>
     /// 以指定主键查询
     /// </summary>
-    Task<TModel?> QueryByKeyNoTrackingAsync(TKey key);
-    /// <summary>
-    /// 以指定主键查询
-    /// </summary>
-    Task<TModel?> QueryByKeyTrackingAsync(TKey key);
+    Task<TModel?> QueryByKeyAsync(TKey key);
     /// <summary>
     /// 表中的数据条数
     /// </summary>
@@ -46,12 +42,7 @@ public interface IBaseRepository<TModel, TKey>
     /// <summary>
     /// 查询全部，懒惰返回表中数据，不跟踪
     /// </summary>
-    IEnumerable<TModel> QueryAllNoTracking();
-    /// <summary>
-    /// 查询全部，懒惰返回表中数据，跟踪
-    /// </summary>
-    IEnumerable<TModel> QueryAllTracking();
-
+    IEnumerable<TModel> QueryAll();
 }
 /// <summary>
 /// 任务结果

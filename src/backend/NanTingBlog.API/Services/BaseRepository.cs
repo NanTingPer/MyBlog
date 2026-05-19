@@ -101,13 +101,13 @@ public abstract class BaseRepository<TModel, TKey>(BlogContext context) : IBaseR
     }
 
     /// <inheritdoc/>
-    public async Task<TModel?> QueryByKeyNoTrackingAsync(TKey key)
+    public async Task<TModel?> QueryByKeyAsync(TKey key)
     {
         return await context.Set<TModel>().AsNoTracking().FirstOrDefaultAsync(BuildKeyEqualExpression(key));
     }
 
     /// <inheritdoc/>
-    public async Task<TModel?> QueryByKeyTrackingAsync(TKey key)
+    protected async Task<TModel?> QueryByKeyTrackingAsync(TKey key)
     {
         return await context.Set<TModel>().FirstOrDefaultAsync(BuildKeyEqualExpression(key));
     }
@@ -151,18 +151,42 @@ public abstract class BaseRepository<TModel, TKey>(BlogContext context) : IBaseR
     }
 
     /// <inheritdoc/>
-    public IEnumerable<TModel> QueryAllNoTracking()
+    public IEnumerable<TModel> QueryAll()
     {
         foreach (var post in context.Set<TModel>().AsNoTracking()) {
             yield return post;
         }
     }
 
-    /// <inheritdoc/>
-    public IEnumerable<TModel> QueryAllTracking()
+    /// <summary>
+    /// 查询全部，并跟踪
+    /// </summary>
+    protected IEnumerable<TModel> QueryAllTracking()
     {
         foreach (var post in context.Set<TModel>()) {
             yield return post;
         }
+    }
+
+    /// <summary>
+    /// 使用给定条件查询，返回不跟踪的数据
+    /// </summary>
+    /// <returns></returns>
+    protected Task<List<TModel>> WhereQueryNoTrackingAsync(Expression<Func<TModel, bool>> query, int limit = 10, int page = 1)
+    {
+        var startIndex = limit * (page - 1);
+        if (startIndex < 0) startIndex = 0;
+        return Task.FromResult<List<TModel>>([.. context.Set<TModel>().AsNoTracking().Where(query).Skip(startIndex).Take(limit)]);
+    }
+
+    /// <summary>
+    /// 使用给定条件查询，返回被跟踪的数据
+    /// </summary>
+    /// <returns></returns>
+    protected Task<List<TModel>> WhereQueryTrackingAsync(Expression<Func<TModel, bool>> query, int limit = 10, int page = 1)
+    {
+        var startIndex = limit * (page - 1);
+        if (startIndex < 0) startIndex = 0;
+        return Task.FromResult<List<TModel>>([.. context.Set<TModel>().Where(query).Skip(startIndex).Take(limit)]);
     }
 }

@@ -43,7 +43,7 @@ public class PostsController(PostsService service, MarkdownService markdown, Wat
     [HttpGet("searchOnContent")]
     public async Task<ActionResult<BaseResult<IReadOnlyCollection<PostInfo>>>> SearchOnContent([FromQuery] SearchBlogInput input)
     {
-        var simple = await service.QueryByContentNoTrackingAsync(input.KeyWord, input.Limit ?? 10, input.Page ?? 1);
+        var simple = await service.QueryByContentAsync(input.KeyWord, input.Limit ?? 10, input.Page ?? 1);
         simple.ToSimplePosts();
         var result = new BaseResult<IReadOnlyCollection<PostInfo>>()
         {
@@ -103,7 +103,7 @@ public class PostsController(PostsService service, MarkdownService markdown, Wat
     {
         var result = new BaseResult<PostInfo>()
         {
-            Data = await service.QueryByKeyNoTrackingAsync(input.KeyWord)
+            Data = await service.QueryByKeyAsync(input.KeyWord)
         };
         return Ok(result);
     }
@@ -176,7 +176,7 @@ public class PostsController(PostsService service, MarkdownService markdown, Wat
     [HttpPost("addOrReplace")]
     public async Task<ActionResult<BaseResult<string>>> AddOrReplace([FromBody] PostInfo blog)
     {
-        var oldPost = await service.QueryByKeyNoTrackingAsync(blog.Id);
+        var oldPost = await service.QueryByKeyAsync(blog.Id);
         var result = await service.UpdateOrAddAsync(blog);
 
         var bodyName = blog.Name;
@@ -226,9 +226,9 @@ public class PostsController(PostsService service, MarkdownService markdown, Wat
     {
         List<PostInfo> postInfos;
         if(input?.KeyWord == null || string.IsNullOrEmpty(input.KeyWord) || input.KeyWord == "*") {
-            postInfos = [.. service.QueryAllNoTracking().GetPageValue(input?.Limit ?? 10, input?.Page ?? 1)];
+            postInfos = [.. service.QueryAll().GetPageValue(input?.Limit ?? 10, input?.Page ?? 1)];
         } else {
-            postInfos = await service.QueryByNameNoTrackingAsync(input.KeyWord, input?.Limit ?? 10, input?.Page ?? 1);
+            postInfos = await service.QueryByNameAsync(input.KeyWord, input?.Limit ?? 10, input?.Page ?? 1);
         }
         var result = new BaseResult<IReadOnlyCollection<PostInfo>>()
         {
@@ -248,7 +248,7 @@ public class PostsController(PostsService service, MarkdownService markdown, Wat
         {
             return Ok(result);
         }
-        var post = await service.QueryByKeyNoTrackingAsync(input.Id);
+        var post = await service.QueryByKeyAsync(input.Id);
         result.Data = markdown.ToHTML(post?.Content ?? "");
         return Ok(result);
     }

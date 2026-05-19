@@ -54,7 +54,7 @@ public class WatchService : BackgroundService
         uploadings.Add(async service => {
             var postName = Path.GetFileNameWithoutExtension(e.Name);
             UpdateName(uid, postName);
-            var blogInfo = await service.QueryByKeyTrackingAsync(uid);
+            var blogInfo = await service.QueryByKeyAsync(uid);
             if(blogInfo == null) return;
             blogInfo.Name = postName; // 前面用的是e.name 导致保存了扩展名
             await service.UpdateOrAddAsync(blogInfo);
@@ -106,7 +106,7 @@ public class WatchService : BackgroundService
                 return;
             }
             var blogText = File.ReadAllText(e.FullPath);
-            var blog = await service.QueryByKeyTrackingAsync(id);
+            var blog = await service.QueryByKeyAsync(id);
             if(blog == null) return;
             blog.Content = blogText;
             blog.EditTime = DateTime.UtcNow.Ticks - DateTimeOffset.UnixEpoch.Ticks;
@@ -244,7 +244,7 @@ public class WatchService : BackgroundService
         var postsService = serviceScope.ServiceProvider.GetService<PostsService>();
 
         #region 从数据库同步
-        foreach (var postInfo in postsService!.QueryAllNoTracking()) {
+        foreach (var postInfo in postsService!.QueryAll()) {
             uidToName[postInfo.Id] = postInfo.Name;
             nameToUid[postInfo.Name] = postInfo.Id;
         }
@@ -295,7 +295,7 @@ public class WatchService : BackgroundService
         }
 
         DateTime baseTime = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        foreach (var postInfo in postsService.QueryAllNoTracking()) {
+        foreach (var postInfo in postsService.QueryAll()) {
             // 更新映射
             uidToName[postInfo.Id] = postInfo.Name;
             nameToUid[postInfo.Name] = postInfo.Id;

@@ -1,6 +1,4 @@
 using Markdig;
-using Microsoft.Extensions.Caching.Memory;
-using NanTingBlog.API;
 using NanTingBlog.API.Middlewares;
 using NanTingBlog.API.Services;
 using NanTingBlog.API.Services.Blog;

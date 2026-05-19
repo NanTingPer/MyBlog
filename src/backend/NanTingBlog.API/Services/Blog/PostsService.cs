@@ -25,13 +25,13 @@ public class PostsService(BlogContext context, IMemoryCache cache) : BaseReposit
     /// <summary>
     /// 查询全部
     /// </summary>
-    public Task<List<PostInfo>> QueryNoTrackingAsync(int limit, int page)
+    public Task<List<PostInfo>> QueryAsync(int limit, int page)
         => WhereQueryNoTrackingAsync(f => true, limit, page);
 
     /// <summary>
     /// 查询最后创建的文章
     /// </summary>
-    public Task<List<PostInfo>> QueryByLastNoTrackingAsync(int limit, int page)
+    public Task<List<PostInfo>> QueryByLastAsync(int limit, int page)
     {
         var startIndex = limit * (page - 1);
         if (startIndex < 0) startIndex = 0;
@@ -41,19 +41,19 @@ public class PostsService(BlogContext context, IMemoryCache cache) : BaseReposit
     /// <summary>
     /// 查询自内容
     /// </summary>
-    public Task<List<PostInfo>> QueryByContentNoTrackingAsync(string wordkey, int limit, int page)
+    public Task<List<PostInfo>> QueryByContentAsync(string wordkey, int limit, int page)
         => WhereQueryNoTrackingAsync(b => b.Content.Contains(wordkey), limit, page);
 
     /// <summary>
     /// 查询自标签
     /// </summary>
-    public Task<List<PostInfo>> QueryByTagNoTrackingAsync(string wordkey, int limit, int page)
+    public Task<List<PostInfo>> QueryByTagAsync(string wordkey, int limit, int page)
         => WhereQueryNoTrackingAsync(b => b.Tag.Contains(wordkey), limit, page);
 
     /// <summary>
     /// 查询自名字
     /// </summary>
-    public Task<List<PostInfo>> QueryByNameNoTrackingAsync(string wordkey, int limit, int page)
+    public Task<List<PostInfo>> QueryByNameAsync(string wordkey, int limit, int page)
         => WhereQueryNoTrackingAsync(b => b.Name.Contains(wordkey), limit, page);
 
     /// <summary>
@@ -74,17 +74,10 @@ public class PostsService(BlogContext context, IMemoryCache cache) : BaseReposit
         await context.SaveChangesAsync();
     }
 
-    private Task<List<PostInfo>> WhereQueryNoTrackingAsync(Expression<Func<PostInfo, bool>> query, int limit, int page)
-    {
-        var startIndex = limit * (page - 1);
-        if (startIndex < 0) startIndex = 0;
-        return Task.FromResult<List<PostInfo>>([.. context.Blogs.AsNoTracking().Where(query).Skip(startIndex).Take(limit)]);
-    }
-
     /// <inheritdoc/>
     public async Task<int> CountByCriteriaAsync(PostCountCriteria criteria)
     {
-        var allPost = QueryAllNoTracking();
+        var allPost = QueryAll();
         if (criteria.Tag != null) {
             allPost = allPost.Where(f => f.Tag.Contains(criteria.Tag));
         }
@@ -103,7 +96,7 @@ public class PostsService(BlogContext context, IMemoryCache cache) : BaseReposit
     public async Task<List<string>> TagsAsync()
     {
         HashSet<string> str = [];
-        foreach (var item in QueryAllNoTracking()) {
+        foreach (var item in QueryAll()) {
             foreach (var item1 in item.Tag) {
                 str.Add(item1);
             }
@@ -120,7 +113,7 @@ public class PostsService(BlogContext context, IMemoryCache cache) : BaseReposit
     {
         var t = cache.GetOrCreateAsync<List<PostInfo>>(postsCacheKey, async entry => {
             entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(1); // 1分钟缓存
-            var posts = await QueryNoTrackingAsync(await CountAsync(), 1);
+            var posts = await QueryAsync(await CountAsync(), 1);
             posts.ToSimplePosts();
             return posts;
         });
@@ -143,7 +136,7 @@ public class PostsService(BlogContext context, IMemoryCache cache) : BaseReposit
         const string queryByLastKeyName = $"Posts_{nameof(QueryByLastCacheAsync)}";
         var t = cache.GetOrCreate(queryByLastKeyName, async entry => {
             entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5); // 5分
-            return await QueryByLastNoTrackingAsync(limit, page);
+            return await QueryByLastAsync(limit, page);
         });
         if (t != null) await t;
         else return [];
