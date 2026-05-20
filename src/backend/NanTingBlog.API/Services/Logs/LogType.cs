@@ -17,8 +17,9 @@ using Serilog.Core;
 using Serilog.Events;
 using Serilog.Formatting.Json;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
-namespace NanTingBlog.API;
+namespace NanTingBlog.API.Services.Logs;
 
 /// <summary>
 /// An optional static entry point for logging that can be easily referenced
@@ -189,6 +190,7 @@ public abstract class BaseLog
     /// <param name="logEvent">The event to write.</param>
     public void Write(LogEvent logEvent)
     {
+        WriteLogEventEvent?.Invoke(logEvent);
         Logger.Write(logEvent);
     }
 
@@ -200,6 +202,7 @@ public abstract class BaseLog
     [MessageTemplateFormatMethod("messageTemplate")]
     public void Write(LogEventLevel level, string messageTemplate)
     {
+        WriteMessageEvent?.Invoke(level, messageTemplate);
         Logger.Write(level, messageTemplate);
     }
 
@@ -212,6 +215,7 @@ public abstract class BaseLog
     [MessageTemplateFormatMethod("messageTemplate")]
     public void Write<T>(LogEventLevel level, string messageTemplate, T propertyValue)
     {
+        WriteMessageTEvent?.Invoke(level, messageTemplate, propertyValue);
         Logger.Write(level, messageTemplate, propertyValue);
     }
 
@@ -225,6 +229,7 @@ public abstract class BaseLog
     [MessageTemplateFormatMethod("messageTemplate")]
     public void Write<T0, T1>(LogEventLevel level, string messageTemplate, T0 propertyValue0, T1 propertyValue1)
     {
+        WriteMessageT0T1Event?.Invoke(level, messageTemplate, propertyValue0, propertyValue1);
         Logger.Write(level, messageTemplate, propertyValue0, propertyValue1);
     }
 
@@ -239,6 +244,7 @@ public abstract class BaseLog
     [MessageTemplateFormatMethod("messageTemplate")]
     public void Write<T0, T1, T2>(LogEventLevel level, string messageTemplate, T0 propertyValue0, T1 propertyValue1, T2 propertyValue2)
     {
+        WriteMessageT0T1T2Event?.Invoke(level, messageTemplate, propertyValue0, propertyValue1, propertyValue2);
         Logger.Write(level, messageTemplate, propertyValue0, propertyValue1, propertyValue2);
     }
 
@@ -251,6 +257,7 @@ public abstract class BaseLog
     [MessageTemplateFormatMethod("messageTemplate")]
     public void Write(LogEventLevel level, string messageTemplate, params object?[]? propertyValues)
     {
+        WriteMessageParamsEvent?.Invoke(level, messageTemplate, propertyValues);
         Logger.Write(level, messageTemplate, propertyValues);
     }
 
@@ -263,6 +270,7 @@ public abstract class BaseLog
     [MessageTemplateFormatMethod("messageTemplate")]
     public void Write(LogEventLevel level, Exception? exception, string messageTemplate)
     {
+        WriteExMessageEvent?.Invoke(level, exception, messageTemplate);
         Logger.Write(level, exception, messageTemplate);
     }
 
@@ -276,6 +284,7 @@ public abstract class BaseLog
     [MessageTemplateFormatMethod("messageTemplate")]
     public void Write<T>(LogEventLevel level, Exception? exception, string messageTemplate, T propertyValue)
     {
+        WriteExMessageTEvent?.Invoke(level, exception, messageTemplate, propertyValue);
         Logger.Write(level, exception, messageTemplate, propertyValue);
     }
 
@@ -290,6 +299,7 @@ public abstract class BaseLog
     [MessageTemplateFormatMethod("messageTemplate")]
     public void Write<T0, T1>(LogEventLevel level, Exception? exception, string messageTemplate, T0 propertyValue0, T1 propertyValue1)
     {
+        WriteExMessageT0T1Event?.Invoke(level, exception, messageTemplate, propertyValue0, propertyValue1);
         Logger.Write(level, exception, messageTemplate, propertyValue0, propertyValue1);
     }
 
@@ -305,6 +315,7 @@ public abstract class BaseLog
     [MessageTemplateFormatMethod("messageTemplate")]
     public void Write<T0, T1, T2>(LogEventLevel level, Exception? exception, string messageTemplate, T0 propertyValue0, T1 propertyValue1, T2 propertyValue2)
     {
+        WriteExMessageT0T1T2Event?.Invoke(level, exception, messageTemplate, propertyValue0, propertyValue1, propertyValue2);
         Logger.Write(level, exception, messageTemplate, propertyValue0, propertyValue1, propertyValue2);
     }
 
@@ -318,6 +329,7 @@ public abstract class BaseLog
     [MessageTemplateFormatMethod("messageTemplate")]
     public void Write(LogEventLevel level, Exception? exception, string messageTemplate, params object?[]? propertyValues)
     {
+        WriteExMessageParamsEvent?.Invoke(level, exception, messageTemplate, propertyValues);
         Logger.Write(level, exception, messageTemplate, propertyValues);
     }
 
@@ -1284,6 +1296,9 @@ public abstract class BaseLog
 /// </summary>
 public static class GlobalLog
 {
+    [ModuleInitializer]
+    internal static void Init() { }
+
     static GlobalLog()
     {
         var logRootDir = Path.Combine(AppContext.BaseDirectory, "logs");

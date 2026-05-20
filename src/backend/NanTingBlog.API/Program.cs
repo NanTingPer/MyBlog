@@ -3,12 +3,24 @@ using NanTingBlog.API.Middlewares;
 using NanTingBlog.API.Services;
 using NanTingBlog.API.Services.Blog;
 using NanTingBlog.API.Services.Db;
+using NanTingBlog.API.Services.Logs;
 using NanTingBlog.IdentityModel.JWTIdentity;
 using NanTingBlog.IdentityModel.RSAIdentity;
+using Serilog;
+using Serilog.Formatting.Json;
 using System.Reflection;
 using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
+var logRootDir = Path.Combine(AppContext.BaseDirectory, "logs");
+builder.Services.AddSerilog(lc => 
+    lc      
+            .WriteTo.Console()
+            .WriteTo.File(path: Path.Combine(logRootDir, "log_asp_json_formatter.log"), formatter: new JsonFormatter(), rollingInterval: RollingInterval.Month, retainedFileCountLimit: 20)
+            .WriteTo.File(path: Path.Combine(logRootDir, "log_asp.log"), outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}", rollingInterval: RollingInterval.Month, retainedFileCountLimit: 20));
+
+builder.Services.AddSingleton<LoginLogger>();
+builder.Services.AddSingleton<ServiceLogger>();
 
 var markdown = new MarkdownPipelineBuilder();
 var markdownPipeline = markdown
@@ -24,13 +36,6 @@ builder.Services.AddSingleton<MarkdownPipeline>(op => markdownPipeline);
 builder.Services.AddSingleton<MarkdownService>();
 builder.Services.AddMemoryCache();
 
-#region Log
-builder.Services.AddLogging();
-builder.Services.AddSingleton<ILogger>(services => {
-    var logFactory = services.GetService<ILoggerFactory>();
-    return logFactory!.CreateLogger("global");
-});
-#endregion
 
 #region DbContext Scoped
 builder.Services.AddDbContext<BlogContext>(ServiceLifetime.Scoped);

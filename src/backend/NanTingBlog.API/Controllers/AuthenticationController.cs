@@ -1,5 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using NanTingBlog.API.Services;
+using NanTingBlog.API.Services.Logs;
 using NanTingBlog.IdentityModel.JWTIdentity;
 using System.Text.Json.Serialization;
 
@@ -10,7 +11,7 @@ namespace NanTingBlog.API.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/auth")]
-public class AuthenticationController(GlobalConfigService configService) : ControllerBase
+public class AuthenticationController(GlobalConfigService configService, LoginLogger logger) : ControllerBase
 {
     /// <summary>
     /// 获取Token
@@ -27,16 +28,19 @@ public class AuthenticationController(GlobalConfigService configService) : Contr
             try {
                 var token = JWTAttribute.CreateToken(configService.LoginPassword);
                 result.Data = token;
+                logger.Information($"IP {Request.HttpContext.Connection.RemoteIpAddress?.ToString() ?? "未知IP "} 登录成功");
                 return Ok(result);
             } catch (ArgumentOutOfRangeException) {
                 result.Code = 400;
                 result.Data = "密码长度不足256字节，请更改.";
+                logger.Warning($"IP {Request.HttpContext.Connection.RemoteIpAddress?.ToString() ?? "未知IP "} 登录失败");
                 return result;
             } catch {
+                logger.Warning($"IP {Request.HttpContext.Connection.RemoteIpAddress?.ToString() ?? "未知IP "} 登录失败");
                 return Unauthorized();
             }
         }
-
+        logger.Warning($"IP {Request.HttpContext.Connection.RemoteIpAddress?.ToString() ?? "未知IP "} 登录失败");
         return Unauthorized();
     }
 
