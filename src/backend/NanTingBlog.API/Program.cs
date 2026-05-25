@@ -1,11 +1,12 @@
 using Markdig;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using NanTingBlog.API.Middlewares;
 using NanTingBlog.API.Services;
 using NanTingBlog.API.Services.Blog;
 using NanTingBlog.API.Services.Db;
+using NanTingBlog.API.Services.Identitys;
 using NanTingBlog.API.Services.Logs;
-using NanTingBlog.IdentityModel.JWTIdentity;
-using NanTingBlog.IdentityModel.RSAIdentity;
 using Serilog;
 using Serilog.Formatting.Json;
 using System.Reflection;
@@ -35,7 +36,7 @@ var markdownPipeline = markdown
 builder.Services.AddSingleton<MarkdownPipeline>(op => markdownPipeline);
 builder.Services.AddSingleton<MarkdownService>();
 builder.Services.AddMemoryCache();
-
+builder.Services.AddSingleton<UserPasswordHasher>();
 
 #region DbContext Scoped
 builder.Services.AddDbContext<BlogContext>(ServiceLifetime.Scoped);
@@ -56,7 +57,9 @@ builder.Services.AddSingleton(provider => {
 builder.Services.AddScoped<PostsService>(); // 博文服务
 builder.Services.AddScoped<FriendslinkService>(); // 友链服务
 builder.Services.AddSingleton<WatchService>();// 文章服务依赖此服务
-builder.Services.AddHostedService(services => services.GetService<WatchService>()!); 
+builder.Services.AddHostedService(services => services.GetService<WatchService>()!);
+builder.Services.AddScoped<UserService>(); // 用户服务
+builder.Services.AddSingleton<JwtService>();
 builder.Services.AddControllers().AddControllersAsServices();
 builder.Services.AddOpenApi();
 
@@ -72,13 +75,21 @@ builder.Services.AddSwaggerGen(options => {
 #endregion
 
 #region JWT
-builder.Services.AddJWTService(serviceProvice => {
-    var gcs = serviceProvice.GetService<GlobalConfigService>()!;
-    return new JWTServiceOptions()
-    {
-        SecurityKey = () => gcs.LoginPassword,
-    };
-});
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer();// Bearer
+builder.Services.AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme)
+    .Configure<IServiceProvider>((opt, provider) => {
+        var jwtService = provider.GetService<JwtService>();
+        opt.TokenValidationParameters = jwtService!.JwtValidationParameters;
+    });
+
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy(PolicyTypes.ADMIN, policy =>
+        policy.AddRequirements(Policy.AdminPolicyRequirement))
+    .AddPolicy(PolicyTypes.USER, policy =>
+        policy.AddRequirements(Policy.UserPolicyRequirement))
+    ;
+builder.Services.AddSingleton<IAuthorizationHandler, UserAuthorizationHandler>();
+builder.Services.AddAuthorization();
 #endregion
 
 #region CORS
@@ -91,7 +102,7 @@ builder.Services.AddCors(options => {
 });
 #endregion
 
-builder.Services.AddRSAService();
+builder.Services.AddSingleton<RSAService>();
 
 #region SpeedMiddleware And Hosted
 builder.Services.AddSingleton<SpeedMiddleware>();
@@ -101,7 +112,6 @@ builder.Services.AddHostedService(provider => provider.GetService<SpeedMiddlewar
 var app = builder.Build();
 app.UseMiddleware<SpeedMiddleware>();
 app.UseCors("AllowAll");
-app.AddJWTMiddleware();
 #if DEBUG
 app.UseSwagger();
 app.UseSwaggerUI();
@@ -114,7 +124,9 @@ if (app.Environment.IsDevelopment()) {
 var gcs = app.Services.GetService<GlobalConfigService>();
 var ports = gcs!.Ports;
 app.UseHttpsRedirection();
-app.UseAuthorization();
+app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();  //先认证 再授权 
 app.MapControllers();
 app.Urls.Clear();
 foreach (var port in ports) {

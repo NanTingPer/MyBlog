@@ -43,6 +43,21 @@ public class GlobalConfigService
     public string LoginPassword { get; set { field = value; Save(); } } = "qwertyuiopasdfghjklzxcvbnm123";
 
     /// <summary>
+    /// jwt令牌颁发机构
+    /// </summary>
+    public string JwtIssuer { get; set { field = value; Save(); } } = "blogapi";
+
+    /// <summary>
+    /// jwt令牌受用人
+    /// </summary>
+    public string JwtAudience { get; set { field = value; Save(); } } = "blogapi";
+
+    /// <summary>
+    /// jwt私钥
+    /// </summary>
+    public string JwtKey { get; set { field = value; Save(); } } = "blogapiwertyu131i3o1p654d64f1g3h1j3k65641jzsxuhjcvguawsueqwrdsojga13wdwgsdr564";
+
+    /// <summary>
     /// 数据库链接字符串
     /// </summary>
     public string BlogDbConnectionString { get; set { field = value; Save(); } } = @"Host=127.0.0.1:5432;Username=postgres;Password=123456;Database=blog";

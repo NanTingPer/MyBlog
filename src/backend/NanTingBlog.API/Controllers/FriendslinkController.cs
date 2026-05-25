@@ -2,8 +2,10 @@ using Microsoft.AspNetCore.Mvc;
 using NanTingBlog.API.Dtos.Blogs;
 using NanTingBlog.API.Services.Blog;
 #if RELEASE
-using NanTingBlog.IdentityModel.JWTIdentity;
+using Microsoft.AspNetCore.Authorization;
+using NanTingBlog.API.Services.Identitys;
 #endif
+
 namespace NanTingBlog.API.Controllers;
 
 /// <summary>
@@ -30,7 +32,7 @@ public class FriendslinkController(FriendslinkService service) : ControllerBase
     /// 删除给定友链
     /// </summary>
 #if RELEASE
-    [JWT]
+    [Authorize(Policy = PolicyTypes.ADMIN)]
 #endif
     [HttpPost("delete")]
     public async Task<ActionResult<BaseResult<string>>> DeleteById([FromBody] DeleteByIdInput input)
@@ -50,7 +52,7 @@ public class FriendslinkController(FriendslinkService service) : ControllerBase
     /// <br> 无论如何都不要传入创建时间和创建字串 </br>
     /// </summary>
 #if RELEASE
-    [JWT]
+    [Authorize(Policy = PolicyTypes.ADMIN)]
 #endif
     [HttpPost("addOrUpdate")]
     public async Task<ActionResult<BaseResult<string>>> AddOrUpdate([FromBody] Friendslink newFriendslink)

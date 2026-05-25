@@ -153,7 +153,7 @@ public class PostsController(PostsService service, MarkdownService markdown, Wat
     /// 删除给定id的文章
     /// </summary>
 #if RELEASE
-    [JWT]
+    [Authorize(Policy = PolicyTypes.ADMIN)]
 #endif
     [HttpPost("delete")]
     public async Task<ActionResult<BaseResult<string>>> Delete([FromBody] DeleteInput input)
@@ -171,7 +171,7 @@ public class PostsController(PostsService service, MarkdownService markdown, Wat
     /// 如果要创建一个条目，请不要携带Id            <br/>
     /// </summary>
 #if RELEASE
-    [JWT]
+    [Authorize(Policy = PolicyTypes.ADMIN)]
 #endif
     [HttpPost("addOrReplace")]
     public async Task<ActionResult<BaseResult<string>>> AddOrReplace([FromBody] PostInfo blog)
@@ -206,7 +206,7 @@ public class PostsController(PostsService service, MarkdownService markdown, Wat
     /// </summary>
     /// <returns></returns>
 #if RELEASE
-    [JWT]
+    [Authorize(Policy = PolicyTypes.ADMIN)]
 #endif
     [HttpPost("deleteAll")]
     public async Task<ActionResult<BaseResult<string>>> DeleteAll()
@@ -219,7 +219,7 @@ public class PostsController(PostsService service, MarkdownService markdown, Wat
     /// 以页获取文章，返回文章的全部内容
     /// </summary>
 #if RELEASE
-    [JWT]
+    [Authorize(Policy = PolicyTypes.ADMIN)]
 #endif
     [HttpGet("getAllToPage")]
     public async Task<ActionResult<BaseResult<IReadOnlyCollection<PostInfo>>>> GetAllToPage([FromQuery] SearchBlogInput? input)
