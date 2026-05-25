@@ -83,8 +83,7 @@ public class AuthenticationController(
             return Ok(result);
         }
         var verifcationResult = passwordHasher.VerifyHashedPassword(user, user.Password, origPassword);
-        if (verifcationResult != Microsoft.AspNetCore.Identity.PasswordVerificationResult.Success ||
-            verifcationResult != Microsoft.AspNetCore.Identity.PasswordVerificationResult.SuccessRehashNeeded) {
+        if (verifcationResult == Microsoft.AspNetCore.Identity.PasswordVerificationResult.Failed) {
             result.Code = 500;
             result.Data = "身份验证失败";
             return Ok(result);
