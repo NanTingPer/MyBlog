@@ -115,6 +115,7 @@ public class AuthenticationController(
     /// </summary>
     /// <returns></returns>
 #if DEBUG
+    [HttpPost("createTestAdminUser")]
     public async Task<ActionResult<BaseResult<string>>> CreateTestAdminUser()
     {
         var newUser = new User()
