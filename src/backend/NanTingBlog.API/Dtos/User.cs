@@ -38,6 +38,7 @@ public class User
     /// <summary>
     /// 用户角色
     /// </summary>
+    [JsonPropertyName("roles"), Column("roles"), Description("用户角色")]
     public List<UserRole> Roles { get; set; } = [UserRole.User];
 }
 

@@ -23,7 +23,7 @@ public class AuthenticationController(
     /// 注册用户
     /// </summary>
     [HttpPost("createUser")]
-    public async Task<ActionResult<BaseResult<string>>> CreateUser([FromBody] UserInput input )
+    public async Task<ActionResult<BaseResult<string>>> CreateUser([FromBody] UserInput input)
     {
         var result = BaseResult<string>.Create("注册成功");
         if (input.UserName == null || input.Password == null || input.RsaId == null) {
@@ -36,6 +36,13 @@ public class AuthenticationController(
         if(input.Password == null) {
             result.Code = 500;
             result.Data = "非对称加密验证失败";
+            return Ok(result);
+        }
+
+        var oldUser = await userService.GetUserByName(input.UserName);
+        if(oldUser != null) {
+            result.Code = 500;
+            result.Data = "用户名以存在";
             return Ok(result);
         }
 
@@ -103,6 +110,27 @@ public class AuthenticationController(
         return Ok(BaseResult<PublicKey>.Create(rsa.GetPublicKey()));
     }
 
+    /// <summary>
+    /// 创建测试用管理员用户
+    /// </summary>
+    /// <returns></returns>
+#if DEBUG
+    public async Task<ActionResult<BaseResult<string>>> CreateTestAdminUser()
+    {
+        var newUser = new User()
+        {
+            Name = "admin",
+            Password = "admin123456",
+            Roles = [UserRole.User, UserRole.Admin]
+        };
+        try {
+            newUser.Password = passwordHasher.HashPassword(newUser, newUser.Password);
+            await userService.UpdateOrAddAsync(newUser);
+        } catch {
+        }
+        return Ok(BaseResult<string>.Create("Ok"));
+    }
+#endif
 #pragma warning disable CS1591 // 缺少对公共可见类型或成员的 XML 注释
     public class UserInput
     {

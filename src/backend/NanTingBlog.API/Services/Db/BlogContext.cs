@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using NanTingBlog.API.Dtos;
 using NanTingBlog.API.Dtos.Blogs;
 
 namespace NanTingBlog.API.Services.Db;
@@ -24,6 +25,11 @@ public class BlogContext(GlobalConfigService gcs) : DbContext
     public DbSet<Friendslink> Friendslinks { get; set; }
 
     /// <summary>
+    /// 用户表
+    /// </summary>
+    public DbSet<User> Users { get; set; }
+
+    /// <summary>
     /// </summary>
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -38,6 +44,11 @@ public class BlogContext(GlobalConfigService gcs) : DbContext
             .HasKey(b => b.Id);
 
         modelBuilder.Entity<Friendslink>()
+            .HasKey(f => f.Id);
+
+        modelBuilder.Entity<User>()
+            .HasIndex(f => f.Name);
+        modelBuilder.Entity<User>()
             .HasKey(f => f.Id);
     }
 }
