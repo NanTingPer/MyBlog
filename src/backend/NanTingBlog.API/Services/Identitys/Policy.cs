@@ -10,7 +10,7 @@ public class Policy
     /// <summary>
     /// 管理员策略
     /// </summary>
-    public static UserRoleRequirement AdminPolicyRequirement { get; } = new UserRoleRequirement(UserRole.Admin, UserRole.User);
+    public static UserRoleRequirement AdminPolicyRequirement { get; } = new UserRoleRequirement(UserRole.Admin);
 
     /// <summary>
     /// 用户策略

@@ -35,7 +35,7 @@ public class UserAuthorizationHandler : AuthorizationHandler<UserRoleRequirement
         if (roles.Any(f => requirement.Roles.Any(f1 => f == f1))) {
             context.Succeed(requirement);
             return Task.CompletedTask;
-        }
+        } 
         return Task.CompletedTask;
     }
 }
