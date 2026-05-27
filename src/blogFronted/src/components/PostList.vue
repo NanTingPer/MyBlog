@@ -1,42 +1,52 @@
+<!--
+  PostList - 文章列表组件
+
+  使用 StaggerTransition 提供加载旋转圈和列表交错进入动画。
+  动画细节见 src/composables/useStaggerAnimation.md
+-->
 <template>
-    <div class="articles-list">
-        <div v-if="loading" class="flex items-center justify-center py-20">
-            <div class="loading-spinner"></div>
-        </div>
-        <TransitionGroup v-else name="post-list" tag="div" class="flex flex-col gap-6"
-            appear
-            @before-enter="onBeforeEnter" @enter="onEnter">
-            <div v-for="(article, index) in articles" :key="article.id" :data-index="index"
-                class="card article-card cursor-pointer" @click="goToPost(article.id!)">
-                <img v-show="article.drawingUrl != ''" :src="article.drawingUrl" :alt="article.name"
-                    class="article-image" />
-                <div class="article-content">
-                    <h3 class="article-title">{{ article.title }}</h3>
-                    <p class="article-description">{{ article.description }}</p>
-                    <div class="article-footer">
-                        <span class="article-date">{{ formatDate(article.createTime!) }}</span>
-                        <router-link v-for="tag in article.tag" :key="tag" :to="`/tag/${tag}`" class="article-tag tag"
-                            @click.stop>
-                            {{ tag }}
-                        </router-link>
-                    </div>
+    <StaggerTransition :loading="loading">
+        <div v-for="(article, index) in articles" :key="article.id" :data-index="index"
+            class="card article-card cursor-pointer" @click="goToPost(article.id!)">
+            <img v-show="article.drawingUrl != ''" :src="article.drawingUrl" :alt="article.name"
+                class="article-image" />
+            <div class="article-content">
+                <h3 class="article-title">{{ article.title }}</h3>
+                <p class="article-description">{{ article.description }}</p>
+                <div class="article-footer">
+                    <span class="article-date">{{ formatDate(article.createTime!) }}</span>
+                    <router-link v-for="tag in article.tag" :key="tag" :to="`/tag/${tag}`" class="article-tag tag"
+                        @click.stop>
+                        {{ tag }}
+                    </router-link>
                 </div>
             </div>
-        </TransitionGroup>
-    </div>
+        </div>
+    </StaggerTransition>
 </template>
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
 import type { BlogInfo } from '../ts/types/blogs/BlogInfo';
+import StaggerTransition from './StaggerTransition.vue';
 
+/**
+ * 组件 Props
+ */
 defineProps<{
+    /** 文章列表数据 */
     articles: BlogInfo[];
+    /** 是否处于加载状态 */
     loading?: boolean;
 }>();
 
 const router = useRouter();
 
+/**
+ * 将 Unix 时间戳格式化为中文日期字符串
+ * @param timestamp 时间戳（支持秒级和毫秒级）
+ * @returns 格式化后的日期字符串，如 "2024年1月1日"
+ */
 const formatDate = (timestamp: number): string => {
     let ms = Number(timestamp.toString().substring(0, 13));
     const date = new Date(ms);
@@ -46,96 +56,22 @@ const formatDate = (timestamp: number): string => {
     return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
 };
 
+/**
+ * 跳转到文章详情页
+ * @param id 文章 ID
+ */
 const goToPost = (id: string) => {
     router.push(`/post/${id}`);
-};
-
-/**
- * 每个列表项进入前设置初始状态和延迟
- */
-const onBeforeEnter = (el: Element) => {
-    const htmlEl = el as HTMLElement;
-    htmlEl.style.opacity = '0';
-    htmlEl.style.transform = 'translateY(-20px)';
-};
-
-/**
- * 每个列表项进入时触发过渡
- */
-const onEnter = (el: Element, done: () => void) => {
-    const htmlEl = el as HTMLElement;
-    const index = parseInt(htmlEl.dataset.index || '0', 10);
-    // 使用 Web Animations API，通过 .finished promise 精确通知 Vue 动画结束
-    const animation = htmlEl.animate(
-        [
-            { opacity: '0', transform: 'translateY(-20px)' },
-            { opacity: '1', transform: 'translateY(0)' }
-        ],
-        {
-            duration: 400,
-            delay: index * 80,
-            easing: 'ease',
-            fill: 'forwards'
-        }
-    );
-    animation.finished.then(() => done());
 };
 </script>
 
 <style scoped>
 /* ========== 原子化工具类 ========== */
-.flex {
-    display: flex;
-}
-
-.flex-col {
-    flex-direction: column;
-}
-
-.items-center {
-    align-items: center;
-}
-
-.justify-center {
-    justify-content: center;
-}
-
-.py-20 {
-    padding-top: 5rem;
-    padding-bottom: 5rem;
-}
-
-.gap-6 {
-    gap: 1.5rem;
-}
-
 .cursor-pointer {
     cursor: pointer;
 }
 
-/* ========== 加载旋转动画 ========== */
-.loading-spinner {
-    width: 2.5rem;
-    height: 2.5rem;
-    border: 3px solid #e0e0e0;
-    border-top-color: #4caf50;
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-}
-
-/* 复杂动画关键帧 - 旋转加载指示器 */
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-/* ========== 文章卡片样式（组件独有） ========== */
-.articles-list {
-    display: flex;
-    flex-direction: column;
-}
-
+/* ========== 文章卡片样式 ========== */
 .article-card {
     display: flex;
     overflow: hidden;

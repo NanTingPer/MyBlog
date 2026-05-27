@@ -1,12 +1,19 @@
-﻿<template>
+<!--
+  FriendLink - 友情链接列表组件
+
+  使用 StaggerTransition 提供加载旋转圈和列表交错进入动画。
+  动画细节见 src/composables/useStaggerAnimation.md
+-->
+<template>
     <div class="page-container">
         <div class="page-header">
             <h1 class="page-title">友情链接</h1>
             <p class="page-subtitle">那些温暖而有趣的角落，是互联网上的星光</p>
         </div>
 
-        <div class="friendlink-list">
-            <a v-for="link in friendlinks" :key="link.id" :href="link.url" target="_blank" rel="noopener noreferrer"
+        <StaggerTransition :loading="loading">
+            <a v-for="(link, index) in friendlinks" :key="link.id" :data-index="index"
+                :href="link.url" target="_blank" rel="noopener noreferrer"
                 class="card friendlink-card">
                 <img :src="link.avatar" :alt="link.name" class="friendlink-avatar" />
                 <div class="friendlink-info">
@@ -14,7 +21,7 @@
                     <p class="friendlink-dictum">{{ link.dictum }}</p>
                 </div>
             </a>
-        </div>
+        </StaggerTransition>
     </div>
 </template>
 
@@ -23,9 +30,17 @@ import { ref, onMounted } from 'vue';
 import type { Friendslink } from '../ts/types/friendlink/Friendslink';
 import type { FriendslinkListBaseResult } from '../ts/types/friendlink/FriendslinkListBaseResult';
 import { FriendlinkAPI } from '../ts/utils/FriendlinkAPI';
+import StaggerTransition from './StaggerTransition.vue';
 
+/** 友链列表数据 */
 const friendlinks = ref<Friendslink[]>([]);
+/** 加载状态 */
+const loading = ref(true);
 
+/**
+ * 页面挂载时获取全部友链数据
+ * 请求失败时使用模拟数据兜底
+ */
 onMounted(async () => {
     try {
         const response = await FriendlinkAPI.getAll();
@@ -44,17 +59,14 @@ onMounted(async () => {
                 avatar: 'https://www.nantingya.top/avatar.png'
             }
         ];
+    } finally {
+        loading.value = false;
     }
 });
 </script>
 
 <style scoped>
-.friendlink-list {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
+/* ========== 友链卡片样式 ========== */
 .friendlink-card {
     display: flex;
     align-items: center;
