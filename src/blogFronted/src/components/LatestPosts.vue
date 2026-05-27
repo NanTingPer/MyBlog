@@ -1,7 +1,7 @@
 <template>
     <div class="latest-articles page-container">
         <h2 class="section-title">最新文章</h2>
-        <PostList :articles="articles" />
+        <PostList :articles="articles" :loading="loading" />
     </div>
 </template>
 
@@ -13,6 +13,7 @@ import { API_BASE_URL } from "../ts/config/apiConfig";
 import PostList from "./PostList.vue";
 
 const articles = ref<BlogInfo[]>([]);
+const loading = ref(true);
 
 onMounted(async () => {
     try {
@@ -24,6 +25,8 @@ onMounted(async () => {
         console.error("Failed to fetch articles:", error);
         articles.value = [
         ];
+    } finally {
+        loading.value = false;
     }
 });
 </script>

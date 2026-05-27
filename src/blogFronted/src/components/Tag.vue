@@ -1,9 +1,9 @@
-﻿<template>
+<template>
     <div class="tag-page page-container">
         <h2 class="section-title">{{ tagName }}</h2>
         <div class="tag-layout">
             <div class="tag-main">
-                <PostList :articles="articles" />
+                <PostList :articles="articles" :loading="loading" />
                 <div class="pagination" v-if="totalPages > 1">
                     <button class="page-btn" :disabled="currentPage <= 1" @click="changePage(currentPage - 1)">
                         上一页

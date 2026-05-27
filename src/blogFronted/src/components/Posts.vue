@@ -1,7 +1,7 @@
 <template>
     <div class="articles-page page-container">
         <h2 class="section-title">文章</h2>
-        <PostList :articles="articles" />
+        <PostList :articles="articles" :loading="loading" />
         <div class="pagination" v-if="totalPages > 1">
             <button class="page-btn" :disabled="currentPage <= 1" @click="changePage(currentPage - 1)">
                 上一页
@@ -26,6 +26,7 @@ const api = new BlogAPI(API_BASE_URL);
 const articles = ref<BlogInfo[]>([]);
 const totalPages = ref(0);
 const currentPage = ref(1);
+const loading = ref(true);
 const limit = 5;
 
 /**
@@ -33,12 +34,15 @@ const limit = 5;
  * @param page 给定页
  */
 const fetchArticles = async (page: number) => {
+    loading.value = true;
     try {
         const response = await api.GetArticlesToPage(limit, page);
         const data = await response.json();
         articles.value = data.data || [];
     } catch (error) {
         articles.value = [];
+    } finally {
+        loading.value = false;
     }
 };
 
