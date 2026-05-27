@@ -1,8 +1,9 @@
-﻿import { watch } from "vue";
+import { watch } from "vue";
 import { ref } from "vue";
 
 const JWT_KEY = 'mellow_admin_jwt';
 const PASSWORD_KEY = 'mellow_admin_password';
+const USERNAME_KEY = 'mellow_admin_username';
 let jwtToken = ref("");
 let callBacks : Array<() => void> = [];
 sessionStorage[JWT_KEY] = "";
@@ -39,9 +40,22 @@ export const sessionStore = {
         sessionStorage.removeItem(PASSWORD_KEY);
     },
 
+    getUserName(): string | null {
+        return sessionStorage.getItem(USERNAME_KEY);
+    },
+
+    setUserName(userName: string): void {
+        sessionStorage.setItem(USERNAME_KEY, userName);
+    },
+
+    removeUserName(): void {
+        sessionStorage.removeItem(USERNAME_KEY);
+    },
+
     clearAll(): void {
         this.removeJwt();
         this.removePassword();
+        this.removeUserName();
     },
 
     isLoggedIn(): boolean {

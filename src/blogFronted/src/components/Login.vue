@@ -1,4 +1,4 @@
-﻿<template>
+<template>
     <div class="login-container">
         <div class="login-card">
             <div class="login-header">
@@ -8,9 +8,17 @@
             <form class="login-form" @submit.prevent="handleLogin">
                 <div class="form-group">
                     <div class="input-wrapper">
+                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'%3E%3C/path%3E%3Ccircle cx='12' cy='7' r='4'%3E%3C/circle%3E%3C/svg%3E"
+                            class="input-icon" alt="用户名">
+                        <input type="text" v-model="userName" class="form-input password-input" placeholder="输入用户名" required
+                            @keyup.enter="(passwordInput as HTMLInputElement)?.focus()" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="input-wrapper">
                         <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='11' width='18' height='11' rx='2' ry='2'%3E%3C/rect%3E%3Cpath d='M7 11V7a5 5 0 0 1 10 0v4'%3E%3C/path%3E%3C/svg%3E"
                             class="input-icon" alt="密码">
-                        <input type="password" v-model="password" class="form-input password-input" placeholder="输入密码" required
+                        <input ref="passwordInput" type="password" v-model="password" class="form-input password-input" placeholder="输入密码" required
                             @keyup.enter="handleLogin" />
                     </div>
                 </div>
@@ -30,11 +38,17 @@ import { AuthAPI } from '../ts/utils/AuthAPI';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
+const passwordInput = ref<HTMLInputElement | null>(null);
+const userName = ref('');
 const password = ref('');
 const isLoading = ref(false);
 const errorMessage = ref('');
 
 const handleLogin = async () => {
+    if (!userName.value.trim()) {
+        errorMessage.value = '请输入用户名';
+        return;
+    }
     if (!password.value.trim()) {
         errorMessage.value = '请输入密码';
         return;
@@ -44,12 +58,12 @@ const handleLogin = async () => {
     errorMessage.value = '';
 
     try {
-        const response = await AuthAPI.getToken(password.value);
+        const response = await AuthAPI.login(userName.value, password.value);
 
         if (response && response.code === 200) {
             router.push('/friendlink');
         } else {
-            errorMessage.value = '密码错误，请重试';
+            errorMessage.value = response?.msg || '用户名或密码错误，请重试';
         }
     } catch (error) {
         errorMessage.value = '登录失败，请稍后重试';

@@ -216,11 +216,11 @@ const editingTags = ref<string[]>([]);
 const formData = ref<BlogInfo>({
     id: undefined,
     name: '',
+    title: '',
+    description: '',
     author: [],
     content: '',
     tag: [],
-    description: "",
-    title: ""
 });
 
 const truncateContent = (content: string): string => {
@@ -262,11 +262,11 @@ const showAddForm = () => {
     formData.value = {
         id: undefined,
         name: '',
+        title: '',
+        description: '',
         author: [],
         content: '',
         tag: [],
-        description: '',
-        title: ''
     };
     editingAuthors.value = [];
     editingTags.value = [];

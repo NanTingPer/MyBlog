@@ -1,13 +1,13 @@
-﻿export interface BlogInfo {
-    id?: string,
-    name: string,
-    title: string,
-    description: string,
-    createTime?: number,
-    editTime?: number,
-    author: string[],
-    content: string,
-    tag: string[],
-    drawingUrl?: string,
-    html?: string
+export interface BlogInfo {
+    id?: string;
+    name: string;
+    title: string;
+    description: string;
+    createTime?: number;
+    editTime?: number;
+    author: string[];
+    content: string;
+    tag: string[];
+    drawingUrl?: string;
+    html?: string;
 }
