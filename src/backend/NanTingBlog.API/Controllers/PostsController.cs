@@ -4,11 +4,8 @@ using NanTingBlog.API.Services;
 using System.Text.Json.Serialization;
 using NanTingBlog.API.Services.Blog;
 using NanTingBlog.API.Extensions;
-
-
-#if RELEASE
-using NanTingBlog.IdentityModel.JWTIdentity;
-#endif
+using Microsoft.AspNetCore.Authorization;
+using NanTingBlog.API.Services.Identitys;
 
 namespace NanTingBlog.API.Controllers;
 
