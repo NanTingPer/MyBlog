@@ -1,13 +1,17 @@
 ﻿<template>
-    <div class="post-container">
-        <div v-html="content"></div>
-    </div>
+    <Transition appear @before-enter="onBeforeEnter" @enter="onEnter">
+        <div class="post-container">
+            <div v-html="content"></div>
+        </div>
+    </Transition>
 </template>
 <script setup lang="ts">
 import { ref, onMounted, nextTick } from 'vue';
 import { useRoute } from 'vue-router';
 import { apiFetch } from '../ts/config/apiConfig';
+import { useStaggerAnimation } from '../composables/useStaggerAnimation';
 
+const { onBeforeEnter, onEnter } = useStaggerAnimation();
 const route = useRoute();
 const content = ref('');
 

@@ -12,7 +12,7 @@
     <!-- 加载完成：使用 TransitionGroup 展示交错进入动画 -->
     <TransitionGroup v-else appear tag="div" class="stagger-group flex flex-col gap-6"
         @before-enter="onBeforeEnter" @enter="onEnter">
-        <slot />
+        <slot></slot>
     </TransitionGroup>
 </template>
 
