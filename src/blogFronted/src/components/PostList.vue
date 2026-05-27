@@ -57,8 +57,6 @@ const onBeforeEnter = (el: Element) => {
     const htmlEl = el as HTMLElement;
     htmlEl.style.opacity = '0';
     htmlEl.style.transform = 'translateY(-20px)';
-    const index = parseInt(htmlEl.dataset.index || '0', 10);
-    htmlEl.style.transitionDelay = `${index * 80}ms`;
 };
 
 /**
@@ -66,16 +64,21 @@ const onBeforeEnter = (el: Element) => {
  */
 const onEnter = (el: Element, done: () => void) => {
     const htmlEl = el as HTMLElement;
-    // 强制 reflow，确保 onBeforeEnter 设置的初始样式被应用
-    htmlEl.offsetHeight;
-    // 使用 requestAnimationFrame 确保浏览器完成初始渲染后再设置结束状态
-    requestAnimationFrame(() => {
-        htmlEl.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
-        htmlEl.style.opacity = '1';
-        htmlEl.style.transform = 'translateY(0)';
-        // 将 done 回调绑定到 transitionend 事件
-        htmlEl.ontransitionend = done;
-    });
+    const index = parseInt(htmlEl.dataset.index || '0', 10);
+    // 使用 Web Animations API，通过 .finished promise 精确通知 Vue 动画结束
+    const animation = htmlEl.animate(
+        [
+            { opacity: '0', transform: 'translateY(-20px)' },
+            { opacity: '1', transform: 'translateY(0)' }
+        ],
+        {
+            duration: 400,
+            delay: index * 80,
+            easing: 'ease',
+            fill: 'forwards'
+        }
+    );
+    animation.finished.then(() => done());
 };
 </script>
 
