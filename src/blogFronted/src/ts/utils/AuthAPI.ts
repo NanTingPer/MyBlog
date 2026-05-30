@@ -112,4 +112,83 @@ export class AuthAPI {
         }
         return `Bearer ${jwt}`;
     }
+
+    /**
+     * 获取邮箱验证码
+     */
+    public static async getMailVerificationCode(mailAddress: string, userName?: string): Promise<BaseResult<{ id: string }> | null> {
+        try {
+            const response = await apiFetch(`${apiEndpoint}/getMailVerificationCode`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    mailAddress,
+                    userName: userName || mailAddress
+                })
+            });
+
+            if (response.status === 200) {
+                const data: BaseResult<{ id: string }> = await response.json();
+                if (data.code === 200 && data.data) {
+                    return data;
+                }
+            }
+            return null;
+        } catch (error) {
+            console.error('获取邮箱验证码失败:', error);
+            return null;
+        }
+    }
+
+    /**
+     * 注册用户
+     */
+    public static async register(
+        userName: string,
+        password: string,
+        mailAddress: string,
+        mailId: string,
+        mailCode: string
+    ): Promise<BaseResult<string> | null> {
+        // 1. 获取公钥
+        const publicKey = await this.getPublicKey();
+        if (!publicKey) {
+            return null;
+        }
+
+        // 2. 加密密码
+        const encryptedPassword = this.encryptPassword(publicKey.key, password);
+        if (!encryptedPassword) {
+            return null;
+        }
+
+        // 3. 注册请求
+        try {
+            const response = await apiFetch(`${apiEndpoint}/createUser`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    userName,
+                    password: encryptedPassword,
+                    rsaid: publicKey.requestId,
+                    mailAddress,
+                    mailId,
+                    mailCode
+                })
+            });
+
+            if (response.status === 200) {
+                const data: BaseResult<string> = await response.json();
+                return data;
+            }
+            return null;
+        } catch (error) {
+            console.error('注册失败:', error);
+            return null;
+        }
+    }
 }
