@@ -4,7 +4,8 @@ using MimeKit;
 namespace NanTingBlog.API.Services;
 
 /// <summary>
-/// 邮件服务
+/// 邮件服务 <br/>
+/// 建议注册为单例服务
 /// </summary>
 public class MailService : IMailService
 {
