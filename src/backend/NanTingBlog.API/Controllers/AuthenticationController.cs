@@ -63,7 +63,8 @@ public class AuthenticationController(
         var newUser = new User()
         {
             Name = input.UserName,
-            Password = input.Password
+            Password = input.Password,
+            MailAddress = input.MailAddress
         };
         try {
             newUser.Password = passwordHasher.HashPassword(newUser, input.Password);

@@ -75,7 +75,7 @@ builder.Services.AddOpenApi();
 #region swagger
 #if DEBUG
 builder.Services.AddSwaggerGen(options => {
-    var xmlPath = Path.Combine(AppContext.BaseDirectory, (Assembly.GetExecutingAssembly().GetName().Name ?? "null") + ".xml");
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, (System.Reflection.Assembly.GetExecutingAssembly().GetName().Name ?? "null") + ".xml");
     if (File.Exists(xmlPath)) {
         options.IncludeXmlComments(xmlPath);
     }

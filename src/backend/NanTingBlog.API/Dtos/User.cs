@@ -34,6 +34,11 @@ public class User
     /// </summary>
     [JsonPropertyName("createTime"), Column("createTime"), Description("创建时间")]
     public long CreateTime { get; set; } = DateTime.UtcNow.Ticks - DateTimeOffset.UnixEpoch.Ticks;
+    /// <summary>
+    /// 用户邮件地址
+    /// </summary>
+    [JsonPropertyName("mailAddress"), Column("mailAddress"), Description("用户邮箱地址")]
+    public string MailAddress { get; set; } = "";
 
     /// <summary>
     /// 用户角色
