@@ -1,4 +1,4 @@
-﻿import { createRouter, createWebHashHistory } from 'vue-router';
+import { createRouter, createWebHashHistory } from 'vue-router';
 import AdminFriendLink from '../components/AdminFriendLink.vue';
 import AdminPosts from '../components/AdminPosts.vue';
 import Login from '../components/Login.vue';
@@ -35,16 +35,14 @@ const router = createRouter({
     routes
 });
 
-router.beforeEach((to, _, next) => {
+router.beforeEach((to) => {
     const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
     const isLoggedIn = sessionStore.isLoggedIn();
 
     if (requiresAuth && !isLoggedIn) {
-        next('/login');
+        return '/login';
     } else if (to.path === '/login' && isLoggedIn) {
-        next('/friendlink');
-    } else {
-        next();
+        return '/friendlink';
     }
 });
 
