@@ -9,7 +9,6 @@ using NanTingBlog.API.Services.Identitys;
 using NanTingBlog.API.Services.Logs;
 using Serilog;
 using Serilog.Formatting.Json;
-using System.Reflection;
 using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -59,6 +58,16 @@ builder.Services.AddScoped<FriendslinkService>(); // 友链服务
 builder.Services.AddSingleton<WatchService>();// 文章服务依赖此服务
 builder.Services.AddHostedService(services => services.GetService<WatchService>()!);
 builder.Services.AddScoped<UserService>(); // 用户服务
+
+#region 邮箱验证服务 依赖MSCache、GlobaleConfigService
+builder.Services.AddSingleton<IMailService, MailService>(provider => {
+    var config = provider.GetService<GlobalConfigService>();
+    var mailService = new MailService(() => config!.MailOptions);
+    return mailService;
+});
+builder.Services.AddSingleton<MailVerificationService>();
+#endregion
+
 builder.Services.AddSingleton<JwtService>();
 builder.Services.AddControllers().AddControllersAsServices();
 builder.Services.AddOpenApi();

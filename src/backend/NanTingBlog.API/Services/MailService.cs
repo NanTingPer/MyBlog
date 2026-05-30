@@ -39,7 +39,6 @@ public class MailService : IMailService
     /// <inheritdoc/>
     public async Task<bool> SendMail(MailSendDto dto, CancellationToken cancellationToken = default)
     {
-        
         var body = new BodyBuilder()
         {
             BodyEncoding = System.Text.Encoding.UTF8,
