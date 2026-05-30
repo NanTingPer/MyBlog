@@ -21,7 +21,7 @@
                     </button>
                 </div>
                 <!-- const { onBeforeEnter, onEnter } = useStaggerAnimation(); -->
-                <Transition v-on:before-enter="onBeforeEnter" v-on:enter="onEnter">
+                <Transition mode="out-in" @before-enter="onBeforeEnter" @enter="onEnter" @after-leave="onAfterLeave">
                     <!-- 登录表单 -->
                     <form v-if="activeTab === 'login'" class="flex flex-col" @submit.prevent="handleLogin">
                         <div class="form-group">
@@ -177,7 +177,14 @@ function switchTab(tab: TabType) {
     loginError.value = '';
     registerError.value = '';
     registerSuccess.value = false;
-    // 内容切换后，测量目标高度并开始 Lerp
+    // lerpToContent 由 onAfterLeave 触发，确保旧 form 已离开 DOM
+}
+
+/**
+ * Transition after-leave 回调
+ * 旧 form 离开后，wrapper 中只剩新 form，此时测量目标高度并开始 lerp
+ */
+function onAfterLeave() {
     nextTick(() => {
         lerpToContent();
     });
