@@ -56,10 +56,8 @@ public class MailService : IMailService
         try {
             await smtpClient.ConnectAsync(sendUri.Host, sendUri.Port, cancellationToken: cancellationToken, useSsl: Options.UseSSL);
             await smtpClient.AuthenticateAsync(Options.Account, Options.AuthorizationCode, cancellationToken);
-            await smtpClient.SendAsync(message, cancellationToken);
+            var sendMsg = await smtpClient.SendAsync(message, cancellationToken);
             return true;
-        } catch {
-            return false;
         } finally {
             await smtpClient.DisconnectAsync(true, cancellationToken);
         }

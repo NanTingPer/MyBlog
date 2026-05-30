@@ -18,7 +18,8 @@ public class AuthenticationController(
     UserService userService,
     UserPasswordHasher passwordHasher,
     LoginLogger logger,
-    MailVerificationService service) : ControllerBase
+    GlobalConfigService config,
+    MailVerificationService mailService) : ControllerBase
 {
     /// <summary>
     /// 注册用户
@@ -47,7 +48,7 @@ public class AuthenticationController(
             result.Msg = "非对称加密验证失败";
             return Ok(result);
         }
-        if (!service.VerificatCode(input.MailAddress, input.MailId, input.MailCode)) {
+        if (!mailService.VerificatCode(input.MailAddress, input.MailId, input.MailCode)) {
             result.Code = 500;
             result.Msg = "邮箱验证失败";
             return Ok(result);
@@ -66,6 +67,11 @@ public class AuthenticationController(
             Password = input.Password,
             MailAddress = input.MailAddress
         };
+
+        if (input.MailAddress != "" && input.MailAddress == config.AdminMailAddress) {
+            newUser.Roles = [UserRole.User, UserRole.Admin];
+        }
+
         try {
             newUser.Password = passwordHasher.HashPassword(newUser, input.Password);
             await userService.AddAsync(newUser);
@@ -137,7 +143,7 @@ public class AuthenticationController(
             br.Code = 500; br.Msg = "邮箱无效";
             return Ok(br);
         }
-        var codeId = await service.GetVerificatCode(input.MailAddress!, input.UserName ?? input.MailAddress!);
+        var codeId = await mailService.GetVerificatCode(input.MailAddress!, input.UserName ?? input.MailAddress!);
         br.Data!.Id = codeId.Id;
         return Ok(br);
     }

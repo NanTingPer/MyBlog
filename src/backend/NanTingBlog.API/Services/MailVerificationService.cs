@@ -1,4 +1,6 @@
 using Microsoft.Extensions.Caching.Memory;
+using System.Security.Cryptography;
+using System.Text;
 namespace NanTingBlog.API.Services;
 
 /// <summary>
@@ -16,10 +18,13 @@ public class MailVerificationService(IMailService service, IMemoryCache cache)
     {
         var value = await cache.GetOrCreateAsync(mailAddress, async cacheEntry => {
             cacheEntry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5);
+            var num32 = new byte[4];
+            RandomNumberGenerator.Create().GetBytes(num32);
+            var code = BitConverter.ToUInt32(num32).ToString()[0.. 5];
             var mvd = new MailVerificatData()
             {
                 Id = Guid.NewGuid().ToString(),
-                Code = _random.Next(10000000, 100000000).ToString(),
+                Code = code ?? _random.Next(10000, 10000).ToString(),
             };
             await service.SendMail(new MailSendDto()
             {

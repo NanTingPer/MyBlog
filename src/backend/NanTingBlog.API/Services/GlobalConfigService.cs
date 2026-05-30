@@ -66,6 +66,11 @@ public class GlobalConfigService
     /// 邮箱验证服务的基本配置
     /// </summary>
     public MailOptions MailOptions { get; set { field = value; Save(); } } = new();
+
+    /// <summary>
+    /// 管理员的邮箱地址，当使用此地址注册账户时，会将你设置为Admin，以提供接口权限
+    /// </summary>
+    public string AdminMailAddress { get; set { field = value; Save(); } } = "";
     #endregion
 
     /// <summary>
