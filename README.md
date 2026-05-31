@@ -110,6 +110,29 @@ nohup http-server /opt/nantingBlog/fornt -p 1313 >> fornt.log &
 nohup /opt/nantingBlog/end/NanTingBlog.API >> end.log &
 ```
 
+
+
+## 配置邮箱验证
+
+如果要使用用户注册功能，必须启用邮箱验证。在应用启动后，可以在根目录下找到`configs`下找到`global.conf`文件，需要配置`MailOptions`项。以qq邮箱为例。
+
+需要前往 qq邮箱 -> 设置 -> 账户与安全 -> 安全设置，开启`POP3/IMAP/SMTP/Exchange/CardDAV 服务`，并查看`[配置方法]`
+
+```json
+  "MailOptions": {
+    "Account": "",
+    "AuthorizationCode": "",
+    "MailAddress": "",
+    "ReveiveUrl": "imap://imap.qq.com:993",
+    "SendUrl": "smtp://smtp.qq.com:465",
+    "UseSSL": true
+  }
+```
+
+
+
+
+
 # 效果
 
 ![fdlink](./README/fdlink.png)
