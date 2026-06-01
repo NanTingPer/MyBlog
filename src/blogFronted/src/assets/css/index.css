@@ -1,4 +1,21 @@
-﻿/* 全局重置 */
+/* ===== 前端博客颜色 Token ===== */
+:root {
+    /* 复用共享主色 */
+    --color-primary: #4caf50;
+    --color-primary-hover: #43a047;
+
+    /* 中性色 */
+    --color-text: #333;
+    --color-text-secondary: #666;
+    --color-text-muted: #999;
+    --color-border: #eee;
+
+    /* 前端特有背景色 */
+    --color-bg-warm: #faf8f5;
+    --color-bg-warm-alt: #f8f7f4;
+}
+
+/* 全局重置 */
 * {
     margin: 0;
     padding: 0;
@@ -10,7 +27,7 @@ html, body {
     height: 100%;
     margin: 0;
     padding: 0;
-    background: #faf8f5;
+    background: var(--color-bg-warm);
 }
 
 #app {
@@ -76,13 +93,13 @@ code[class*="language-"] {
 .page-title {
     font-size: 28px;
     font-weight: 600;
-    color: #333;
+    color: var(--color-text);
     margin: 0 0 12px;
 }
 
 .page-subtitle {
     font-size: 14px;
-    color: #999;
+    color: var(--color-text-muted);
     margin: 0;
 }
 
@@ -91,7 +108,7 @@ code[class*="language-"] {
     text-align: center;
     font-size: 24px;
     font-weight: 600;
-    color: #333;
+    color: var(--color-text);
     margin-bottom: 32px;
 }
 

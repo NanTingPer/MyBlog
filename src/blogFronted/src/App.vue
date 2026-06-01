@@ -1,4 +1,4 @@
-﻿<template>
+<template>
     <div class="app-container">
         <header class="header">
             <div class="header-content">
@@ -40,11 +40,11 @@ const isNavOpen = ref(false);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    background: #faf8f5;
+    background: var(--color-bg-warm);
 }
 
 .header {
-    background: #f8f7f4;
+    background: var(--color-bg-warm-alt);
     /* border-bottom: 1px solid #eee; */
     padding: 0 16px;
     /* position: relative; */
@@ -65,7 +65,7 @@ const isNavOpen = ref(false);
 .logo {
     font-size: 18px;
     font-weight: 700;
-    color: #333;
+    color: var(--color-text);
 }
 
 .nav {
@@ -75,7 +75,7 @@ const isNavOpen = ref(false);
 
 .nav-link {
     font-size: 14px;
-    color: #666;
+    color: var(--color-text-secondary);
     text-decoration: none;
     padding: 6px 10px;
     border-radius: 6px;
@@ -83,12 +83,12 @@ const isNavOpen = ref(false);
 }
 
 .nav-link:hover {
-    color: #4caf50;
+    color: var(--color-primary);
     background: rgba(76, 175, 80, 0.1);
 }
 
 .nav-link.active {
-    color: #4caf50;
+    color: var(--color-primary);
     font-weight: 500;
 }
 
@@ -105,7 +105,7 @@ const isNavOpen = ref(false);
 .menu-btn span {
     width: 24px;
     height: 2px;
-    background: #333;
+    background: var(--color-text);
     transition: all 0.3s;
 }
 
@@ -116,13 +116,13 @@ const isNavOpen = ref(false);
 
 .footer {
     padding: 24px 16px;
-    border-top: 1px solid #eee;
+    border-top: 1px solid var(--color-border);
     text-align: center;
 }
 
 .copyright {
     font-size: 12px;
-    color: #999;
+    color: var(--color-text-muted);
     margin: 0;
 }
 
@@ -144,7 +144,7 @@ const isNavOpen = ref(false);
         top: 52px;
         left: 0;
         right: 0;
-        background: #f8f7f4;
+        background: var(--color-bg-warm-alt);
         flex-direction: column;
         padding: 12px 0;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);

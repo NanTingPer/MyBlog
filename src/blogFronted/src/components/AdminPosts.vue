@@ -330,15 +330,15 @@ loadPosts();
     text-align: left;
     font-size: 13px;
     font-weight: 600;
-    color: #666;
-    border-bottom: 1px solid #eee;
+    color: var(--color-text-secondary);
+    border-bottom: 1px solid var(--color-border-light);
 }
 
 .posts-table td {
     padding: 14px 16px;
     font-size: 14px;
-    color: #333;
-    border-bottom: 1px solid #f0f0f0;
+    color: var(--color-text);
+    border-bottom: 1px solid var(--color-border-light);
     max-width: 200px;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -347,8 +347,8 @@ loadPosts();
 /* 标签样式 */
 .tag-item {
     display: inline-block;
-    background: #e8f5e9;
-    color: #2e7d32;
+    background: var(--color-primary-light-bg);
+    color: var(--color-primary-text);
     padding: 2px 8px;
     border-radius: 10px;
     font-size: 12px;
@@ -362,32 +362,32 @@ loadPosts();
 /* 文章操作按钮覆盖：蓝色编辑按钮 */
 .btn-edit {
     padding: 6px 14px;
-    background: #e3f2fd;
-    color: #1976d2;
+    background: var(--color-info-light-bg);
+    color: var(--color-info);
     font-size: 13px;
     margin-right: 8px;
 }
 
 .btn-edit:hover {
-    background: #bbdefb;
+    background: var(--color-info-light-bg-hover);
 }
 
 /* 文章操作按钮覆盖：红色背景删除按钮 */
 .btn-delete {
     padding: 6px 14px;
-    background: #ffebee;
-    color: #d32f2f;
+    background: var(--color-danger-light-bg);
+    color: var(--color-danger-text);
     border: none;
     font-size: 13px;
 }
 
 .btn-delete:hover {
-    background: #ffcdd2;
+    background: var(--color-danger-light-bg-hover);
 }
 
 /* 分页禁用按钮覆盖 */
 .pagination-btn:disabled {
-    color: #ccc;
+    color: var(--color-text-muted);
     cursor: not-allowed;
 }
 
@@ -407,7 +407,7 @@ loadPosts();
 }
 
 .card-date {
-    color: #999;
+    color: var(--color-text-muted);
     margin: 0 0 8px 0;
 }
 
@@ -417,7 +417,7 @@ loadPosts();
 
 .card-content-text {
     font-size: 13px;
-    color: #666;
+    color: var(--color-text-secondary);
     margin: 0 0 8px 0;
     line-height: 1.5;
     word-break: break-all;
@@ -431,7 +431,7 @@ loadPosts();
 .card-actions {
     display: flex;
     gap: 8px;
-    border-top: 1px solid #f0f0f0;
+    border-top: 1px solid var(--color-border-light);
     padding-top: 12px;
     flex-direction: row;
     margin-left: 0;
@@ -440,8 +440,8 @@ loadPosts();
 .btn-edit-mobile {
     flex: 1;
     padding: 8px;
-    background: #e3f2fd;
-    color: #1976d2;
+    background: var(--color-info-light-bg);
+    color: var(--color-info);
     border-radius: 6px;
     font-size: 13px;
 }
@@ -449,8 +449,8 @@ loadPosts();
 .btn-delete-mobile {
     flex: 1;
     padding: 8px;
-    background: #ffebee;
-    color: #d32f2f;
+    background: var(--color-danger-light-bg);
+    color: var(--color-danger-text);
     border: none;
     border-radius: 6px;
     font-size: 13px;

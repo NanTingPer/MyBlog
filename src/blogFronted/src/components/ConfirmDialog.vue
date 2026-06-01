@@ -110,6 +110,9 @@ function handleCancel() {
 </script>
 
 <style scoped>
+/* ===== ConfirmDialog 样式 ===== */
+/* 颜色使用 admin.css :root 中定义的 CSS 变量 */
+
 /* 遮罩层 */
 .dialog-overlay {
     position: fixed;
@@ -138,14 +141,14 @@ function handleCancel() {
 .dialog-title {
     font-size: 18px;
     font-weight: 600;
-    color: #333;
+    color: var(--color-text);
     margin: 0 0 12px 0;
 }
 
 /* 内容 */
 .dialog-content {
     font-size: 14px;
-    color: #666;
+    color: var(--color-text-secondary);
     margin: 0 0 24px 0;
     line-height: 1.6;
 }
@@ -175,32 +178,32 @@ function handleCancel() {
 /* 取消按钮 */
 .dialog-btn-cancel {
     background: #fff;
-    color: #666;
-    border: 1px solid #e8e8e8;
+    color: var(--color-text-secondary);
+    border: 1px solid var(--color-border);
 }
 
 .dialog-btn-cancel:hover:not(:disabled) {
-    background: #f5f5f5;
+    background: var(--color-bg-hover);
 }
 
 /* 确认按钮（默认绿色） */
 .dialog-btn-confirm {
-    background: #4caf50;
+    background: var(--color-primary);
     color: #fff;
 }
 
 .dialog-btn-confirm:hover:not(:disabled) {
-    background: #43a047;
+    background: var(--color-primary-hover);
 }
 
 /* 确认按钮（危险操作红色） */
 .dialog-btn-danger {
-    background: #e53935;
+    background: var(--color-danger);
     color: #fff;
 }
 
 .dialog-btn-danger:hover:not(:disabled) {
-    background: #c62828;
+    background: var(--color-danger-hover);
 }
 
 /* 过渡动画 */

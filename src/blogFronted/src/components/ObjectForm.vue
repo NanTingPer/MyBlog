@@ -27,6 +27,10 @@
     - readonly: 只读展示，不可编辑
     - hidden:   完全不渲染
 
+  颜色体系：
+    组件使用 CSS 自定义属性（var(--xxx)）引用 admin.css 中定义的设计 token。
+    如需自定义颜色，修改 admin.css 中 :root 下的变量即可全局生效。
+
   使用示例见 ObjectForm.md
 -->
 <template>
@@ -152,7 +156,7 @@ import { ref, computed, watch } from 'vue';
  * @property required - 是否必填（默认 false）
  * @property placeholder - 输入框占位文本（默认根据 label 自动生成）
  * @property order - 排序权重，越小越靠前（默认 0）
- * @property hidden - 是否在新增模式下隐藏（如 id、createTime 等自动生成的字段）
+ * @property hideOnAdd - 是否在新增模式下隐藏此字段（适用于 id、createTime 等）
  */
 export interface FieldConfig {
     key: string;
@@ -362,14 +366,14 @@ function handleCancel() {
 /* 只读展示 */
 .form-readonly {
     padding: 12px 14px;
-    background: #f8f9fa;
+    background: var(--color-bg-light);
     border-radius: 8px;
-    border: 1px solid #e8e8e8;
+    border: 1px solid var(--color-border);
 }
 
 .form-readonly-text {
     font-size: 14px;
-    color: #666;
+    color: var(--color-text-secondary);
     margin: 0;
     word-break: break-all;
 }
@@ -384,20 +388,20 @@ function handleCancel() {
 /* 内容预览 */
 .content-preview {
     padding: 12px 14px;
-    background: #f8f9fa;
+    background: var(--color-bg-light);
     border-radius: 8px;
-    border: 1px solid #e8e8e8;
+    border: 1px solid var(--color-border);
     cursor: pointer;
     transition: border-color 0.2s;
 }
 
 .content-preview:hover {
-    border-color: #4caf50;
+    border-color: var(--color-primary);
 }
 
 .content-preview-text {
     font-size: 14px;
-    color: #333;
+    color: var(--color-text);
     margin: 0 0 8px 0;
     line-height: 1.6;
     max-height: 120px;
@@ -414,11 +418,11 @@ function handleCancel() {
 /* 切换编辑按钮 */
 .btn-toggle-edit {
     background: none;
-    border: 1px solid #e0e0e0;
+    border: 1px solid var(--color-border);
     border-radius: 6px;
     padding: 6px 14px;
     font-size: 13px;
-    color: #666;
+    color: var(--color-text-secondary);
     cursor: pointer;
     transition: all 0.2s;
     margin-top: 4px;
@@ -427,8 +431,8 @@ function handleCancel() {
 }
 
 .btn-toggle-edit:hover {
-    border-color: #4caf50;
-    color: #4caf50;
+    border-color: var(--color-primary);
+    color: var(--color-primary);
 }
 
 /* array 编辑器 */
@@ -450,8 +454,8 @@ function handleCancel() {
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    background: #e8f5e9;
-    color: #2e7d32;
+    background: var(--color-primary-light-bg);
+    color: var(--color-primary-text);
     padding: 4px 10px;
     border-radius: 12px;
     font-size: 13px;
@@ -460,7 +464,7 @@ function handleCancel() {
 .array-tag-remove {
     background: none;
     border: none;
-    color: #c62828;
+    color: var(--color-danger-text);
     font-size: 16px;
     cursor: pointer;
     padding: 0 2px;
@@ -469,15 +473,15 @@ function handleCancel() {
 
 .array-empty {
     font-size: 13px;
-    color: #999;
+    color: var(--color-text-muted);
 }
 
 .array-editor-panel {
     margin-top: 12px;
     padding: 16px;
-    background: #f8f9fa;
+    background: var(--color-bg-light);
     border-radius: 8px;
-    border: 1px solid #e8e8e8;
+    border: 1px solid var(--color-border);
 }
 
 .array-editor-items {
@@ -499,8 +503,8 @@ function handleCancel() {
 
 .btn-array-remove {
     padding: 6px 14px;
-    background: #ffebee;
-    color: #d32f2f;
+    background: var(--color-danger-light-bg);
+    color: var(--color-danger-text);
     border: none;
     border-radius: 4px;
     font-size: 13px;
@@ -510,7 +514,7 @@ function handleCancel() {
 }
 
 .btn-array-remove:hover {
-    background: #ffcdd2;
+    background: var(--color-danger-light-bg-hover);
 }
 
 .array-editor-actions {
@@ -521,8 +525,8 @@ function handleCancel() {
 
 .btn-array-add {
     padding: 6px 14px;
-    background: #e8f5e9;
-    color: #2e7d32;
+    background: var(--color-primary-light-bg);
+    color: var(--color-primary-text);
     border: none;
     border-radius: 4px;
     font-size: 13px;
@@ -531,12 +535,12 @@ function handleCancel() {
 }
 
 .btn-array-add:hover {
-    background: #c8e6c9;
+    background: var(--color-primary-light-bg-hover);
 }
 
 .btn-array-confirm {
     padding: 6px 14px;
-    background: #4caf50;
+    background: var(--color-primary);
     color: #fff;
     border: none;
     border-radius: 4px;
@@ -546,7 +550,7 @@ function handleCancel() {
 }
 
 .btn-array-confirm:hover {
-    background: #43a047;
+    background: var(--color-primary-hover);
 }
 
 @media (max-width: 768px) {

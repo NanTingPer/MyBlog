@@ -1,3 +1,37 @@
+/* ===== 设计 Token：颜色定义 ===== */
+:root {
+    /* 主色 - 绿色 */
+    --color-primary: #4caf50;
+    --color-primary-hover: #43a047;
+    --color-primary-light-bg: #e8f5e9;
+    --color-primary-light-bg-hover: #c8e6c9;
+    --color-primary-text: #2e7d32;
+
+    /* 危险色 - 红色 */
+    --color-danger: #e53935;
+    --color-danger-hover: #c62828;
+    --color-danger-light-bg: #ffebee;
+    --color-danger-light-bg-hover: #ffcdd2;
+    --color-danger-text: #d32f2f;
+
+    /* 信息色 - 蓝色 */
+    --color-info: #1976d2;
+    --color-info-light-bg: #e3f2fd;
+    --color-info-light-bg-hover: #bbdefb;
+
+    /* 中性色 */
+    --color-text: #333;
+    --color-text-secondary: #666;
+    --color-text-muted: #999;
+    --color-text-light: #bbb;
+    --color-border: #e8e8e8;
+    --color-border-light: #f0f0f0;
+    --color-bg-white: #fff;
+    --color-bg-light: #f8f9fa;
+    --color-bg-lighter: #fafafa;
+    --color-bg-hover: #f5f5f5;
+}
+
 /* 页面布局 */
 .page-header {
     display: flex;
@@ -9,13 +43,13 @@
 .page-title {
     font-size: 20px;
     font-weight: 600;
-    color: #333;
+    color: var(--color-text);
     margin: 0;
 }
 
 /* 按钮 */
 .btn-add {
-    background: #4caf50;
+    background: var(--color-primary);
     color: #fff;
     border: none;
     padding: 8px 16px;
@@ -26,11 +60,11 @@
 }
 
 .btn-add:hover {
-    background: #43a047;
+    background: var(--color-primary-hover);
 }
 
 .btn-edit {
-    background: #4caf50;
+    background: var(--color-primary);
     color: #fff;
     border: none;
     padding: 4px 10px;
@@ -41,13 +75,13 @@
 }
 
 .btn-edit:hover {
-    background: #43a047;
+    background: var(--color-primary-hover);
 }
 
 .btn-delete {
     background: #fff;
-    color: #e53935;
-    border: 1px solid #e53935;
+    color: var(--color-danger);
+    border: 1px solid var(--color-danger);
     padding: 4px 10px;
     border-radius: 4px;
     font-size: 12px;
@@ -56,11 +90,11 @@
 }
 
 .btn-delete:hover {
-    background: #ffebee;
+    background: var(--color-danger-light-bg);
 }
 
 .btn-save {
-    background: #4caf50;
+    background: var(--color-primary);
     color: #fff;
     border: none;
     padding: 10px 24px;
@@ -71,13 +105,13 @@
 }
 
 .btn-save:hover {
-    background: #43a047;
+    background: var(--color-primary-hover);
 }
 
 .btn-cancel {
     background: #fff;
-    color: #666;
-    border: 1px solid #e8e8e8;
+    color: var(--color-text-secondary);
+    border: 1px solid var(--color-border);
     padding: 10px 24px;
     border-radius: 6px;
     font-size: 14px;
@@ -86,7 +120,7 @@
 }
 
 .btn-cancel:hover {
-    background: #f5f5f5;
+    background: var(--color-bg-hover);
 }
 
 .btn-back {
@@ -94,12 +128,12 @@
     border: none;
     font-size: 20px;
     cursor: pointer;
-    color: #666;
+    color: var(--color-text-secondary);
     padding: 4px 8px;
 }
 
 .btn-back:hover {
-    color: #333;
+    color: var(--color-text);
 }
 
 /* 搜索栏 */
@@ -110,7 +144,7 @@
 .search-input {
     width: 300px;
     padding: 10px 14px;
-    border: 1px solid #e8e8e8;
+    border: 1px solid var(--color-border);
     border-radius: 6px;
     font-size: 14px;
     outline: none;
@@ -118,7 +152,7 @@
 }
 
 .search-input:focus {
-    border-color: #4caf50;
+    border-color: var(--color-primary);
 }
 
 /* 表格容器 */
@@ -137,14 +171,14 @@
 .friendlink-table td {
     padding: 14px 16px;
     text-align: left;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid var(--color-border-light);
 }
 
 .friendlink-table th {
-    background: #fafafa;
+    background: var(--color-bg-lighter);
     font-weight: 600;
     font-size: 14px;
-    color: #666;
+    color: var(--color-text-secondary);
 }
 
 .friendlink-table tr:last-child td {
@@ -173,7 +207,7 @@
 
 /* 链接 */
 .link-url {
-    color: #4caf50;
+    color: var(--color-primary);
     text-decoration: none;
     font-size: 14px;
 }
@@ -192,7 +226,7 @@
 .empty-state {
     padding: 48px;
     text-align: center;
-    color: #999;
+    color: var(--color-text-muted);
 }
 
 /* 分页 */
@@ -201,12 +235,12 @@
     justify-content: space-between;
     align-items: center;
     padding: 16px;
-    border-top: 1px solid #f0f0f0;
+    border-top: 1px solid var(--color-border-light);
 }
 
 .total {
     font-size: 13px;
-    color: #999;
+    color: var(--color-text-muted);
 }
 
 .pagination-controls {
@@ -217,7 +251,7 @@
 .pagination-btn {
     width: 32px;
     height: 32px;
-    border: 1px solid #e8e8e8;
+    border: 1px solid var(--color-border);
     background: #fff;
     border-radius: 4px;
     cursor: pointer;
@@ -226,14 +260,14 @@
 }
 
 .pagination-btn:hover:not(:disabled) {
-    border-color: #4caf50;
-    color: #4caf50;
+    border-color: var(--color-primary);
+    color: var(--color-primary);
 }
 
 .pagination-btn.active {
-    background: #4caf50;
+    background: var(--color-primary);
     color: #fff;
-    border-color: #4caf50;
+    border-color: var(--color-primary);
 }
 
 .pagination-btn:disabled {
@@ -257,7 +291,7 @@
 .form-title {
     font-size: 18px;
     font-weight: 600;
-    color: #333;
+    color: var(--color-text);
     margin: 0;
 }
 
@@ -276,14 +310,14 @@
     display: block;
     font-size: 14px;
     font-weight: 500;
-    color: #333;
+    color: var(--color-text);
     margin-bottom: 8px;
 }
 
 .form-input {
     width: 100%;
     padding: 12px;
-    border: 1px solid #e8e8e8;
+    border: 1px solid var(--color-border);
     border-radius: 6px;
     font-size: 14px;
     outline: none;
@@ -292,13 +326,13 @@
 }
 
 .form-input:focus {
-    border-color: #4caf50;
+    border-color: var(--color-primary);
 }
 
 .form-textarea {
     width: 100%;
     padding: 12px;
-    border: 1px solid #e8e8e8;
+    border: 1px solid var(--color-border);
     border-radius: 6px;
     font-size: 14px;
     outline: none;
@@ -311,7 +345,7 @@
 }
 
 .form-textarea:focus {
-    border-color: #4caf50;
+    border-color: var(--color-primary);
 }
 
 .form-actions {
@@ -335,7 +369,7 @@
     .page-title {
         font-size: 18px;
         font-weight: 600;
-        color: #333;
+        color: var(--color-text);
         margin: 0;
         flex: 1;
         text-align: center;
@@ -347,7 +381,7 @@
 
     .btn-add-mobile {
         display: flex;
-        background: #4caf50;
+        background: var(--color-primary);
         color: #fff;
         border: none;
         width: 36px;
@@ -372,7 +406,7 @@
     .search-icon {
         margin-right: 8px;
         font-size: 14px;
-        color: #999;
+        color: var(--color-text-muted);
     }
 
     .search-input {
@@ -425,13 +459,13 @@
     .card-name {
         font-size: 16px;
         font-weight: 600;
-        color: #333;
+        color: var(--color-text);
         margin: 0 0 4px 0;
     }
 
     .card-date {
         font-size: 12px;
-        color: #bbb;
+        color: var(--color-text-light);
         margin: 0;
     }
 
@@ -443,7 +477,7 @@
     }
 
     .btn-edit-mobile {
-        background: #4caf50;
+        background: var(--color-primary);
         color: #fff;
         border: none;
         padding: 6px 12px;
@@ -454,8 +488,8 @@
 
     .btn-delete-mobile {
         background: #fff;
-        color: #e53935;
-        border: 1px solid #e53935;
+        color: var(--color-danger);
+        border: 1px solid var(--color-danger);
         padding: 6px 12px;
         border-radius: 4px;
         font-size: 12px;
@@ -469,13 +503,13 @@
     .empty-state-mobile {
         padding: 48px 16px;
         text-align: center;
-        color: #999;
+        color: var(--color-text-muted);
     }
 
     .mobile-footer {
         padding: 16px;
         text-align: center;
-        color: #999;
+        color: var(--color-text-muted);
         font-size: 13px;
     }
 
@@ -494,13 +528,13 @@
     .form-group label {
         font-size: 14px;
         font-weight: 500;
-        color: #333;
+        color: var(--color-text);
     }
 
     .form-input {
         width: 100%;
         padding: 14px;
-        border: 1px solid #e8e8e8;
+        border: 1px solid var(--color-border);
         border-radius: 8px;
         font-size: 14px;
         box-sizing: border-box;
@@ -509,7 +543,7 @@
     .form-textarea {
         width: 100%;
         padding: 14px;
-        border: 1px solid #e8e8e8;
+        border: 1px solid var(--color-border);
         border-radius: 8px;
         font-size: 14px;
         box-sizing: border-box;
