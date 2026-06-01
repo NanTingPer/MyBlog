@@ -353,7 +353,12 @@ function handleCancel() {
 }
 </script>
 
-<style scoped>
+<style>
+/* ===== ObjectForm 独有样式 ===== */
+/* 布局样式（.form-section, .form-header, .form-title, .form-group, .form-input,
+   .form-textarea, .form-actions, .btn-back, .btn-save, .btn-cancel, .friendlink-form）
+   由外部 admin.css 全局样式提供，此处不重复定义 */
+
 /* 只读展示 */
 .form-readonly {
     padding: 12px 14px;
@@ -373,7 +378,7 @@ function handleCancel() {
 .textarea-wrapper {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 0.5rem;
 }
 
 /* 内容预览 */

@@ -464,6 +464,11 @@ loadPosts();
     padding: 16px;
 }
 
+/* 表单区域：覆盖 admin.css 的 max-width: 500px，文章表单需要全宽 */
+:deep(.form-section) {
+    max-width: none;
+}
+
 @media (max-width: 768px) {
     .posts-container {
         padding: 16px;
