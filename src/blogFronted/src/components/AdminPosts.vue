@@ -37,7 +37,7 @@
                             </td>
                             <td class="actions">
                                 <button class="btn-edit" @click="showEditForm(post)">编辑</button>
-                                <button class="btn-delete" @click="deletePost(post.id)">删除</button>
+                                <button class="btn-delete" @click="openDeleteDialog(post.id)">删除</button>
                             </td>
                         </tr>
                     </tbody>
@@ -72,7 +72,7 @@
                     </div>
                     <div class="card-actions">
                         <button class="btn-edit-mobile" @click="showEditForm(post)">编辑</button>
-                        <button class="btn-delete-mobile" @click="deletePost(post.id)">删除</button>
+                        <button class="btn-delete-mobile" @click="openDeleteDialog(post.id)">删除</button>
                     </div>
                 </div>
 
@@ -91,104 +91,29 @@
             </div>
         </div>
 
-        <div v-show="isEditing" class="form-section">
-            <div class="form-header">
-                <button class="btn-back" @click="cancelEdit">‹ 返回</button>
-                <h2 class="form-title">{{ isAddMode ? '添加文章' : '编辑文章' }}</h2>
-            </div>
-
-            <form class="posts-form" @submit.prevent="savePost">
-                <div class="form-group">
-                    <label>名称</label>
-                    <input type="text" v-model="formData.name" class="form-input" placeholder="请输入文章名称" required />
-                </div>
-
-                <div class="form-group">
-                    <label>标题</label>
-                    <input type="text" v-model="formData.title" class="form-input" placeholder="请输入文章标题" />
-                </div>
-
-                <div class="form-group">
-                    <label>描述</label>
-                    <input type="text" v-model="formData.description" class="form-input" placeholder="请输入文章描述" />
-                </div>
-
-                <!-- Author 列表编辑 -->
-                <div class="form-group">
-                    <label>作者</label>
-                    <div class="list-display">
-                        <div v-for="(a, index) in formData.author" :key="index" class="list-display-item">
-                            <span>{{ a }}</span>
-                            <button type="button" class="btn-remove-inline" @click="removeAuthor(index)">×</button>
-                        </div>
-                        <span v-if="formData.author.length === 0" class="list-empty">暂无作者</span>
-                    </div>
-                    <button type="button" class="btn-toggle-edit" @click="showAuthorEditor = !showAuthorEditor">
-                        {{ showAuthorEditor ? '收起编辑' : '编辑作者' }}
-                    </button>
-                    <div v-show="showAuthorEditor" class="list-editor">
-                        <div class="list-editor-items">
-                            <div v-for="(_, index) in editingAuthors" :key="index" class="list-editor-row">
-                                <input type="text" v-model="editingAuthors[index]" class="form-input list-input"
-                                    placeholder="请输入作者名称" />
-                                <button type="button" class="btn-remove" @click="editingAuthors.splice(index, 1)">删除</button>
-                            </div>
-                        </div>
-                        <div class="list-editor-actions">
-                            <button type="button" class="btn-add-item" @click="editingAuthors.push('')">+ 添加作者</button>
-                            <button type="button" class="btn-confirm-list" @click="confirmAuthors">确认</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Tag 列表编辑 -->
-                <div class="form-group">
-                    <label>标签</label>
-                    <div class="list-display">
-                        <div v-for="(t, index) in formData.tag" :key="index" class="list-display-item">
-                            <span>{{ t }}</span>
-                            <button type="button" class="btn-remove-inline" @click="removeTag(index)">×</button>
-                        </div>
-                        <span v-if="formData.tag.length === 0" class="list-empty">暂无标签</span>
-                    </div>
-                    <button type="button" class="btn-toggle-edit" @click="showTagEditor = !showTagEditor">
-                        {{ showTagEditor ? '收起编辑' : '编辑标签' }}
-                    </button>
-                    <div v-show="showTagEditor" class="list-editor">
-                        <div class="list-editor-items">
-                            <div v-for="(_, index) in editingTags" :key="index" class="list-editor-row">
-                                <input type="text" v-model="editingTags[index]" class="form-input list-input"
-                                    placeholder="请输入标签名称" />
-                                <button type="button" class="btn-remove" @click="editingTags.splice(index, 1)">删除</button>
-                            </div>
-                        </div>
-                        <div class="list-editor-actions">
-                            <button type="button" class="btn-add-item" @click="editingTags.push('')">+ 添加标签</button>
-                            <button type="button" class="btn-confirm-list" @click="confirmTags">确认</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Content 编辑 -->
-                <div class="form-group">
-                    <label>内容</label>
-                    <div v-show="showContentEditor" class="content-editor">
-                        <textarea v-model="formData.content" class="form-textarea" placeholder="请输入文章内容"
-                            rows="12"></textarea>
-                        <button type="button" class="btn-confirm-list" @click="showContentEditor = false">收起编辑</button>
-                    </div>
-                    <div v-show="!showContentEditor" class="content-preview" @click="showContentEditor = true">
-                        <p class="content-preview-text">{{ formData.content || '暂无内容，点击编辑' }}</p>
-                        <button type="button" class="btn-toggle-edit">编辑内容</button>
-                    </div>
-                </div>
-
-                <div class="form-actions">
-                    <button type="submit" class="btn-save">保存</button>
-                    <button type="button" class="btn-cancel" @click="cancelEdit">取消</button>
-                </div>
-            </form>
+        <!-- 表单：使用 ObjectForm 组件 -->
+        <div v-show="isEditing">
+            <ObjectForm
+                v-model="formData"
+                :fields="postFields"
+                :title="isAddMode ? '添加文章' : '编辑文章'"
+                :is-add-mode="isAddMode"
+                :loading="saving"
+                @submit="savePost"
+                @cancel="cancelEdit"
+            />
         </div>
+
+        <!-- 删除确认对话框：使用 ConfirmDialog 组件 -->
+        <ConfirmDialog
+            v-model:visible="showDeleteConfirm"
+            title="确认删除文章"
+            content="确定要删除这篇文章吗？此操作不可撤销。"
+            confirm-text="删除"
+            :danger="true"
+            :loading="deleting"
+            @confirm="confirmDelete"
+        />
     </div>
 </template>
 
@@ -196,33 +121,51 @@
 import { ref, watch } from 'vue';
 import type { BlogInfo } from '../ts/types/blogs/BlogInfo';
 import { AdminBlogAPI } from '../ts/utils/AdminBlogAPI';
+import ObjectForm from './ObjectForm.vue';
+import type { FieldConfig } from './ObjectForm.vue';
+import ConfirmDialog from './ConfirmDialog.vue';
 
+/* ===== 字段配置 ===== */
+/** 文章表单字段配置，驱动 ObjectForm 自动渲染 */
+const postFields: FieldConfig[] = [
+    { key: 'name', label: '名称', type: 'text', required: true },
+    { key: 'title', label: '标题', type: 'text' },
+    { key: 'description', label: '描述', type: 'text' },
+    { key: 'author', label: '作者', type: 'array' },
+    { key: 'tag', label: '标签', type: 'array' },
+    { key: 'content', label: '内容', type: 'textarea' },
+    { key: 'id', label: 'ID', type: 'readonly', order: 99, hideOnAdd: true },
+    { key: 'createTime', label: '创建时间', type: 'readonly', order: 100, hideOnAdd: true },
+    { key: 'editTime', label: '编辑时间', type: 'readonly', order: 101, hideOnAdd: true },
+];
+
+/* ===== 列表状态 ===== */
 const isEditing = ref(false);
 const isAddMode = ref(false);
 const searchKeyword = ref('');
 const currentPage = ref(1);
 const pageSize = 10;
 const totalCount = ref(0);
-
 const posts = ref<BlogInfo[]>([]);
 
-const showAuthorEditor = ref(false);
-const showTagEditor = ref(false);
-const showContentEditor = ref(false);
-
-const editingAuthors = ref<string[]>([]);
-const editingTags = ref<string[]>([]);
-
-const formData = ref<BlogInfo>({
+/* ===== 表单状态 ===== */
+const formData = ref<Record<string, any>>({
     id: undefined,
     name: '',
     title: '',
     description: '',
-    author: [],
+    author: [] as string[],
     content: '',
-    tag: [],
+    tag: [] as string[],
 });
+const saving = ref(false);
 
+/* ===== 删除对话框状态 ===== */
+const showDeleteConfirm = ref(false);
+const deleting = ref(false);
+const deleteTargetId = ref('');
+
+/* ===== 工具函数 ===== */
 const truncateContent = (content: string): string => {
     if (!content) return '';
     return content.length > 20 ? content.substring(0, 20) + '...' : content;
@@ -238,6 +181,7 @@ const formatDate = (timestamp?: number): string => {
     return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
 };
 
+/* ===== 搜索与分页 ===== */
 let searchTimer: ReturnType<typeof setTimeout> | null = null;
 
 watch(searchKeyword, () => {
@@ -253,12 +197,11 @@ const goToPage = (page: number) => {
     loadPosts();
 };
 
+/* ===== 表单操作 ===== */
+/** 显示新增表单 */
 const showAddForm = () => {
     isAddMode.value = true;
     isEditing.value = true;
-    showAuthorEditor.value = false;
-    showTagEditor.value = false;
-    showContentEditor.value = false;
     formData.value = {
         id: undefined,
         name: '',
@@ -268,52 +211,35 @@ const showAddForm = () => {
         content: '',
         tag: [],
     };
-    editingAuthors.value = [];
-    editingTags.value = [];
 };
 
+/** 显示编辑表单 */
 const showEditForm = (post: BlogInfo) => {
     isAddMode.value = false;
     isEditing.value = true;
-    showAuthorEditor.value = false;
-    showTagEditor.value = false;
-    showContentEditor.value = false;
-    formData.value = { ...post, author: [...post.author], tag: [...post.tag] };
-    editingAuthors.value = [...post.author];
-    editingTags.value = [...post.tag];
+    formData.value = {
+        ...post,
+        author: [...post.author],
+        tag: [...post.tag]
+    };
 };
 
+/** 取消编辑，返回列表 */
 const cancelEdit = () => {
     isEditing.value = false;
-    showAuthorEditor.value = false;
-    showTagEditor.value = false;
-    showContentEditor.value = false;
 };
 
-const removeAuthor = (index: number) => {
-    formData.value.author.splice(index, 1);
-};
-
-const removeTag = (index: number) => {
-    formData.value.tag.splice(index, 1);
-};
-
-const confirmAuthors = () => {
-    formData.value.author = editingAuthors.value.filter(a => a.trim() !== '');
-    showAuthorEditor.value = false;
-};
-
-const confirmTags = () => {
-    formData.value.tag = editingTags.value.filter(t => t.trim() !== '');
-    showTagEditor.value = false;
-};
-
-const savePost = async () => {
+/**
+ * 保存文章（ObjectForm submit 事件回调）
+ * 组件传递的 data 是当前表单数据的副本
+ */
+const savePost = async (data: Record<string, any>) => {
+    saving.value = true;
     try {
         const postToSave: BlogInfo = {
-            ...formData.value,
-            author: formData.value.author.filter(a => a.trim() !== ''),
-            tag: formData.value.tag.filter(t => t.trim() !== '')
+            ...data as BlogInfo,
+            author: (data.author as string[]).filter((a: string) => a.trim() !== ''),
+            tag: (data.tag as string[]).filter((t: string) => t.trim() !== '')
         };
         await AdminBlogAPI.addOrReplace(postToSave);
         alert(isAddMode.value ? '文章添加成功' : '文章更新成功');
@@ -322,24 +248,36 @@ const savePost = async () => {
     } catch (error) {
         console.error('保存文章失败:', error);
         alert('保存失败，请稍后重试');
+    } finally {
+        saving.value = false;
     }
 };
 
-const deletePost = async (id?: string) => {
+/* ===== 删除操作 ===== */
+/** 打开删除确认对话框 */
+const openDeleteDialog = (id?: string) => {
     if (!id) return;
+    deleteTargetId.value = id;
+    showDeleteConfirm.value = true;
+};
 
-    if (!confirm('确定要删除这篇文章吗？')) return;
-
+/** 确认删除（ConfirmDialog confirm 事件回调） */
+const confirmDelete = async () => {
+    deleting.value = true;
     try {
-        await AdminBlogAPI.delete({ ids: [id] });
+        await AdminBlogAPI.delete({ ids: [deleteTargetId.value] });
+        showDeleteConfirm.value = false;
         alert('删除成功');
         await loadPosts();
     } catch (error) {
         console.error('删除文章失败:', error);
         alert('删除失败，请稍后重试');
+    } finally {
+        deleting.value = false;
     }
 };
 
+/* ===== 数据加载 ===== */
 const loadPosts = async () => {
     try {
         const input = {
@@ -421,7 +359,7 @@ loadPosts();
     white-space: nowrap;
 }
 
-/* 文章操作按钮覆盖：蓝色编辑按钮（区别于 admin.css 的绿色） */
+/* 文章操作按钮覆盖：蓝色编辑按钮 */
 .btn-edit {
     padding: 6px 14px;
     background: #e3f2fd;
@@ -434,7 +372,7 @@ loadPosts();
     background: #bbdefb;
 }
 
-/* 文章操作按钮覆盖：红色背景删除按钮（区别于 admin.css 的白底红边） */
+/* 文章操作按钮覆盖：红色背景删除按钮 */
 .btn-delete {
     padding: 6px 14px;
     background: #ffebee;
@@ -447,184 +385,13 @@ loadPosts();
     background: #ffcdd2;
 }
 
-/* 分页禁用按钮覆盖：使用 color 而非 opacity */
+/* 分页禁用按钮覆盖 */
 .pagination-btn:disabled {
     color: #ccc;
     cursor: not-allowed;
 }
 
-/* 表单区域覆盖：移除 admin.css 的 max-width 限制 */
-.form-section {
-    background: #fff;
-    border-radius: 10px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-    padding: 24px;
-    max-width: none;
-    margin: 0;
-}
-
-/* 列表展示样式 */
-.list-display {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 8px;
-    min-height: 28px;
-    align-items: center;
-}
-
-.list-display-item {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    background: #e8f5e9;
-    color: #2e7d32;
-    padding: 4px 10px;
-    border-radius: 12px;
-    font-size: 13px;
-}
-
-.btn-remove-inline {
-    background: none;
-    border: none;
-    color: #c62828;
-    font-size: 16px;
-    cursor: pointer;
-    padding: 0 2px;
-    line-height: 1;
-}
-
-.list-empty {
-    font-size: 13px;
-    color: #999;
-}
-
-.btn-toggle-edit {
-    background: none;
-    border: 1px solid #e0e0e0;
-    border-radius: 6px;
-    padding: 6px 14px;
-    font-size: 13px;
-    color: #666;
-    cursor: pointer;
-    transition: all 0.2s;
-    margin-top: 4px;
-}
-
-.btn-toggle-edit:hover {
-    border-color: #4caf50;
-    color: #4caf50;
-}
-
-/* 列表编辑器样式 */
-.list-editor {
-    margin-top: 12px;
-    padding: 16px;
-    background: #f8f9fa;
-    border-radius: 8px;
-    border: 1px solid #e8e8e8;
-}
-
-.list-editor-items {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-bottom: 12px;
-}
-
-.list-editor-row {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-}
-
-.list-input {
-    flex: 1;
-}
-
-.btn-remove {
-    padding: 6px 14px;
-    background: #ffebee;
-    color: #d32f2f;
-    border: none;
-    border-radius: 4px;
-    font-size: 13px;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: background 0.2s;
-}
-
-.btn-remove:hover {
-    background: #ffcdd2;
-}
-
-.list-editor-actions {
-    display: flex;
-    gap: 8px;
-    margin-top: 8px;
-}
-
-.btn-add-item {
-    padding: 6px 14px;
-    background: #e8f5e9;
-    color: #2e7d32;
-    border: none;
-    border-radius: 4px;
-    font-size: 13px;
-    cursor: pointer;
-    transition: background 0.2s;
-}
-
-.btn-add-item:hover {
-    background: #c8e6c9;
-}
-
-.btn-confirm-list {
-    padding: 6px 14px;
-    background: #4caf50;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    font-size: 13px;
-    cursor: pointer;
-    transition: background 0.2s;
-}
-
-.btn-confirm-list:hover {
-    background: #43a047;
-}
-
-/* 内容编辑器样式 */
-.content-editor {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.content-preview {
-    padding: 12px 14px;
-    background: #f8f9fa;
-    border-radius: 8px;
-    border: 1px solid #e8e8e8;
-    cursor: pointer;
-    transition: border-color 0.2s;
-}
-
-.content-preview:hover {
-    border-color: #4caf50;
-}
-
-.content-preview-text {
-    font-size: 14px;
-    color: #333;
-    margin: 0 0 8px 0;
-    line-height: 1.6;
-    max-height: 120px;
-    overflow: hidden;
-    word-break: break-all;
-}
-
-/* 移动端卡片覆盖：block 布局（区别于 admin.css 的 flex 布局） */
+/* 移动端卡片覆盖：block 布局 */
 .mobile-card {
     display: block;
     border-radius: 10px;
@@ -660,7 +427,7 @@ loadPosts();
     margin-bottom: 12px;
 }
 
-/* 卡片操作按钮覆盖：水平布局（区别于 admin.css 的垂直布局） */
+/* 卡片操作按钮覆盖：水平布局 */
 .card-actions {
     display: flex;
     gap: 8px;
@@ -702,19 +469,6 @@ loadPosts();
         padding: 16px;
         min-height: 100vh;
         background: #f5f5f5;
-    }
-
-    .form-section {
-        max-width: 100%;
-        padding: 16px;
-    }
-
-    .list-editor-row {
-        flex-direction: column;
-    }
-
-    .list-input {
-        width: 100%;
     }
 }
 </style>

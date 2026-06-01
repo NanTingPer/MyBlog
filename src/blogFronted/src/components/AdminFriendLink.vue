@@ -1,4 +1,4 @@
-﻿<template>
+<template>
     <div class="friendlink-container">
         <div class="page-header">
             <h1 class="page-title">友链</h1>
@@ -39,7 +39,7 @@
                             <td>{{ formatDate(link.createTime) }}</td>
                             <td class="actions">
                                 <button class="btn-edit" @click="showEditForm(link)">编辑</button>
-                                <button class="btn-delete" @click="deleteFriendlink(link.id)">删除</button>
+                                <button class="btn-delete" @click="openDeleteDialog(link.id)">删除</button>
                             </td>
                         </tr>
                     </tbody>
@@ -73,7 +73,7 @@
                     </div>
                     <div class="card-actions">
                         <button class="btn-edit-mobile" @click="showEditForm(link)">编辑</button>
-                        <button class="btn-delete-mobile" @click="deleteFriendlink(link.id)">删除</button>
+                        <button class="btn-delete-mobile" @click="openDeleteDialog(link.id)">删除</button>
                     </div>
                 </div>
 
@@ -87,63 +87,75 @@
             </div>
         </div>
 
-        <div v-show="isEditing" class="form-section">
-            <div class="form-header">
-                <button class="btn-back" @click="cancelEdit">‹ 返回</button>
-                <h2 class="form-title">{{ isAddMode ? '添加友链' : '编辑友链' }}</h2>
-            </div>
-
-            <form class="friendlink-form" @submit.prevent="saveFriendlink">
-                <div class="form-group">
-                    <label>名称</label>
-                    <input type="text" v-model="formData.name" class="form-input" placeholder="请输入友链名称" required />
-                </div>
-
-                <div class="form-group">
-                    <label>跳转链接</label>
-                    <input type="url" v-model="formData.url" class="form-input" placeholder="请输入友链地址" required />
-                </div>
-
-                <div class="form-group">
-                    <label>格言</label>
-                    <input type="text" v-model="formData.dictum" class="form-input" placeholder="请输入友链格言" />
-                </div>
-
-                <div class="form-group">
-                    <label>头像 URL</label>
-                    <input type="url" v-model="formData.avatar" class="form-input" placeholder="请输入头像URL" />
-                </div>
-
-                <div class="form-actions">
-                    <button type="submit" class="btn-save">保存</button>
-                    <button type="button" class="btn-cancel" @click="cancelEdit">取消</button>
-                </div>
-            </form>
+        <!-- 表单：使用 ObjectForm 组件 -->
+        <div v-show="isEditing">
+            <ObjectForm
+                v-model="formData"
+                :fields="friendlinkFields"
+                :title="isAddMode ? '添加友链' : '编辑友链'"
+                :is-add-mode="isAddMode"
+                :loading="saving"
+                @submit="saveFriendlink"
+                @cancel="cancelEdit"
+            />
         </div>
+
+        <!-- 删除确认对话框：使用 ConfirmDialog 组件 -->
+        <ConfirmDialog
+            v-model:visible="showDeleteConfirm"
+            title="确认删除友链"
+            content="确定要删除这个友链吗？此操作不可撤销。"
+            confirm-text="删除"
+            :danger="true"
+            :loading="deleting"
+            @confirm="confirmDelete"
+        />
     </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import type { Friendslink } from '../ts/types/friendlink/Friendslink';
-import { FriendlinkAPI } from '../ts/utils/FriendlinkAPI';
 import type { DeleteByIdInput } from '../ts/types/friendlink/DeleteByIdInput';
+import { FriendlinkAPI } from '../ts/utils/FriendlinkAPI';
+import ObjectForm from './ObjectForm.vue';
+import type { FieldConfig } from './ObjectForm.vue';
+import ConfirmDialog from './ConfirmDialog.vue';
 
+/* ===== 字段配置 ===== */
+/** 友链表单字段配置，驱动 ObjectForm 自动渲染 */
+const friendlinkFields: FieldConfig[] = [
+    { key: 'name', label: '名称', type: 'text', required: true },
+    { key: 'url', label: '跳转链接', type: 'url', required: true },
+    { key: 'dictum', label: '格言', type: 'text' },
+    { key: 'avatar', label: '头像 URL', type: 'url' },
+    { key: 'id', label: 'ID', type: 'readonly', order: 99, hideOnAdd: true },
+    { key: 'createTime', label: '创建时间', type: 'readonly', order: 100, hideOnAdd: true },
+];
+
+/* ===== 列表状态 ===== */
 const isEditing = ref(false);
 const isAddMode = ref(false);
 const searchKeyword = ref('');
 const currentPage = ref(1);
-
 const friendlinks = ref<Friendslink[]>([]);
 
-const formData = ref<Friendslink>({
+/* ===== 表单状态 ===== */
+const formData = ref<Record<string, any>>({
     id: undefined,
     name: '',
     url: '',
     dictum: '',
     avatar: ''
 });
+const saving = ref(false);
 
+/* ===== 删除对话框状态 ===== */
+const showDeleteConfirm = ref(false);
+const deleting = ref(false);
+const deleteTargetId = ref('');
+
+/* ===== 计算属性 ===== */
 const filteredLinks = computed(() => {
     if (!searchKeyword.value) {
         return friendlinks.value;
@@ -155,6 +167,7 @@ const filteredLinks = computed(() => {
 
 const totalPages = computed(() => Math.ceil(filteredLinks.value.length / 10));
 
+/* ===== 工具函数 ===== */
 const formatDate = (dateStr?: string): string => {
     if (!dateStr) return '';
     return dateStr.split(' ')[0];
@@ -164,6 +177,8 @@ const handleSearch = () => {
     currentPage.value = 1;
 };
 
+/* ===== 表单操作 ===== */
+/** 显示新增表单 */
 const showAddForm = () => {
     isAddMode.value = true;
     isEditing.value = true;
@@ -176,44 +191,63 @@ const showAddForm = () => {
     };
 };
 
+/** 显示编辑表单 */
 const showEditForm = (link: Friendslink) => {
     isAddMode.value = false;
     isEditing.value = true;
     formData.value = { ...link };
 };
 
+/** 取消编辑，返回列表 */
 const cancelEdit = () => {
     isEditing.value = false;
 };
 
-const saveFriendlink = async () => {
+/**
+ * 保存友链（ObjectForm submit 事件回调）
+ * 组件传递的 data 是当前表单数据的副本
+ */
+const saveFriendlink = async (data: Record<string, any>) => {
+    saving.value = true;
     try {
-        await FriendlinkAPI.addOrUpdate(formData.value);
+        await FriendlinkAPI.addOrUpdate(data as Friendslink);
         alert(isAddMode.value ? '友链添加成功' : '友链更新成功');
         await loadFriendlinks();
         cancelEdit();
     } catch (error) {
         console.error('保存友链失败:', error);
         alert('保存失败，请稍后重试');
+    } finally {
+        saving.value = false;
     }
 };
 
-const deleteFriendlink = async (id?: string) => {
+/* ===== 删除操作 ===== */
+/** 打开删除确认对话框 */
+const openDeleteDialog = (id?: string) => {
     if (!id) return;
+    deleteTargetId.value = id;
+    showDeleteConfirm.value = true;
+};
 
-    if (!confirm('确定要删除这个友链吗？')) return;
-
+/** 确认删除（ConfirmDialog confirm 事件回调） */
+const confirmDelete = async () => {
+    deleting.value = true;
     try {
-        const input: DeleteByIdInput = { id };
+        const input: DeleteByIdInput = { id: deleteTargetId.value };
         await FriendlinkAPI.delete(input);
+        showDeleteConfirm.value = false;
         alert('删除成功');
         await loadFriendlinks();
     } catch (error) {
         console.error('删除友链失败:', error);
         alert('删除失败，请稍后重试');
+    } finally {
+        deleting.value = false;
     }
 };
 
+/* ===== 数据加载 ===== */
 const loadFriendlinks = async () => {
     try {
         const response = await FriendlinkAPI.getAll();
