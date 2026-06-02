@@ -1,7 +1,7 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
-import AdminFriendLink from '../components/AdminFriendLink.vue';
-import AdminPosts from '../components/AdminPosts.vue';
-import Login from '../components/Login.vue';
+import AdminFriendLink from '../views/admin/AdminFriendLink.vue';
+import AdminPosts from '../views/admin/AdminPosts.vue';
+import Login from '../views/admin/Login.vue';
 import { sessionStore } from '../ts/utils/sessionStore';
 
 const routes = [

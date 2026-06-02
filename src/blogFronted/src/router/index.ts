@@ -1,10 +1,10 @@
-﻿import { createRouter, createWebHistory } from "vue-router";
-import LatestArticles from "../components/LatestPosts.vue";
-import Articles from "../components/Posts.vue";
-import Post from "../components/Post.vue";
-import Tag from "../components/Tag.vue";
-import FriendLink from "../components/FriendLink.vue";
-import About from "../components/About.vue";
+import { createRouter, createWebHistory } from "vue-router";
+import LatestArticles from "../views/frontend/LatestPosts.vue";
+import Articles from "../views/frontend/Posts.vue";
+import Post from "../views/frontend/Post.vue";
+import Tag from "../views/frontend/Tag.vue";
+import FriendLink from "../views/frontend/FriendLink.vue";
+import About from "../views/frontend/About.vue";
 
 const routes = [
     {

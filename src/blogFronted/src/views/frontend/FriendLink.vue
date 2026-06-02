@@ -27,10 +27,10 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import type { Friendslink } from '../ts/types/friendlink/Friendslink';
-import type { FriendslinkListBaseResult } from '../ts/types/friendlink/FriendslinkListBaseResult';
-import { FriendlinkAPI } from '../ts/utils/FriendlinkAPI';
-import StaggerTransition from './StaggerTransition.vue';
+import type { Friendslink } from '../../ts/types/friendlink/Friendslink';
+import type { FriendslinkListBaseResult } from '../../ts/types/friendlink/FriendslinkListBaseResult';
+import { FriendlinkAPI } from '../../ts/utils/FriendlinkAPI';
+import StaggerTransition from '../../components/StaggerTransition.vue';
 
 /** 友链列表数据 */
 const friendlinks = ref<Friendslink[]>([]);

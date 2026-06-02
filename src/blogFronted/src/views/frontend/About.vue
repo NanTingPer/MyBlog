@@ -60,7 +60,7 @@
  * 虽然 composable 名为「交错动画」，但单元素场景下无交错效果，
  * 仅使用其渐入（opacity + translateY）能力。
  */
-import { useStaggerAnimation } from '../composables/useStaggerAnimation';
+import { useStaggerAnimation } from '../../composables/useStaggerAnimation';
 
 /** 获取动画钩子 */
 const { onBeforeEnter, onEnter } = useStaggerAnimation();

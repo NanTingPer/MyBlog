@@ -115,12 +115,12 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import type { Friendslink } from '../ts/types/friendlink/Friendslink';
-import type { DeleteByIdInput } from '../ts/types/friendlink/DeleteByIdInput';
-import { FriendlinkAPI } from '../ts/utils/FriendlinkAPI';
-import ObjectForm from './ObjectForm.vue';
-import type { FieldConfig } from './ObjectForm.vue';
-import ConfirmDialog from './ConfirmDialog.vue';
+import type { Friendslink } from '../../ts/types/friendlink/Friendslink';
+import type { DeleteByIdInput } from '../../ts/types/friendlink/DeleteByIdInput';
+import { FriendlinkAPI } from '../../ts/utils/FriendlinkAPI';
+import ObjectForm from '../../components/ObjectForm.vue';
+import type { FieldConfig } from '../../components/ObjectForm.vue';
+import ConfirmDialog from '../../components/ConfirmDialog.vue';
 
 /* ===== 字段配置 ===== */
 /** 友链表单字段配置，驱动 ObjectForm 自动渲染 */

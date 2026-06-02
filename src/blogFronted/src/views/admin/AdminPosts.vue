@@ -119,11 +119,11 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-import type { BlogInfo } from '../ts/types/blogs/BlogInfo';
-import { AdminBlogAPI } from '../ts/utils/AdminBlogAPI';
-import ObjectForm from './ObjectForm.vue';
-import type { FieldConfig } from './ObjectForm.vue';
-import ConfirmDialog from './ConfirmDialog.vue';
+import type { BlogInfo } from '../../ts/types/blogs/BlogInfo';
+import { AdminBlogAPI } from '../../ts/utils/AdminBlogAPI';
+import ObjectForm from '../../components/ObjectForm.vue';
+import type { FieldConfig } from '../../components/ObjectForm.vue';
+import ConfirmDialog from '../../components/ConfirmDialog.vue';
 
 /* ===== 字段配置 ===== */
 /** 文章表单字段配置，驱动 ObjectForm 自动渲染 */

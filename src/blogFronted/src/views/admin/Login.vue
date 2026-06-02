@@ -113,10 +113,10 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed, nextTick } from 'vue';
-import { AuthAPI } from '../ts/utils/AuthAPI';
+import { AuthAPI } from '../../ts/utils/AuthAPI';
 import { useRouter } from 'vue-router';
-import { useStaggerAnimation } from '../composables/useStaggerAnimation'
-import { useLerpHeight } from '../composables/useLerpHeight'
+import { useStaggerAnimation } from '../../composables/useStaggerAnimation'
+import { useLerpHeight } from '../../composables/useLerpHeight'
 const { onBeforeEnter, onEnter } = useStaggerAnimation();
 
 const formSectionRef = ref<HTMLElement | null>(null);

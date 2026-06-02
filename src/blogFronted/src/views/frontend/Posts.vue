@@ -16,10 +16,10 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import type { BlogInfo } from "../ts/types/blogs/BlogInfo";
-import { BlogAPI } from "../ts/utils/BlogAPI";
-import { API_BASE_URL } from "../ts/config/apiConfig";
-import PostList from "./PostList.vue";
+import type { BlogInfo } from "../../ts/types/blogs/BlogInfo";
+import { BlogAPI } from "../../ts/utils/BlogAPI";
+import { API_BASE_URL } from "../../ts/config/apiConfig";
+import PostList from "../../components/PostList.vue";
 
 const api = new BlogAPI(API_BASE_URL);
 
