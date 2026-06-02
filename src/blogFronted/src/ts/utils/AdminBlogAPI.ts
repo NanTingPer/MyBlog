@@ -37,13 +37,10 @@ export class AdminBlogAPI {
     }
 
     public static async delete(input: DeleteInput): Promise<Response> {
-        const params = new URLSearchParams();
-        input.ids.forEach(id => params.append("ids", id));
-        const paramsText = params.toString();
-
-        return apiFetch(`${apiEndpoint}/delete?${paramsText}`, {
+        return apiFetch(`${apiEndpoint}/delete`, {
             method: "POST",
-            headers: AdminBlogAPI.GetHeaders()
+            headers: AdminBlogAPI.GetHeaders(),
+            body: JSON.stringify(input)
         });
     }
 
