@@ -1,4 +1,4 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 
 namespace NanTingBlog.API.Controllers;
 
@@ -36,5 +36,19 @@ public class BaseResult<T>
         {
             Data = data
         };
+    }
+
+    /// <summary>
+    /// 创建一个错误请求信息
+    /// </summary>
+    /// <param name="msg"> 错误消息 </param>
+    /// <param name="code"> 错误代码 </param>
+    /// <returns></returns>
+    public static BaseResult<T> CreateError(string msg, int code = 500)
+    {
+        var r = new BaseResult<T>();
+        r.Msg = msg;
+        r.Code = code;
+        return r;
     }
 }
