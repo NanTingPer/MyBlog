@@ -34,7 +34,7 @@ public class DeepUpdater<TModel>
     /// <returns></returns>
     private static PropertyInfo[] WritableProperties(Type type, BindingFlags bf = BindingFlags.Instance | BindingFlags.Public)
     {
-        return type.GetProperties(bf).Where(prop => prop.CanRead && prop.CanWrite && prop.GetIndexParameters().Length == 0).ToArray();
+        return [.. type.GetProperties(bf).Where(prop => prop.CanRead && prop.CanWrite && prop.GetIndexParameters().Length == 0 && prop.SetMethod != null)];
     }
 
     private static bool IsSimpleType(Type type)
@@ -140,8 +140,14 @@ public class DeepUpdater<TModel>
             // target.info = source.info
             var assignExp = /*assignExpBuilder?.Invoke(rightExp, leftExp) ?? */Expression.Assign(rightExp, leftExp);
             // target.info == null
-            var nullExp = Expression.Constant(null);
-            var equalNullExp = Expression.Equal(leftExp, nullExp);
+            Expression equalNullExp;
+            // 值类型 并且可空，不过滤会出现类型错误，因为值类型 不等于 Nullable<Type>
+            if (info.PropertyType.IsValueType && Nullable.GetUnderlyingType(info.PropertyType) != null) {
+                var nullExp = Expression.Constant(null, info.PropertyType);
+                equalNullExp = Expression.Equal(leftExp, nullExp);
+            } else {
+                equalNullExp = Expression.Constant(false);
+            }
 
             // if != null then target.info = source.info  <br />
             // body
@@ -176,9 +182,9 @@ public class DeepUpdater<TModel>
             var ifThenElse = Expression.IfThenElse(ifArray, then, @else);
 
             // source == null
-            var sourceIsNull = Expression.Equal(sourcePropExp, Expression.Constant(null));
+            var sourceIsNull = Expression.Equal(sourcePropExp, Expression.Constant(null, propertyInfo.PropertyType));
             // target == null
-            var targetIsNull = Expression.Equal(targetPropExp, Expression.Constant(null));
+            var targetIsNull = Expression.Equal(targetPropExp, Expression.Constant(null, propertyInfo.PropertyType));
 
             // if (!(source == null and target == null))
             var andNull = Expression.IsFalse(Expression.And(sourceIsNull, targetIsNull));
@@ -194,6 +200,7 @@ public class DeepUpdater<TModel>
         }
 
         var body = Expression.Block(assignList);
+        var t = body.ToString();
         return Expression.Lambda<Action<object, object>>(body, o_sourceParameter, o_targetParameter).Compile();
     }
 }
