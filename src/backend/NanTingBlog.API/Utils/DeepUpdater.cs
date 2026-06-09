@@ -13,7 +13,6 @@ public class DeepUpdater<TModel>
     private static readonly Action<object, object> _final_update_action;
     static DeepUpdater()
     {
-        var modelType = typeof(TModel);
         _final_update_action = RecursionCreateAssignExpression();
     }
 
@@ -97,64 +96,9 @@ public class DeepUpdater<TModel>
         foreach (var type in refPropTypes) {
             _cache[type] = CreateAssignExpressionOneType(type);
         }
-        _cache[modelType] = CreateAssignExpressionOneType(modelType);
+        var ret = _cache[modelType] = CreateAssignExpressionOneType(modelType);
 
-        var props = WritableProperties(modelType);
-        var simpleTypeInfos = props.Where(p => IsSimpleType(p.PropertyType));
-        var notSimpleTypeInfos = props.Except(simpleTypeInfos);
-
-        var o_sourceParameter = Expression.Parameter(typeof(object), "source");
-        var o_targetParameter = Expression.Parameter(typeof(object), "target");
-        var sourceParameter = Expression.Convert(o_sourceParameter, modelType);
-        var targetParameter = Expression.Convert(o_targetParameter, modelType);
-
-        List<Expression> block = [];
-        var updateInfo = typeof(DeepUpdater<TModel>).GetMethod(nameof(Update), BindingFlags.Static | BindingFlags.NonPublic);
-        var addRangeMethod = typeof(DeepUpdater<TModel>).GetMethod(nameof(AddRange), BindingFlags.NonPublic | BindingFlags.Static);
-
-        foreach (var propertyInfo in notSimpleTypeInfos) {
-            var sourcePropExp = Expression.Property(sourceParameter, propertyInfo);
-            var targetPropExp = Expression.Property(targetParameter, propertyInfo);
-
-            // target is IList
-            var ifArray = Expression.TypeIs(targetPropExp, typeof(IList));
-            var targetAsList = Expression.Convert(targetPropExp, typeof(IList));
-            var sourceAsList = Expression.Convert(sourcePropExp, typeof(IList));
-
-            // AddRange(source, target);
-            var then = Expression.Call(null, addRangeMethod!, sourceAsList, targetAsList);
-            
-            // Update(source, target);
-            var @else = Expression.Call(updateInfo!, 
-                Expression.Convert(sourcePropExp, typeof(object)),  
-                Expression.Convert(targetPropExp, typeof(object)));
-
-            // if(target is IList)<br />
-            // AddRange(s, t) <br />
-            // else               <br />
-            // Update(s, t)   <br />
-            var ifThenElse = Expression.IfThenElse(ifArray, then, @else);
-
-            // source == null
-            var sourceIsNull = Expression.Equal(sourcePropExp, Expression.Constant(null));
-            // target == null
-            var targetIsNull = Expression.Equal(targetPropExp, Expression.Constant(null));
-
-            // if (!(source == null and target == null))
-            var andNull = Expression.IsFalse(Expression.And(sourceIsNull, targetIsNull));
-
-            // if(!(source == null and target == null)){ <br /> 
-            //      if(target is IList)<br />                   
-            //          AddRange(s, t) <br />                   
-            //      else               <br />                   
-            //          Update(s, t)   <br />                   
-            // }
-            var f = Expression.IfThen(andNull, ifThenElse);
-            block.Add(f);
-        }
-        block.Add(Expression.Call(updateInfo!, o_sourceParameter, o_targetParameter));
-        var body = Expression.Block(block);
-        return Expression.Lambda<Action<object, object>>(body, o_sourceParameter, o_targetParameter).Compile();
+        return ret;
     }
 
     private static void Update(object source, object target)
@@ -178,7 +122,7 @@ public class DeepUpdater<TModel>
     {
         var props = WritableProperties(type);
         var simpleTypeInfos = props.Where(p => IsSimpleType(p.PropertyType));
-        //var notSimpleTypeInfos = props.Except(simpleTypeInfos);
+        var notSimpleTypeInfos = props.Except(simpleTypeInfos);
 
         // 生成赋值表达式
         var o_sourceParameter = Expression.Parameter(typeof(object), "source");
@@ -204,6 +148,51 @@ public class DeepUpdater<TModel>
             var ifThen = Expression.IfThen(Expression.IsFalse(equalNullExp), assignExp);
             assignList.Add(ifThen);
         }
+
+        var updateInfo = typeof(DeepUpdater<TModel>).GetMethod(nameof(Update), BindingFlags.Static | BindingFlags.NonPublic);
+        var addRangeMethod = typeof(DeepUpdater<TModel>).GetMethod(nameof(AddRange), BindingFlags.NonPublic | BindingFlags.Static);
+
+        foreach (var propertyInfo in notSimpleTypeInfos) {
+            var sourcePropExp = Expression.Property(sourceParameter, propertyInfo);
+            var targetPropExp = Expression.Property(targetParameter, propertyInfo);
+
+            // target is IList
+            var ifArray = Expression.TypeIs(targetPropExp, typeof(IList));
+            var targetAsList = Expression.Convert(targetPropExp, typeof(IList));
+            var sourceAsList = Expression.Convert(sourcePropExp, typeof(IList));
+
+            // AddRange(source, target);
+            var then = Expression.Call(null, addRangeMethod!, sourceAsList, targetAsList);
+
+            // Update(source, target);
+            var @else = Expression.Call(updateInfo!,
+                Expression.Convert(sourcePropExp, typeof(object)),
+                Expression.Convert(targetPropExp, typeof(object)));
+
+            // if(target is IList)<br />
+            // AddRange(s, t) <br />
+            // else               <br />
+            // Update(s, t)   <br />
+            var ifThenElse = Expression.IfThenElse(ifArray, then, @else);
+
+            // source == null
+            var sourceIsNull = Expression.Equal(sourcePropExp, Expression.Constant(null));
+            // target == null
+            var targetIsNull = Expression.Equal(targetPropExp, Expression.Constant(null));
+
+            // if (!(source == null and target == null))
+            var andNull = Expression.IsFalse(Expression.And(sourceIsNull, targetIsNull));
+
+            // if(!(source == null and target == null)){ <br /> 
+            //      if(target is IList)<br />                   
+            //          AddRange(s, t) <br />                   
+            //      else               <br />                   
+            //          Update(s, t)   <br />                   
+            // }
+            var f = Expression.IfThen(andNull, ifThenElse);
+            assignList.Add(f);
+        }
+
         var body = Expression.Block(assignList);
         return Expression.Lambda<Action<object, object>>(body, o_sourceParameter, o_targetParameter).Compile();
     }
