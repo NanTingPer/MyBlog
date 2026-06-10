@@ -200,7 +200,6 @@ public class DeepUpdater<TModel>
         }
 
         var body = Expression.Block(assignList);
-        var t = body.ToString();
         return Expression.Lambda<Action<object, object>>(body, o_sourceParameter, o_targetParameter).Compile();
     }
 }

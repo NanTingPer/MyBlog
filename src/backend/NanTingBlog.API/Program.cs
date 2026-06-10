@@ -1,6 +1,7 @@
 using Markdig;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using NanTingBlog.API.Dtos;
 using NanTingBlog.API.Middlewares;
 using NanTingBlog.API.Services;
 using NanTingBlog.API.Services.Blog;
@@ -42,13 +43,16 @@ builder.Services.AddDbContext<BlogContext>(ServiceLifetime.Scoped);
 #endregion
 
 #region GlobalConfigService
-builder.Services.AddSingleton(provider => {
+builder.Services.AddSingleton<GlobalConfigService>(provider => {
+    var log_service = provider.GetService<ServiceLogger>()!;
+    var service = new GlobalConfigService(log_service);
+
     if (File.Exists(GlobalConfigService.FullPath)) {
-        var gcs = JsonSerializer.Deserialize<GlobalConfigService>(File.ReadAllText(GlobalConfigService.FullPath))!;
-        gcs.Save();
-        return gcs;
+        var gcd = JsonSerializer.Deserialize<GlobalConfigDto>(File.ReadAllText(GlobalConfigService.FullPath))!;
+        service!.Update(gcd);
+        return service;
     } else {
-        return new GlobalConfigService();
+        return service;
     }
 });
 #endregion
