@@ -18,7 +18,7 @@ public class ConfigController(GlobalConfigService service, RSAService rsaService
     /// 获取脱敏后的配置
     /// </summary>
     /// <returns></returns>
-    [HttpGet]
+    [HttpGet("getConfig")]
     [Authorize(Policy = PolicyTypes.ADMIN)]
     public ActionResult<BaseResult<GlobalConfigDto>> GetConfig()
     {
@@ -26,7 +26,7 @@ public class ConfigController(GlobalConfigService service, RSAService rsaService
     }
 
     /// <summary>
-    /// 更新配置，请将<see cref="UpdateConfigInput.Config"></see>进行RSA加密后返回
+    /// 更新配置，请将<see cref="UpdateConfigInput.Config"></see>进行RSA加密后传递
     /// </summary>
     /// <param name="gcs">全局配置对象</param>
     /// <returns></returns>
