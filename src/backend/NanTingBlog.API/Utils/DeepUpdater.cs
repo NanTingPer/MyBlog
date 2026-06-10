@@ -142,14 +142,15 @@ public class DeepUpdater<TModel>
             // target.info == null
             Expression equalNullExp;
             // 值类型 并且可空，不过滤会出现类型错误，因为值类型 不等于 Nullable<Type>
-            if (info.PropertyType.IsValueType && Nullable.GetUnderlyingType(info.PropertyType) != null) {
+            // string类型不是值类型，但是他是引用类型
+            if ((info.PropertyType.IsValueType && Nullable.GetUnderlyingType(info.PropertyType) != null) || info.PropertyType.IsClass || info.PropertyType.IsInterface) {
                 var nullExp = Expression.Constant(null, info.PropertyType);
                 equalNullExp = Expression.Equal(leftExp, nullExp);
             } else {
                 equalNullExp = Expression.Constant(false);
             }
 
-            // if != null then target.info = source.info  <br />
+            // if != null ifIsIListThenAddRange target.info = source.info  <br />
             // body
             var ifThen = Expression.IfThen(Expression.IsFalse(equalNullExp), assignExp);
             assignList.Add(ifThen);
@@ -168,35 +169,38 @@ public class DeepUpdater<TModel>
             var sourceAsList = Expression.Convert(sourcePropExp, typeof(IList));
 
             // AddRange(source, target);
-            var then = Expression.Call(null, addRangeMethod!, sourceAsList, targetAsList);
-
+            var ifIsIListThenAddRange = Expression.Call(null, addRangeMethod!, sourceAsList, targetAsList);
             // Update(source, target);
-            var @else = Expression.Call(updateInfo!,
+            var IfNotIListThenUpdate = Expression.Call(updateInfo!,
                 Expression.Convert(sourcePropExp, typeof(object)),
                 Expression.Convert(targetPropExp, typeof(object)));
 
             // if(target is IList)<br />
             // AddRange(s, t) <br />
-            // else               <br />
+            // IfNotIListThenUpdate               <br />
             // Update(s, t)   <br />
-            var ifThenElse = Expression.IfThenElse(ifArray, then, @else);
+            var ifIListThenAddRangeElseUpdate = Expression.IfThenElse(ifArray, ifIsIListThenAddRange, IfNotIListThenUpdate);
 
             // source == null
             var sourceIsNull = Expression.Equal(sourcePropExp, Expression.Constant(null, propertyInfo.PropertyType));
             // target == null
             var targetIsNull = Expression.Equal(targetPropExp, Expression.Constant(null, propertyInfo.PropertyType));
 
-            // if (!(source == null and target == null))
-            var andNull = Expression.IsFalse(Expression.And(sourceIsNull, targetIsNull));
+            var ifTargetIsNullThenNew = Expression.IfThen(targetIsNull, 
+                Expression.Assign(targetPropExp, Expression.New(propertyInfo.PropertyType)));
 
-            // if(!(source == null and target == null)){ <br /> 
+            // if(source != null){ <br /> 
+            //      if (target == null) target = new();
             //      if(target is IList)<br />                   
             //          AddRange(s, t) <br />                   
-            //      else               <br />                   
+            //      IfNotIListThenUpdate               <br />                   
             //          Update(s, t)   <br />                   
             // }
-            var f = Expression.IfThen(andNull, ifThenElse);
-            assignList.Add(f);
+            // 如果源不为null，但是target为null的话，那么先给target赋一个默认值
+            var ifSourceNotNullThenUpdate = Expression.IfThen(
+                Expression.IsFalse(sourceIsNull), 
+                Expression.Block(ifTargetIsNullThenNew, ifIListThenAddRangeElseUpdate));
+            assignList.Add(ifSourceNotNullThenUpdate);
         }
 
         var body = Expression.Block(assignList);
