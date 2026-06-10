@@ -12,56 +12,59 @@ public class GlobalConfigDto
     /// 博文保存路径
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public virtual string BlogSaveDir { get; set; } = Path.Combine(AppContext.BaseDirectory, "posts");
+    public virtual string? BlogSaveDir { get; set; } = Path.Combine(AppContext.BaseDirectory, "posts");
 
     /// <summary>
     /// 监听端口
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public virtual List<string> Ports { get; set; } = ["6999"];
+    public virtual List<string>? Ports { get; set; } = ["6999"];
 
     /// <summary>
     /// 每分钟的最大API访问次数
     /// </summary>
-    public virtual int MinuteAPIMaxVisit { get; set; } = 50;
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public virtual int? MinuteAPIMaxVisit { get; set; } = 50;
 
     /// <summary>
     /// 登录密码
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public virtual string LoginPassword { get; set; } = "qwertyuiopasdfghjklzxcvbnm123";
+    public virtual string? LoginPassword { get; set; } = "qwertyuiopasdfghjklzxcvbnm123";
 
     /// <summary>
     /// jwt令牌颁发机构
     /// </summary>
-    public virtual string JwtIssuer { get; set; } = "blogapi";
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public virtual string? JwtIssuer { get; set; } = "blogapi";
 
     /// <summary>
     /// jwt令牌受用人
     /// </summary>
-    public virtual string JwtAudience { get; set; } = "blogapi";
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public virtual string? JwtAudience { get; set; } = "blogapi";
 
     /// <summary>
     /// jwt私钥
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public virtual string JwtKey { get; set; } = "blogapiwertyu131i3o1p654d64f1g3h1j3k65641jzsxuhjcvguawsueqwrdsojga13wdwgsdr564";
+    public virtual string? JwtKey { get; set; } = "blogapiwertyu131i3o1p654d64f1g3h1j3k65641jzsxuhjcvguawsueqwrdsojga13wdwgsdr564";
 
     /// <summary>
     /// 数据库链接字符串
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public virtual string BlogDbConnectionString { get; set; } = @"Host=127.0.0.1:5432;Username=postgres;Password=123456;Database=blog";
+    public virtual string? BlogDbConnectionString { get; set; } = @"Host=127.0.0.1:5432;Username=postgres;Password=123456;Database=blog";
 
     /// <summary>
     /// 邮箱验证服务的基本配置
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public virtual MailOptions MailOptions { get; set; } = new();
+    public virtual MailOptions? MailOptions { get; set; } = new();
 
     /// <summary>
     /// 管理员的邮箱地址，当使用此地址注册账户时，会将你设置为Admin，以提供接口权限
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public virtual string AdminMailAddress { get; set; } = "";
+    public virtual string? AdminMailAddress { get; set; } = "";
 }
