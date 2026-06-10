@@ -28,9 +28,9 @@ public class WatchService : BackgroundService
         factory = serviceFactory;
         this.gconfig = gconfig;
         if (!Directory.Exists(gconfig.BlogSaveDir)) {
-            Directory.CreateDirectory(gconfig.BlogSaveDir);
+            Directory.CreateDirectory(gconfig.BlogSaveDir!);
         }
-        fileWatcher = new FileSystemWatcher(gconfig.BlogSaveDir, "*.md")
+        fileWatcher = new FileSystemWatcher(gconfig.BlogSaveDir!, "*.md")
         {
             IncludeSubdirectories = true,
             EnableRaisingEvents = true
@@ -148,7 +148,7 @@ public class WatchService : BackgroundService
     {
         uploadings.Add(async _ => {
             logger.Information($"创建新文章 `{info.Name}` ");
-            var fullPath = Path.Combine(gconfig.BlogSaveDir, "api_create", info.Name + ".md");
+            var fullPath = Path.Combine(gconfig.BlogSaveDir!, "api_create", info.Name + ".md");
             var stream = File.CreateText(fullPath);
             await stream.WriteAsync(info.Content);
             await stream.FlushAsync();
@@ -265,12 +265,12 @@ public class WatchService : BackgroundService
         #endregion
 
         if (!Directory.Exists(gconfig.BlogSaveDir)) {
-            Directory.CreateDirectory(gconfig.BlogSaveDir);
+            Directory.CreateDirectory(gconfig.BlogSaveDir!);
             logger.Information($"文章文件夹不存在，进行创建 {gconfig.BlogSaveDir}");
         }
 
         #region 获取本地的内容
-        var files = RecursivelyGetFullFile(gconfig.BlogSaveDir);
+        var files = RecursivelyGetFullFile(gconfig.BlogSaveDir!);
         var localhostBlogs = files
             .Where(fullPath => Path.GetExtension(fullPath) == ".md")
             .Select(fullPath => (fullPath: fullPath, blogName: Path.GetFileNameWithoutExtension(fullPath)))
@@ -310,7 +310,7 @@ public class WatchService : BackgroundService
         uidToName.Clear();
         nameToUid.Clear();
 
-        var syncByDbSavePath = Path.Combine(gconfig.BlogSaveDir, "db_sync");
+        var syncByDbSavePath = Path.Combine(gconfig.BlogSaveDir!, "db_sync");
         if(!Directory.Exists(syncByDbSavePath)) {
             Directory.CreateDirectory(syncByDbSavePath);
         }
@@ -376,7 +376,7 @@ public class WatchService : BackgroundService
     private bool TryGetMarkdownFullName(string notExtensionName, out string reslut)
     {
         reslut = "";
-        foreach (var mdFullPath in RecursivelyGetFullFileByMarkdonw(gconfig.BlogSaveDir)) {
+        foreach (var mdFullPath in RecursivelyGetFullFileByMarkdonw(gconfig.BlogSaveDir!)) {
             if (!(Path.GetFileNameWithoutExtension(mdFullPath) == notExtensionName)) {
                 continue;
             }

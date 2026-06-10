@@ -47,7 +47,7 @@ public class GlobalConfigService : GlobalConfigDto
     public static readonly string fileName = "global.conf";
 
     private readonly Lock fileLock = new ();
-    private JsonSerializerOptions options = new JsonSerializerOptions()
+    private readonly JsonSerializerOptions _saveOptions = new JsonSerializerOptions()
     {
         WriteIndented = true
     };
@@ -60,9 +60,12 @@ public class GlobalConfigService : GlobalConfigDto
         lock (fileLock) {
             try {
                 using var fileStream = File.OpenWrite(FullPath);
-                var thisText = JsonSerializer.Serialize(this, options);
+                fileStream.Seek(0, SeekOrigin.Current);
+                fileStream.SetLength(0);
+                var thisText = JsonSerializer.Serialize(this, _saveOptions);
                 var bytes = Encoding.UTF8.GetBytes(thisText);
                 fileStream.Write(bytes);
+                fileStream.Flush();
             } catch {
             }
         }
@@ -78,8 +81,15 @@ public class GlobalConfigService : GlobalConfigDto
         copy.LoginPassword = "";
         copy.JwtKey = "";
         copy.BlogDbConnectionString = "";
-        copy.MailOptions = new();
         copy.AdminMailAddress = "";
+
+        if (copy.MailOptions == null) {
+            copy.MailOptions = MailOptions.CreateDefault();
+        } else {
+            bool old = copy.MailOptions.UseSSL!.Value;
+            copy.MailOptions = MailOptions.CreateDefault();
+            copy.MailOptions.UseSSL = old;
+        }
 
         return copy;
     }
@@ -93,6 +103,11 @@ public class GlobalConfigService : GlobalConfigDto
         Save();
     }
 
+    private static readonly JsonSerializerOptions _updateOptions = new JsonSerializerOptions()
+    {
+        PropertyNameCaseInsensitive = true
+    };
+
     /// <summary>
     /// 更新配置
     /// </summary>
@@ -100,7 +115,7 @@ public class GlobalConfigService : GlobalConfigDto
     public bool Update(string jsonString)
     {
         try {
-            var js = JsonSerializer.Deserialize<GlobalConfigDto>(jsonString);
+            var js = JsonSerializer.Deserialize<GlobalConfigDto>(jsonString, _updateOptions);
             if (js == null) return false;
             Update(js);
             return true;

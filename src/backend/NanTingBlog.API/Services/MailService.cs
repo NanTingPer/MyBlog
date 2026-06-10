@@ -1,5 +1,6 @@
 using MailKit.Net.Smtp;
 using MimeKit;
+using System.Text.Json.Serialization;
 
 namespace NanTingBlog.API.Services;
 
@@ -49,13 +50,13 @@ public class MailService : IMailService
             Body = body.ToMessageBody(),
             Subject = dto.Subject
         };
-        message.From.Add(new MailboxAddress(dto.YourName, Options.MailAddress));
+        message.From.Add(new MailboxAddress(dto.YourName, Options.MailAddress!));
         message.To.AddRange(dto.ToAddresses);
-        var sendUri = new Uri(Options.SendUrl);
+        var sendUri = new Uri(Options.SendUrl!);
         using var smtpClient = new SmtpClient();
         try {
-            await smtpClient.ConnectAsync(sendUri.Host, sendUri.Port, cancellationToken: cancellationToken, useSsl: Options.UseSSL);
-            await smtpClient.AuthenticateAsync(Options.Account, Options.AuthorizationCode, cancellationToken);
+            await smtpClient.ConnectAsync(sendUri.Host, sendUri.Port, cancellationToken: cancellationToken, useSsl: Options.UseSSL!.Value);
+            await smtpClient.AuthenticateAsync(Options.Account!, Options.AuthorizationCode!, cancellationToken);
             var sendMsg = await smtpClient.SendAsync(message, cancellationToken);
             return true;
         } finally {
@@ -72,32 +73,54 @@ public class MailOptions
     /// <summary>
     /// 账户名称
     /// </summary>
-    public string Account { get; set; } = "";
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? Account { get; set; }
 
     /// <summary>
     /// 授权码
     /// </summary>
-    public string AuthorizationCode { get; set; } = "";
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? AuthorizationCode { get; set; }
 
     /// <summary>
     /// 你的邮箱地址
     /// </summary>
-    public string MailAddress { get; set; } = "";
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? MailAddress { get; set; }
 
     /// <summary>
     /// 接收右键服务器地址
     /// </summary>
-    public string ReveiveUrl { get; set; } = "";
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? ReveiveUrl { get; set; }
 
     /// <summary>
     /// 发送邮件服务器地址
     /// </summary>
-    public string SendUrl { get; set; } = "";
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? SendUrl { get; set; }
 
     /// <summary>
     /// 是否使用SSL链接
     /// </summary>
-    public bool UseSSL { get; set; } = true;
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public bool? UseSSL { get; set; }
+
+    /// <summary>
+    /// 获取一个全部都是默认值的此配置对象
+    /// </summary>
+    public static MailOptions CreateDefault()
+    {
+        return new MailOptions()
+        {
+         Account = "",
+         AuthorizationCode = "",
+         MailAddress = "",
+         ReveiveUrl = "",
+         SendUrl = "",
+         UseSSL = true
+        };
+    }
 }
 
 /// <summary>

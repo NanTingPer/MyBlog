@@ -49,9 +49,10 @@ builder.Services.AddSingleton<GlobalConfigService>(provider => {
 
     if (File.Exists(GlobalConfigService.FullPath)) {
         var gcd = JsonSerializer.Deserialize<GlobalConfigDto>(File.ReadAllText(GlobalConfigService.FullPath))!;
-        service!.Update(gcd);
+        service.Update(gcd);
         return service;
     } else {
+        service.Update(GlobalConfigDto.CreateDefault());
         return service;
     }
 });
