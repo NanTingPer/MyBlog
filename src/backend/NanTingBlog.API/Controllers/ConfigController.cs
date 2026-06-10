@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NanTingBlog.API.Dtos;
 using NanTingBlog.API.Services;
 using NanTingBlog.API.Services.Identitys;
 
@@ -14,7 +15,18 @@ namespace NanTingBlog.API.Controllers;
 public class ConfigController(GlobalConfigService service, RSAService rsaService) : ControllerBase
 {
     /// <summary>
-    /// 更新配置
+    /// 获取脱敏后的配置
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet]
+    [Authorize(Policy = PolicyTypes.ADMIN)]
+    public ActionResult<BaseResult<GlobalConfigDto>> GetConfig()
+    {
+        return Ok(BaseResult<GlobalConfigDto>.Create(service.GetSafeConfig()));
+    }
+
+    /// <summary>
+    /// 更新配置，请将<see cref="UpdateConfigInput.Config"></see>进行RSA加密后返回
     /// </summary>
     /// <param name="gcs">全局配置对象</param>
     /// <returns></returns>
@@ -41,9 +53,9 @@ public class ConfigController(GlobalConfigService service, RSAService rsaService
     public class UpdateConfigInput
     {
         /// <summary>
-        /// 配置项，<see cref="GlobalConfigService"/>Json序列化后，使用RSA加密后的字符串
+        /// 配置项，<see cref="GlobalConfigDto"/>Json序列化后，使用RSA加密后的字符串
         /// </summary>
-        public string? /*GlobalConfigService?*/ Config { get; set; }
+        public string? Config { get; set; }
 
         /// <summary>
         /// RSA密钥Id，在<see cref="AuthenticationController"/>中获取
