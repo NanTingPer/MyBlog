@@ -1,4 +1,4 @@
-﻿<template>
+<template>
     <div v-if="isLoginPage" class="login-page">
         <router-view />
     </div>
@@ -21,10 +21,12 @@
                     <img src="/文章图标.svg" class="nav-icon" alt="文章管理">
                     <span class="nav-text">文章管理</span>
                 </router-link>
-                <div class="nav-item disabled">
+                <router-link to="/config" class="nav-item"
+                    :class="{ active: $route.name === 'adminConfig' }"
+                    @click="sidebarOpen = false">
                     <img src="/设置图标.svg" class="nav-icon" alt="系统设置">
                     <span class="nav-text">系统设置</span>
-                </div>
+                </router-link>
             </nav>
             <div class="sidebar-footer">
                 <div class="user-info">

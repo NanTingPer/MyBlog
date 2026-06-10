@@ -1,6 +1,7 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
 import AdminFriendLink from '../views/admin/AdminFriendLink.vue';
 import AdminPosts from '../views/admin/AdminPosts.vue';
+import AdminConfig from '../views/admin/AdminConfig.vue';
 import Login from '../views/admin/Login.vue';
 import { sessionStore } from '../ts/utils/sessionStore';
 
@@ -26,6 +27,12 @@ const routes = [
         path: '/posts',
         name: 'adminPosts',
         component: AdminPosts,
+        meta: { requiresAuth: true }
+    },
+    {
+        path: '/config',
+        name: 'adminConfig',
+        component: AdminConfig,
         meta: { requiresAuth: true }
     }
 ];
