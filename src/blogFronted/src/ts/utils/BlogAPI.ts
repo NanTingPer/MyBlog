@@ -1,4 +1,4 @@
-﻿import { type SearchBlogInput } from "../types/blogs/SearchBlogInput.ts";
+import { type SearchBlogInput } from "../types/blogs/SearchBlogInput.ts";
 
 export class BlogAPI {
     private readonly url: string;
@@ -49,6 +49,12 @@ export class BlogAPI {
         return parmsText ? `?${parms.toString()}` : "";
     }
 
+    /**
+     * 从缓存中获取页数，不保证实时性
+     * 前端管理页面应使用 AdminBlogAPI 的实时接口
+     * @param limit 每页数量
+     * @returns Promise<Response>
+     */
     public GetPageCount(limit: number): Promise<Response> {
         return fetch(`${this.url}${this.apiEndpoint}/pageCount?limit=${limit}`, {
             method: "GET",

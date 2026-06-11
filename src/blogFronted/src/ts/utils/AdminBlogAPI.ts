@@ -28,6 +28,19 @@ export class AdminBlogAPI {
         });
     }
 
+    /**
+     * 从数据库实时获取页数（需要管理员权限）
+     * 与 BlogAPI.GetPageCount 不同，此接口不走缓存，保证数据实时性
+     * @param limit 每页数量
+     * @returns Promise<Response>
+     */
+    public static async getTotalPages(limit: number): Promise<Response> {
+        return apiFetch(`${apiEndpoint}/dbPageCount?limit=${limit}`, {
+            method: "GET",
+            headers: AdminBlogAPI.GetHeaders()
+        });
+    }
+
     public static async addOrReplace(post: BlogInfo): Promise<Response> {
         return apiFetch(`${apiEndpoint}/addOrReplace`, {
             method: "POST",

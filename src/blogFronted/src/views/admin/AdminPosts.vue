@@ -59,8 +59,8 @@
                     <span class="total">共 {{ totalCount }} 条数据</span>
                     <div class="pagination-controls">
                         <button class="pagination-btn" :disabled="currentPage <= 1" @click="goToPage(currentPage - 1)">‹</button>
-                        <button class="pagination-btn active">{{ currentPage }}</button>
-                        <button class="pagination-btn" :disabled="posts.length < pageSize" @click="goToPage(currentPage + 1)">›</button>
+                        <span class="page-info">{{ currentPage }} / {{ totalPages }}</span>
+                        <button class="pagination-btn" :disabled="currentPage >= totalPages" @click="goToPage(currentPage + 1)">›</button>
                     </div>
                 </div>
             </div>
@@ -92,8 +92,8 @@
                     <span class="total">共 {{ totalCount }} 篇文章</span>
                     <div class="pagination-controls">
                         <button class="pagination-btn" :disabled="currentPage <= 1" @click="goToPage(currentPage - 1)">‹</button>
-                        <span>{{ currentPage }}</span>
-                        <button class="pagination-btn" :disabled="posts.length < pageSize" @click="goToPage(currentPage + 1)">›</button>
+                        <span class="page-info">{{ currentPage }} / {{ totalPages }}</span>
+                            <button class="pagination-btn" :disabled="currentPage >= totalPages" @click="goToPage(currentPage + 1)">›</button>
                     </div>
                 </div>
             </div>
@@ -154,6 +154,7 @@ const searchKeyword = ref('');
 const currentPage = ref(1);
 const pageSize = 10;
 const totalCount = ref(0);
+const totalPages = ref(0);
 const posts = ref<BlogInfo[]>([]);
 
 /* ===== 表单状态 ===== */
@@ -293,10 +294,20 @@ const loadPosts = async () => {
             limit: pageSize,
             page: currentPage.value
         };
-        const response = await AdminBlogAPI.getAllToPage(input);
+        
+        // 同时获取文章数据和总页数
+        const [response, pageResponse] = await Promise.all([
+            AdminBlogAPI.getAllToPage(input),
+            AdminBlogAPI.getTotalPages(pageSize)
+        ]);
+        
         const data = await response.json();
         posts.value = data.data || [];
         totalCount.value = data.total || posts.value.length;
+        
+        // 从实时接口获取总页数
+        const pageData = await pageResponse.json();
+        totalPages.value = pageData.data || 0;
     } catch (error) {
         console.error('加载文章失败:', error);
     }
@@ -399,6 +410,12 @@ loadPosts();
 
 .btn-delete:hover {
     background: var(--color-danger-light-bg-hover);
+}
+
+/* 分页页数信息 */
+.page-info {
+    font-size: 14px;
+    color: var(--color-text-muted);
 }
 
 /* 分页禁用按钮覆盖 */
