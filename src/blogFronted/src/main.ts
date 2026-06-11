@@ -1,11 +1,15 @@
 ﻿import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
-import './assets/css/index.css'
 
 const app = createApp(App)
 app.use(router)
 app.mount('#app')
+
+// import './assets/css/index.css'
+import('./assets/css/index.css');
+import('./assets/js/prism.js' as any);
+import('./assets/css/prism.css')
 
 // 如何启动项目？
 // npm install -g http-server
