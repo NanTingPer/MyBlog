@@ -67,7 +67,8 @@ sessionStore.addJWTChangeCallback(j);
 <style scoped>
 .admin-container {
     display: flex;
-    min-height: 100vh;
+    height: 100vh;
+    overflow: hidden;
     background: #f5f5f5;
 }
 
@@ -236,7 +237,8 @@ sessionStore.addJWTChangeCallback(j);
     .sidebar {
         position: static;
         left: auto;
-        height: auto;
+        flex-shrink: 0;
+        overflow-y: auto;
     }
     
     .mobile-header {
