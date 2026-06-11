@@ -9,7 +9,11 @@ app.mount('#app')
 // import './assets/css/index.css'
 import('./assets/css/index.css');
 import('./assets/js/prism.js' as any);
-import('./assets/css/prism.css')
+import('./assets/css/prism.css');
+
+import('katex/dist/katex.min.css');
+import('katex').then(k => (window as any).katex = k.default);
+import('katex/contrib/auto-render/auto-render.ts').then(k => (window as any).randerMathInElement = k.default);
 
 // 如何启动项目？
 // npm install -g http-server

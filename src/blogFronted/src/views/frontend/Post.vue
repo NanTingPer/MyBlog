@@ -1,6 +1,6 @@
 <template>
     <Transition appear @before-enter="onBeforeEnter" @enter="onEnter">
-        <div class="post-container">
+        <div id="content" class="post-container">
             <div v-html="content"></div>
         </div>
     </Transition>
@@ -26,7 +26,27 @@ onMounted(async () => {
 
             response.json().then(json => {
                 content.value = json.data;
-                nextTick(() => eval('Prism.highlightAll();'));
+                nextTick(() => {
+                    let inter = setInterval(() => {
+                        let window_ = (window as any);
+                        if (window_.randerMathInElement && window_.Prism) {
+                            eval(`
+                            randerMathInElement(document.getElementById('content'), 
+                            { 
+                                strict: false,
+                                preProcess: (math) => {
+                                    if (math.includes('&') && !math.includes('\\\\begin{')) {
+                                        return '\\\\begin{aligned}' + math + '\\\\end{aligned}';
+                                    }
+                                    return math;
+                                }
+                            })`);
+                            eval('Prism.highlightAll();')
+                            clearTimeout(inter);
+                        }
+                    }, 20);
+
+                });
             })
         });
     } catch (error) {
