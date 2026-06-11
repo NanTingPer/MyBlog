@@ -93,6 +93,18 @@ public class PostsController(PostsService service, MarkdownService markdown, Wat
     }
 
     /// <summary>
+    /// 获取页面数量
+    /// </summary>
+    [HttpGet("dbPageCount")]
+    [Authorize(Policy = PolicyTypes.ADMIN)]
+    public async Task<ActionResult<BaseResult<int>>> DbPageCount([FromQuery] int limit)
+    {
+        int totalCount = await service.CountAsync();
+        int pages = (int)Math.Ceiling((double)totalCount / limit);
+        return Ok(BaseResult<int>.Create(pages));
+    }
+
+    /// <summary>
     /// 使用Id获取文章，limit 和 page 参数将不会生效
     /// </summary>
     [HttpGet("searchOnId")]
