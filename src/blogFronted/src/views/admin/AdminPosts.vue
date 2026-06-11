@@ -13,7 +13,15 @@
             </div>
 
             <div class="table-container">
-                <table class="posts-table">
+                <table class="posts-table table-fixed">
+                    <colgroup>
+                        <col class="col-post-name">
+                        <col class="col-post-date">
+                        <col class="col-post-author">
+                        <col class="col-post-content">
+                        <col class="col-post-tag">
+                        <col class="col-post-actions">
+                    </colgroup>
                     <thead>
                         <tr>
                             <th>名称</th>
@@ -320,6 +328,14 @@ loadPosts();
     width: 100%;
     border-collapse: collapse;
 }
+
+/* 列宽定义 */
+.col-post-name { width: 10rem; }
+.col-post-date { width: 10rem; }
+.col-post-author { width: 7rem; }
+.col-post-content { width: 14rem; }
+.col-post-tag { width: 8rem; }
+.col-post-actions { width: 9rem; }
 
 .posts-table thead {
     background: #f8f9fa;

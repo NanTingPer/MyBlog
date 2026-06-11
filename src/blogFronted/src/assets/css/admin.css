@@ -694,6 +694,11 @@
 /* 自动滚动 */
 .overflow-auto { overflow: auto; }
 
+/* 表格布局 */
+.table-fixed { table-layout: fixed; }
+.table-fixed th,
+.table-fixed td { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
 /* 显示 */
 .hidden { display: none; }
 .block { display: block; }

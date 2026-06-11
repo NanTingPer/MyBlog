@@ -14,7 +14,15 @@
             </div>
 
             <div class="table-container">
-                <table class="friendlink-table">
+                <table class="friendlink-table table-fixed">
+                    <colgroup>
+                        <col class="col-avatar">
+                        <col class="col-name">
+                        <col class="col-url">
+                        <col class="col-dictum">
+                        <col class="col-date">
+                        <col class="col-actions">
+                    </colgroup>
                     <thead>
                         <tr>
                             <th>头像</th>
@@ -271,6 +279,13 @@ loadFriendlinks();
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
     overflow: hidden;
 }
+
+.col-avatar { width: 5rem; }
+.col-name { width: 8rem; }
+.col-url { width: 14rem; }
+.col-dictum { width: 10rem; }
+.col-date { width: 9rem; }
+.col-actions { width: 9rem; }
 @media (max-width: 768px) {
     .friendlink-container {
         padding: 16px;
