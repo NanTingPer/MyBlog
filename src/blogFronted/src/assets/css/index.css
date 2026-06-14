@@ -1,19 +1,4 @@
-/* ===== 前端博客颜色 Token ===== */
-:root {
-    /* 复用共享主色 */
-    --color-primary: #4caf50;
-    --color-primary-hover: #43a047;
-
-    /* 中性色 */
-    --color-text: #333;
-    --color-text-secondary: #666;
-    --color-text-muted: #999;
-    --color-border: #eee;
-
-    /* 前端特有背景色 */
-    --color-bg-warm: #faf8f5;
-    --color-bg-warm-alt: #f8f7f4;
-}
+@import './variables.css';
 
 /* 全局重置 */
 * {
@@ -66,15 +51,15 @@ code[class*="language-"] {
 
 /* 通用卡片样式 */
 .card {
-    background: #fff;
+    background: var(--color-bg-white);
     border-radius: 16px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    box-shadow: var(--shadow-md);
     transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-lg);
 }
 
 /* 通用页面容器 */

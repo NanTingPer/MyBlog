@@ -132,7 +132,7 @@ watch(() => route.params.name, async (newName) => {
 .tag-sidebar-title {
     font-size: 16px;
     font-weight: 600;
-    color: #333;
+    color: var(--color-text);
     margin: 0 0 16px;
 }
 
@@ -151,12 +151,12 @@ watch(() => route.params.name, async (newName) => {
 }
 
 .tag-item:hover {
-    background: #c8e6c9;
+    background: var(--color-primary-light-bg-hover);
 }
 
 .tag-item.router-link-active {
-    background: #4caf50;
-    color: #fff;
+    background: var(--color-primary);
+    color: var(--color-text-white);
 }
 
 .pagination {
@@ -170,18 +170,18 @@ watch(() => route.params.name, async (newName) => {
 
 .page-btn {
     padding: 8px 16px;
-    border: 1px solid #e0e0e0;
+    border: 1px solid var(--color-border);
     border-radius: 8px;
-    background: #fff;
-    color: #666;
+    background: var(--color-bg-white);
+    color: var(--color-text-secondary);
     font-size: 14px;
     cursor: pointer;
     transition: all 0.2s;
 }
 
 .page-btn:hover:not(:disabled) {
-    background: #f5f5f5;
-    color: #333;
+    background: var(--color-bg-light);
+    color: var(--color-text);
 }
 
 .page-btn:disabled {
@@ -191,12 +191,12 @@ watch(() => route.params.name, async (newName) => {
 
 .page-info {
     font-size: 14px;
-    color: #999;
+    color: var(--color-text-muted);
 }
 
 .empty-tip {
     text-align: center;
-    color: #999;
+    color: var(--color-text-muted);
     font-size: 14px;
     padding: 60px 0;
 }

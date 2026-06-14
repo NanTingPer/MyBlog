@@ -94,14 +94,14 @@ const goToPost = (id: string) => {
 .article-title {
     font-size: 1.125rem;
     font-weight: 600;
-    color: #333;
+    color: var(--color-text);
     margin: 0 0 0.75rem;
     line-height: 1.4;
 }
 
 .article-description {
     font-size: 0.875rem;
-    color: #666;
+    color: var(--color-text-secondary);
     line-height: 1.6;
     margin: 0 0 1rem;
     flex: 1;
@@ -118,7 +118,7 @@ const goToPost = (id: string) => {
 
 .article-date {
     font-size: 0.8125rem;
-    color: #999;
+    color: var(--color-text-muted);
 }
 
 .article-tag {
@@ -129,8 +129,8 @@ const goToPost = (id: string) => {
 }
 
 .tag {
-    background: #e8f5e9;
-    color: #000000;
+    background: var(--color-primary-light-bg);
+    color: var(--color-text);
 }
 
 @media (max-width: 768px) {

@@ -315,7 +315,7 @@ async function handleRegister() {
 <style scoped>
 /* 背景渐变 */
 .login-bg {
-    background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
+    background: linear-gradient(135deg, var(--color-bg-light) 0%, var(--color-border) 100%);
     position: relative;
 }
 
@@ -329,17 +329,17 @@ async function handleRegister() {
 }
 
 .tab-active {
-    color: #4caf50;
-    border-bottom-color: #4caf50;
+    color: var(--color-primary);
+    border-bottom-color: var(--color-primary);
     font-weight: 500;
 }
 
 .tab-inactive {
-    color: #9ca3af;
+    color: var(--color-text-muted);
 }
 
 .tab-inactive:hover {
-    color: #4b5563;
+    color: var(--color-text-secondary);
 }
 
 /* 输入框图标区域 */
@@ -348,7 +348,7 @@ async function handleRegister() {
 }
 
 .input-icon {
-    color: #999;
+    color: var(--color-text-muted);
     pointer-events: none;
 }
 
@@ -358,23 +358,23 @@ async function handleRegister() {
     padding: 12px 16px;
     border-radius: 6px;
     font-size: 14px;
-    background: #fff;
-    color: #4caf50;
-    border: 1px solid #4caf50;
+    background: var(--color-bg-white);
+    color: var(--color-primary);
+    border: 1px solid var(--color-primary);
     cursor: pointer;
     transition: all 0.2s;
 }
 
 .btn-send-code:hover:not(:disabled) {
-    background: #4caf50;
-    color: #fff;
+    background: var(--color-primary);
+    color: var(--color-text-white);
 }
 
 .btn-send-code:disabled {
-    border-color: #d1d5db;
-    color: #9ca3af;
+    border-color: var(--color-border);
+    color: var(--color-text-muted);
     cursor: not-allowed;
-    background: #f9fafb;
+    background: var(--color-bg-light);
 }
 
 /* 加载动画 */
@@ -382,7 +382,7 @@ async function handleRegister() {
     width: 16px;
     height: 16px;
     border: 2px solid rgba(255, 255, 255, 0.3);
-    border-top-color: #fff;
+    border-top-color: var(--color-text-white);
     border-radius: 50%;
     animation: spin 0.6s linear infinite;
 }
@@ -396,8 +396,8 @@ async function handleRegister() {
 /* 消息提示 */
 .error-msg {
     padding: 10px 12px;
-    background: #ffebee;
-    color: #e53935;
+    background: var(--color-danger-light-bg);
+    color: var(--color-danger);
     border-radius: 6px;
     font-size: 13px;
     text-align: center;
@@ -405,8 +405,8 @@ async function handleRegister() {
 
 .success-msg {
     padding: 10px 12px;
-    background: #f0fdf4;
-    color: #16a34a;
+    background: var(--color-success-light-bg);
+    color: var(--color-primary-text);
     border-radius: 6px;
     font-size: 13px;
     text-align: center;

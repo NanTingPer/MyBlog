@@ -87,18 +87,18 @@ onMounted(async () => {
 
 .page-btn {
     padding: 8px 16px;
-    border: 1px solid #e0e0e0;
+    border: 1px solid var(--color-border);
     border-radius: 8px;
-    background: #fff;
-    color: #666;
+    background: var(--color-bg-white);
+    color: var(--color-text-secondary);
     font-size: 14px;
     cursor: pointer;
     transition: all 0.2s;
 }
 
 .page-btn:hover:not(:disabled) {
-    background: #f5f5f5;
-    color: #333;
+    background: var(--color-bg-light);
+    color: var(--color-text);
 }
 
 .page-btn:disabled {
@@ -108,6 +108,6 @@ onMounted(async () => {
 
 .page-info {
     font-size: 14px;
-    color: #999;
+    color: var(--color-text-muted);
 }
 </style>

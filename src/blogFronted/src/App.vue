@@ -17,6 +17,10 @@
 
                     <a href="/admin.html" class="nav-link" target="_blank">后台管理</a>
                 </nav>
+                <button class="theme-toggle" @click="toggleTheme"
+                    :title="currentTheme === 'light' ? '切换暗色主题' : '切换亮色主题'">
+                    {{ currentTheme === 'light' ? '🌙' : '☀️' }}
+                </button>
                 <button class="menu-btn" @click="isNavOpen = !isNavOpen">
                     <span></span>
                     <span></span>
@@ -36,8 +40,14 @@
 </template>
 <script setup lang="ts">
 import { ref } from "vue";
+import { useTheme } from "./composables/useTheme";
 
 const isNavOpen = ref(false);
+const { currentTheme, setTheme } = useTheme();
+
+function toggleTheme() {
+    setTheme(currentTheme.value === 'light' ? 'dark' : 'light');
+}
 </script>
 <style scoped>
 .app-container {
@@ -48,10 +58,8 @@ const isNavOpen = ref(false);
 }
 
 .header {
-    background: var(--color-bg-warm-alt);
-    /* border-bottom: 1px solid #eee; */
+    background: var(--color-bg-warm);
     padding: 0 16px;
-    /* position: relative; */
     position: sticky;
     top: 0;
     z-index: 9999;
@@ -88,12 +96,28 @@ const isNavOpen = ref(false);
 
 .nav-link:hover {
     color: var(--color-primary);
-    background: rgba(76, 175, 80, 0.1);
+    background: var(--color-primary-light-bg);
 }
 
 .nav-link.active {
     color: var(--color-primary);
     font-weight: 500;
+}
+
+.theme-toggle {
+    background: none;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    line-height: 1;
+}
+
+.theme-toggle:hover {
+    border-color: var(--color-primary);
+    background: var(--color-primary-light-bg);
 }
 
 .menu-btn {
@@ -148,10 +172,10 @@ const isNavOpen = ref(false);
         top: 52px;
         left: 0;
         right: 0;
-        background: var(--color-bg-warm-alt);
+        background: var(--color-bg-warm);
         flex-direction: column;
         padding: 12px 0;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        box-shadow: var(--shadow-lg);
         transform: translateY(-150%);
         opacity: 0;
         visibility: hidden;

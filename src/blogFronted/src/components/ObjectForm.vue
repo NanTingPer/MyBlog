@@ -541,7 +541,7 @@ function handleCancel() {
 .btn-array-confirm {
     padding: 6px 14px;
     background: var(--color-primary);
-    color: #fff;
+    color: var(--color-text-white);
     border: none;
     border-radius: 4px;
     font-size: 13px;

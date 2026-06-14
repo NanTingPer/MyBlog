@@ -372,17 +372,17 @@ onMounted(() => {
 }
 
 .config-form {
-    background: #fff;
+    background: var(--color-bg-white);
     border-radius: 8px;
     padding: 24px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    box-shadow: var(--shadow-md);
 }
 
 @media (max-width: 768px) {
     .config-container {
         padding: 16px;
         min-height: 100vh;
-        background: #f5f5f5;
+        background: var(--color-bg-light);
     }
 
     .config-form {

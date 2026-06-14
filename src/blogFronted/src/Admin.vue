@@ -69,13 +69,13 @@ sessionStore.addJWTChangeCallback(j);
     display: flex;
     height: 100vh;
     overflow: hidden;
-    background: #f5f5f5;
+    background: var(--color-bg-light);
 }
 
 .sidebar {
     width: 200px;
-    background: #fff;
-    border-right: 1px solid #e8e8e8;
+    background: var(--color-bg-white);
+    border-right: 1px solid var(--color-border);
     display: flex;
     flex-direction: column;
     position: fixed;
@@ -92,18 +92,18 @@ sessionStore.addJWTChangeCallback(j);
 
 .sidebar-header {
     padding: 20px;
-    border-bottom: 1px solid #e8e8e8;
+    border-bottom: 1px solid var(--color-border);
 }
 
 .logo {
     font-size: 24px;
     font-weight: 700;
-    color: #333;
+    color: var(--color-text);
 }
 
 .admin-label {
     font-size: 12px;
-    color: #999;
+    color: var(--color-text-muted);
     margin-left: 8px;
 }
 
@@ -116,23 +116,23 @@ sessionStore.addJWTChangeCallback(j);
     display: flex;
     align-items: center;
     padding: 12px 20px;
-    color: #666;
+    color: var(--color-text-secondary);
     text-decoration: none;
     transition: all 0.2s;
 }
 
 .nav-item:hover:not(.disabled) {
-    background: #f5f7fa;
-    color: #4caf50;
+    background: var(--color-bg-light);
+    color: var(--color-primary);
 }
 
 .nav-item.active {
-    background: #e8f5e9;
-    color: #4caf50;
+    background: var(--color-primary-light-bg);
+    color: var(--color-primary);
 }
 
 .nav-item.disabled {
-    color: #ccc;
+    color: var(--color-text-light);
     cursor: not-allowed;
 }
 
@@ -148,7 +148,7 @@ sessionStore.addJWTChangeCallback(j);
 
 .sidebar-footer {
     padding: 16px;
-    border-top: 1px solid #e8e8e8;
+    border-top: 1px solid var(--color-border);
 }
 
 .user-info {
@@ -160,8 +160,8 @@ sessionStore.addJWTChangeCallback(j);
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background: #4caf50;
-    color: #fff;
+    background: var(--color-primary);
+    color: var(--color-text-white);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -172,7 +172,7 @@ sessionStore.addJWTChangeCallback(j);
 
 .user-name {
     font-size: 13px;
-    color: #333;
+    color: var(--color-text);
 }
 
 .main-content {
@@ -189,9 +189,9 @@ sessionStore.addJWTChangeCallback(j);
     display: flex;
     align-items: center;
     padding: 12px 16px;
-    background: #fff;
-    border-bottom: 1px solid #e8e8e8;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    background: var(--color-bg-white);
+    border-bottom: 1px solid var(--color-border);
+    box-shadow: var(--shadow-md);
 }
 
 .menu-btn {
@@ -211,7 +211,7 @@ sessionStore.addJWTChangeCallback(j);
 .menu-btn span {
     width: 24px;
     height: 2px;
-    background: #333;
+    background: var(--color-text);
     margin: 3px 0;
     transition: all 0.3s;
 }
@@ -219,7 +219,7 @@ sessionStore.addJWTChangeCallback(j);
 .page-title {
     font-size: 16px;
     font-weight: 600;
-    color: #333;
+    color: var(--color-text);
     margin: 0;
 }
 

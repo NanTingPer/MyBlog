@@ -81,7 +81,7 @@ const { onBeforeEnter, onEnter } = useStaggerAnimation();
 .card-title {
     font-size: 18px;
     font-weight: 600;
-    color: #333;
+    color: var(--color-text);
     margin: 0 0 20px;
 }
 
@@ -96,14 +96,14 @@ const { onBeforeEnter, onEnter } = useStaggerAnimation();
     align-items: center;
     padding: 16px;
     border-radius: 12px;
-    background: #faf8f5;
+    background: var(--color-bg-warm);
     text-decoration: none;
     transition: all 0.2s;
     cursor: pointer;
 }
 
 .account-item:hover {
-    background: #f0ede8;
+    background: var(--color-bg-warm-hover);
     transform: translateY(-2px);
 }
 
@@ -111,7 +111,7 @@ const { onBeforeEnter, onEnter } = useStaggerAnimation();
     width: 36px;
     height: 36px;
     flex-shrink: 0;
-    color: #333;
+    color: var(--color-text);
 }
 
 .bilibili-icon {
@@ -129,18 +129,18 @@ const { onBeforeEnter, onEnter } = useStaggerAnimation();
 .account-name {
     font-size: 15px;
     font-weight: 600;
-    color: #333;
+    color: var(--color-text);
 }
 
 .account-link {
     font-size: 13px;
-    color: #999;
+    color: var(--color-text-muted);
 }
 
 .arrow-icon {
     width: 20px;
     height: 20px;
-    color: #ccc;
+    color: var(--color-text-light);
     flex-shrink: 0;
 }
 

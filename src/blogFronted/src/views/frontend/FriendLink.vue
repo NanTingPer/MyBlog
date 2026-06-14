@@ -90,13 +90,13 @@ onMounted(async () => {
 .friendlink-name {
     font-size: 16px;
     font-weight: 600;
-    color: #333;
+    color: var(--color-text);
     margin: 0 0 6px;
 }
 
 .friendlink-dictum {
     font-size: 13px;
-    color: #999;
+    color: var(--color-text-muted);
     margin: 0;
 }
 </style>

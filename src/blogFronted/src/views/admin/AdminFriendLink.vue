@@ -276,7 +276,7 @@ loadFriendlinks();
 
 .table-container {
     border-radius: 10px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    box-shadow: var(--shadow-md);
     overflow: hidden;
 }
 
@@ -290,7 +290,7 @@ loadFriendlinks();
     .friendlink-container {
         padding: 16px;
         min-height: 100vh;
-        background: #f5f5f5;
+        background: var(--color-bg-light);
     }
 
     .btn-back-mobile {
@@ -298,14 +298,14 @@ loadFriendlinks();
         border: none;
         font-size: 24px;
         cursor: pointer;
-        color: #333;
+        color: var(--color-text);
         padding: 4px 8px;
         display: block;
     }
 
     .card-url {
         font-size: 12px;
-        color: #666;
+        color: var(--color-text-secondary);
         margin: 0 0 4px 0;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -314,7 +314,7 @@ loadFriendlinks();
 
     .card-dictum {
         font-size: 13px;
-        color: #999;
+        color: var(--color-text-muted);
         margin: 0 0 4px 0;
         overflow: hidden;
         text-overflow: ellipsis;

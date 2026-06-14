@@ -1,0 +1,49 @@
+/* ===== 全局设计 Token：颜色变量 ===== */
+:root {
+    /* === 主色 - 绿色 === */
+    --color-primary: #4caf50;
+    --color-primary-hover: #43a047;
+    --color-primary-light-bg: #e8f5e9;
+    --color-primary-light-bg-hover: #c8e6c9;
+    --color-primary-text: #2e7d32;
+
+    /* === 危险色 - 红色 === */
+    --color-danger: #e53935;
+    --color-danger-hover: #c62828;
+    --color-danger-light-bg: #ffebee;
+    --color-danger-light-bg-hover: #ffcdd2;
+    --color-danger-text: #d32f2f;
+
+    /* === 信息色 - 蓝色 === */
+    --color-info: #1976d2;
+    --color-info-light-bg: #e3f2fd;
+    --color-info-light-bg-hover: #bbdefb;
+
+    /* === 成功色 - 绿色 === */
+    --color-success: #22c55e;
+    --color-success-light-bg: #f0fdf4;
+
+    /* === 中性色 - 文本 === */
+    --color-text: #333;
+    --color-text-secondary: #666;
+    --color-text-muted: #999;
+    --color-text-light: #bbb;
+    --color-text-white: #fff;
+
+    /* === 中性色 - 背景 === */
+    --color-bg-white: #fff;
+    --color-bg-warm: #faf8f5;
+    --color-bg-warm-hover: #f0ede8;
+    --color-bg-light: #f8f9fa;
+    --color-bg-lighter: #fafafa;
+    --color-bg-hover: #f5f5f5;
+
+    /* === 中性色 - 边框 === */
+    --color-border: #e8e8e8;
+    --color-border-light: #f0f0f0;
+
+    /* === 阴影 === */
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.1);
+}

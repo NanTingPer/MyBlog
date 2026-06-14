@@ -129,7 +129,7 @@ function handleCancel() {
 
 /* 对话框容器 */
 .dialog-box {
-    background: #fff;
+    background: var(--color-bg-white);
     border-radius: 12px;
     padding: 28px 24px 20px;
     width: 90%;
@@ -177,7 +177,7 @@ function handleCancel() {
 
 /* 取消按钮 */
 .dialog-btn-cancel {
-    background: #fff;
+    background: var(--color-bg-white);
     color: var(--color-text-secondary);
     border: 1px solid var(--color-border);
 }
@@ -189,7 +189,7 @@ function handleCancel() {
 /* 确认按钮（默认绿色） */
 .dialog-btn-confirm {
     background: var(--color-primary);
-    color: #fff;
+    color: var(--color-text-white);
 }
 
 .dialog-btn-confirm:hover:not(:disabled) {
@@ -199,7 +199,7 @@ function handleCancel() {
 /* 确认按钮（危险操作红色） */
 .dialog-btn-danger {
     background: var(--color-danger);
-    color: #fff;
+    color: var(--color-text-white);
 }
 
 .dialog-btn-danger:hover:not(:disabled) {

@@ -1,36 +1,4 @@
-/* ===== 设计 Token：颜色定义 ===== */
-:root {
-    /* 主色 - 绿色 */
-    --color-primary: #4caf50;
-    --color-primary-hover: #43a047;
-    --color-primary-light-bg: #e8f5e9;
-    --color-primary-light-bg-hover: #c8e6c9;
-    --color-primary-text: #2e7d32;
-
-    /* 危险色 - 红色 */
-    --color-danger: #e53935;
-    --color-danger-hover: #c62828;
-    --color-danger-light-bg: #ffebee;
-    --color-danger-light-bg-hover: #ffcdd2;
-    --color-danger-text: #d32f2f;
-
-    /* 信息色 - 蓝色 */
-    --color-info: #1976d2;
-    --color-info-light-bg: #e3f2fd;
-    --color-info-light-bg-hover: #bbdefb;
-
-    /* 中性色 */
-    --color-text: #333;
-    --color-text-secondary: #666;
-    --color-text-muted: #999;
-    --color-text-light: #bbb;
-    --color-border: #e8e8e8;
-    --color-border-light: #f0f0f0;
-    --color-bg-white: #fff;
-    --color-bg-light: #f8f9fa;
-    --color-bg-lighter: #fafafa;
-    --color-bg-hover: #f5f5f5;
-}
+@import './variables.css';
 
 /* 页面布局 */
 .page-header {
@@ -50,7 +18,7 @@
 /* 按钮 */
 .btn-add {
     background: var(--color-primary);
-    color: #fff;
+    color: var(--color-text-white);
     border: none;
     padding: 8px 16px;
     border-radius: 6px;
@@ -65,7 +33,7 @@
 
 .btn-edit {
     background: var(--color-primary);
-    color: #fff;
+    color: var(--color-text-white);
     border: none;
     padding: 4px 10px;
     border-radius: 4px;
@@ -79,7 +47,7 @@
 }
 
 .btn-delete {
-    background: #fff;
+    background: var(--color-bg-white);
     color: var(--color-danger);
     border: 1px solid var(--color-danger);
     padding: 4px 10px;
@@ -95,7 +63,7 @@
 
 .btn-save {
     background: var(--color-primary);
-    color: #fff;
+    color: var(--color-text-white);
     border: none;
     padding: 10px 24px;
     border-radius: 6px;
@@ -109,7 +77,7 @@
 }
 
 .btn-cancel {
-    background: #fff;
+    background: var(--color-bg-white);
     color: var(--color-text-secondary);
     border: 1px solid var(--color-border);
     padding: 10px 24px;
@@ -157,9 +125,9 @@
 
 /* 表格容器 */
 .table-container {
-    background: #fff;
+    background: var(--color-bg-white);
     border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    box-shadow: var(--shadow-md);
 }
 
 .friendlink-table {
@@ -193,7 +161,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #fff;
+    color: var(--color-text-white);
     font-size: 14px;
     font-weight: 500;
     overflow: hidden;
@@ -252,7 +220,7 @@
     width: 32px;
     height: 32px;
     border: 1px solid var(--color-border);
-    background: #fff;
+    background: var(--color-bg-white);
     border-radius: 4px;
     cursor: pointer;
     font-size: 14px;
@@ -266,7 +234,7 @@
 
 .pagination-btn.active {
     background: var(--color-primary);
-    color: #fff;
+    color: var(--color-text-white);
     border-color: var(--color-primary);
 }
 
@@ -296,10 +264,10 @@
 }
 
 .friendlink-form {
-    background: #fff;
+    background: var(--color-bg-white);
     border-radius: 8px;
     padding: 24px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    box-shadow: var(--shadow-md);
 }
 
 .form-group {
@@ -382,7 +350,7 @@
     .btn-add-mobile {
         display: flex;
         background: var(--color-primary);
-        color: #fff;
+        color: var(--color-text-white);
         border: none;
         width: 36px;
         height: 36px;
@@ -396,11 +364,11 @@
     .search-bar {
         display: flex;
         align-items: center;
-        background: #fff;
+        background: var(--color-bg-white);
         padding: 8px 16px;
         border-radius: 24px;
         margin-bottom: 16px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        box-shadow: var(--shadow-sm);
     }
 
     .search-icon {
@@ -429,11 +397,11 @@
     .mobile-card {
         display: flex;
         align-items: center;
-        background: #fff;
+        background: var(--color-bg-white);
         padding: 16px;
         border-radius: 12px;
         margin-bottom: 12px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        box-shadow: var(--shadow-sm);
     }
 
     .avatar {
@@ -443,7 +411,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #fff;
+        color: var(--color-text-white);
         font-size: 18px;
         font-weight: 500;
         overflow: hidden;
@@ -478,7 +446,7 @@
 
     .btn-edit-mobile {
         background: var(--color-primary);
-        color: #fff;
+        color: var(--color-text-white);
         border: none;
         padding: 6px 12px;
         border-radius: 4px;
@@ -487,7 +455,7 @@
     }
 
     .btn-delete-mobile {
-        background: #fff;
+        background: var(--color-bg-white);
         color: var(--color-danger);
         border: 1px solid var(--color-danger);
         padding: 6px 12px;
@@ -519,10 +487,10 @@
     }
 
     .friendlink-form {
-        background: #fff;
+        background: var(--color-bg-white);
         border-radius: 12px;
         padding: 20px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        box-shadow: var(--shadow-md);
     }
 
     .form-group label {
@@ -650,21 +618,21 @@
 .font-medium { font-weight: 500; }
 .font-semibold { font-weight: 600; }
 
-/* 颜色 */
-.text-gray-300 { color: #d1d5db; }
-.text-gray-400 { color: #9ca3af; }
-.text-gray-500 { color: #6b7280; }
-.text-gray-600 { color: #4b5563; }
-.text-gray-700 { color: #374151; }
-.text-gray-800 { color: #1f2937; }
-.text-green-500 { color: #22c55e; }
-.text-green-600 { color: #16a34a; }
-.text-red-500 { color: #ef4444; }
-.text-white { color: #fff; }
-.bg-white { background-color: #fff; }
-.bg-gray-50 { background-color: #f9fafb; }
-.bg-red-50 { background-color: #fef2f2; }
-.bg-green-50 { background-color: #f0fdf4; }
+/* 颜色 - 使用CSS变量统一管理 */
+.text-gray-300 { color: var(--color-text-light); }
+.text-gray-400 { color: var(--color-text-muted); }
+.text-gray-500 { color: var(--color-text-secondary); }
+.text-gray-600 { color: var(--color-text-secondary); }
+.text-gray-700 { color: var(--color-text); }
+.text-gray-800 { color: var(--color-text); }
+.text-green-500 { color: var(--color-success); }
+.text-green-600 { color: var(--color-primary-text); }
+.text-red-500 { color: var(--color-danger); }
+.text-white { color: var(--color-text-white); }
+.bg-white { background-color: var(--color-bg-white); }
+.bg-gray-50 { background-color: var(--color-bg-light); }
+.bg-red-50 { background-color: var(--color-danger-light-bg); }
+.bg-green-50 { background-color: var(--color-success-light-bg); }
 
 /* 圆角 */
 .rounded { border-radius: 4px; }
@@ -674,14 +642,14 @@
 .rounded-2xl { border-radius: 16px; }
 
 /* 阴影 */
-.shadow { box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); }
-.shadow-md { box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
-.shadow-lg { box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1); }
+.shadow { box-shadow: var(--shadow-sm); }
+.shadow-md { box-shadow: var(--shadow-md); }
+.shadow-lg { box-shadow: var(--shadow-lg); }
 
 /* 边框 */
-.border { border: 1px solid #e5e7eb; }
-.border-b { border-bottom: 1px solid #e5e7eb; }
-.border-gray-200 { border-color: #e5e7eb; }
+.border { border: 1px solid var(--color-border); }
+.border-b { border-bottom: 1px solid var(--color-border); }
+.border-gray-200 { border-color: var(--color-border); }
 
 /* 过渡 */
 .transition-all { transition: all 0.2s; }

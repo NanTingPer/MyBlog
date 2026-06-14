@@ -81,7 +81,7 @@ onUnmounted(() => observer?.disconnect());
     border: 1px solid var(--color-border);
     border-radius: 0.5rem;
     outline: none;
-    background: var(--color-bg-warm-alt);
+    background: var(--color-bg-warm);
     color: var(--color-text);
     transition: border-color 0.2s;
 }
@@ -96,7 +96,7 @@ onUnmounted(() => observer?.disconnect());
     border: none;
     border-radius: 0.5rem;
     background: var(--color-primary);
-    color: #fff;
+    color: var(--color-text-white);
     cursor: pointer;
     transition: opacity 0.2s;
     white-space: nowrap;

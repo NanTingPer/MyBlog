@@ -330,7 +330,7 @@ loadPosts();
 /* 表格容器覆盖：圆角和阴影微调 */
 .table-container {
     border-radius: 10px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    box-shadow: var(--shadow-md);
     overflow: hidden;
 }
 
@@ -349,7 +349,7 @@ loadPosts();
 .col-post-actions { width: 9rem; }
 
 .posts-table thead {
-    background: #f8f9fa;
+    background: var(--color-bg-light);
 }
 
 .posts-table th {
@@ -428,7 +428,7 @@ loadPosts();
 .mobile-card {
     display: block;
     border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    box-shadow: var(--shadow-md);
 }
 
 .card-content {
@@ -506,7 +506,7 @@ loadPosts();
     .posts-container {
         padding: 16px;
         min-height: 100vh;
-        background: #f5f5f5;
+        background: var(--color-bg-light);
     }
 }
 </style>
