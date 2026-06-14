@@ -71,7 +71,20 @@ export function useStaggerAnimation(
                 fill: 'forwards'
             }
         );
-        animation.finished.then(() => done());
+        animation.finished.then(() => {
+            // 先设置最终状态的 inline style，防止 cancel 后闪烁
+            htmlEl.style.opacity = '1';
+            htmlEl.style.transform = 'translateY(0)';
+            // 取消 WAAPI 动画
+            animation.cancel();
+            // 在下一帧移除 inline style，让 CSS 平滑接管
+            // 这样 CSS 的 .card:hover { transform: translateY(-2px) } 才能生效
+            requestAnimationFrame(() => {
+                htmlEl.style.removeProperty('opacity');
+                htmlEl.style.removeProperty('transform');
+                done();
+            });
+        });
     };
 
     return { onBeforeEnter, onEnter };
