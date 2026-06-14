@@ -10,7 +10,11 @@
                         @click="isNavOpen = false">文章</router-link>
                     <router-link to="/friendlink" class="nav-link" active-class="active"
                         @click="isNavOpen = false">友链</router-link>
-                    <router-link to="/about" class="nav-link" active-class="active" @click="isNavOpen = false">关于</router-link>
+                    <router-link to="/about" class="nav-link" active-class="active"
+                        @click="isNavOpen = false">关于</router-link>
+                    <router-link to="/search" class="nav-link" active-class="active"
+                        @click="isNavOpen = false">搜索</router-link>
+
                     <a href="/admin.html" class="nav-link" target="_blank">后台管理</a>
                 </nav>
                 <button class="menu-btn" @click="isNavOpen = !isNavOpen">

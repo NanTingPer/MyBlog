@@ -5,6 +5,7 @@ import Post from "../views/frontend/Post.vue";
 import Tag from "../views/frontend/Tag.vue";
 import FriendLink from "../views/frontend/FriendLink.vue";
 import About from "../views/frontend/About.vue";
+import Search from "../views/frontend/Search.vue";
 
 const routes = [
     {
@@ -40,6 +41,11 @@ const routes = [
         path: "/tag/:name",
         name: "tag",
         component: Tag,
+    },
+    {
+        path: "/search",
+        name: "search",
+        component: Search,
     },
 ];
 
