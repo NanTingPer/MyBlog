@@ -14,34 +14,31 @@
 
             <div class="table-container">
                 <table class="posts-table table-fixed">
-                    <colgroup>
-                        <col class="col-post-name">
-                        <col class="col-post-date">
-                        <col class="col-post-author">
-                        <col class="col-post-content">
-                        <col class="col-post-tag">
-                        <col class="col-post-actions">
-                    </colgroup>
                     <thead>
                         <tr>
-                            <th>名称</th>
-                            <th>创建时间</th>
-                            <th>作者</th>
-                            <th>内容</th>
-                            <th>标签</th>
+                            <th v-for="col in tableColumns" :key="col">{{ col }}</th>
                             <th>操作</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr v-for="post in posts" :key="post.id">
-                            <td>{{ post.name }}</td>
-                            <td>{{ formatDate(post.createTime) }}</td>
-                            <td>
-                                <span v-for="a in post.author" :key="a" class="tag-item">{{ a }}</span>
-                            </td>
-                            <td>{{ truncateContent(post.content) }}</td>
-                            <td>
-                                <span v-for="t in post.tag" :key="t" class="tag-item">{{ t }}</span>
+                            <td v-for="col in tableColumns" :key="col">
+                                <!-- 时间列：格式化 -->
+                                <template v-if="col === 'createTime' || col === 'editTime'">
+                                    {{ formatDate(post[col]) }}
+                                </template>
+                                <!-- 数组列：标签展示 -->
+                                <template v-else-if="Array.isArray(post[col])">
+                                    <span v-for="(item, idx) in post[col]" :key="idx" class="tag-item">{{ item }}</span>
+                                </template>
+                                <!-- 长文本列：截断展示 -->
+                                <template v-else-if="isLongText(col, post[col])">
+                                    {{ truncateContent(post[col]) }}
+                                </template>
+                                <!-- 默认列 -->
+                                <template v-else>
+                                    {{ post[col] }}
+                                </template>
                             </td>
                             <td class="actions">
                                 <button class="btn-edit" @click="showEditForm(post)">编辑</button>
@@ -68,15 +65,23 @@
             <div class="mobile-list">
                 <div v-for="post in posts" :key="post.id" class="mobile-card">
                     <div class="card-content">
-                        <h3 class="card-name">{{ post.name }}</h3>
-                        <p class="card-date">{{ formatDate(post.createTime) }}</p>
-                        <p class="card-authors">
-                            <span v-for="a in post.author" :key="a" class="tag-item">{{ a }}</span>
-                        </p>
-                        <p class="card-content-text">{{ truncateContent(post.content) }}</p>
-                        <div class="card-tags">
-                            <span v-for="t in post.tag" :key="t" class="tag-item">{{ t }}</span>
-                        </div>
+                        <template v-for="col in tableColumns" :key="col">
+                            <p class="card-field">
+                                <span class="card-field-label">{{ col }}: </span>
+                                <template v-if="col === 'createTime' || col === 'editTime'">
+                                    {{ formatDate(post[col]) }}
+                                </template>
+                                <template v-else-if="Array.isArray(post[col])">
+                                    {{ post[col].join(', ') }}
+                                </template>
+                                <template v-else-if="isLongText(col, post[col])">
+                                    {{ truncateContent(post[col]) }}
+                                </template>
+                                <template v-else>
+                                    {{ post[col] }}
+                                </template>
+                            </p>
+                        </template>
                     </div>
                     <div class="card-actions">
                         <button class="btn-edit-mobile" @click="showEditForm(post)">编辑</button>
@@ -127,25 +132,24 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-import type { BlogInfo } from '../../ts/types/blogs/BlogInfo';
 import { AdminBlogAPI } from '../../ts/utils/AdminBlogAPI';
+import { generateFields, generateTableColumns } from '../../ts/utils/fieldUtils';
 import ObjectForm from '../../components/ObjectForm.vue';
 import type { FieldConfig } from '../../components/ObjectForm.vue';
 import ConfirmDialog from '../../components/ConfirmDialog.vue';
 
-/* ===== 字段配置 ===== */
-/** 文章表单字段配置，驱动 ObjectForm 自动渲染 */
-const postFields: FieldConfig[] = [
-    { key: 'name', label: '名称', type: 'text', required: true },
-    { key: 'title', label: '标题', type: 'text' },
-    { key: 'description', label: '描述', type: 'text' },
-    { key: 'author', label: '作者', type: 'array' },
-    { key: 'tag', label: '标签', type: 'array' },
-    { key: 'content', label: '内容', type: 'textarea' },
-    { key: 'id', label: 'ID', type: 'readonly', order: 99, hideOnAdd: true },
-    { key: 'createTime', label: '创建时间', type: 'readonly', order: 100, hideOnAdd: true },
-    { key: 'editTime', label: '编辑时间', type: 'readonly', order: 101, hideOnAdd: true },
-];
+/* ===== 动态字段配置 ===== */
+/** 表单字段配置，从第一条数据动态生成 */
+const postFields = ref<FieldConfig[]>([]);
+/** 表格列 key，从第一条数据动态生成 */
+const tableColumns = ref<string[]>([]);
+
+/** 长文本字段集合（表格中截断展示） */
+const LONG_TEXT_KEYS = new Set(['content', 'html', 'description']);
+
+function isLongText(key: string, value: unknown): boolean {
+    return LONG_TEXT_KEYS.has(key) && typeof value === 'string' && value.length > 20;
+}
 
 /* ===== 列表状态 ===== */
 const isEditing = ref(false);
@@ -155,18 +159,10 @@ const currentPage = ref(1);
 const pageSize = 10;
 const totalCount = ref(0);
 const totalPages = ref(0);
-const posts = ref<BlogInfo[]>([]);
+const posts = ref<Record<string, any>[]>([]);
 
 /* ===== 表单状态 ===== */
-const formData = ref<Record<string, any>>({
-    id: undefined,
-    name: '',
-    title: '',
-    description: '',
-    author: [] as string[],
-    content: '',
-    tag: [] as string[],
-});
+const formData = ref<Record<string, any>>({});
 const saving = ref(false);
 
 /* ===== 删除对话框状态 ===== */
@@ -211,26 +207,27 @@ const goToPage = (page: number) => {
 const showAddForm = () => {
     isAddMode.value = true;
     isEditing.value = true;
-    formData.value = {
-        id: undefined,
-        name: '',
-        title: '',
-        description: '',
-        author: [],
-        content: '',
-        tag: [],
-    };
+    const empty: Record<string, any> = {};
+    for (const f of postFields.value) {
+        if (f.type === 'array') empty[f.key] = [];
+        else if (f.type === 'readonly') continue;
+        else empty[f.key] = '';
+    }
+    formData.value = empty;
 };
 
 /** 显示编辑表单 */
-const showEditForm = (post: BlogInfo) => {
+const showEditForm = (post: Record<string, any>) => {
     isAddMode.value = false;
     isEditing.value = true;
-    formData.value = {
-        ...post,
-        author: [...post.author],
-        tag: [...post.tag]
-    };
+    // 深拷贝数组字段避免直接引用
+    const copy: Record<string, any> = { ...post };
+    for (const [key, value] of Object.entries(copy)) {
+        if (Array.isArray(value)) {
+            copy[key] = [...value];
+        }
+    }
+    formData.value = copy;
 };
 
 /** 取消编辑，返回列表 */
@@ -245,12 +242,14 @@ const cancelEdit = () => {
 const savePost = async (data: Record<string, any>) => {
     saving.value = true;
     try {
-        const postToSave: BlogInfo = {
-            ...data as BlogInfo,
-            author: (data.author as string[]).filter((a: string) => a.trim() !== ''),
-            tag: (data.tag as string[]).filter((t: string) => t.trim() !== '')
-        };
-        await AdminBlogAPI.addOrReplace(postToSave);
+        // 过滤数组中的空值
+        const postToSave: Record<string, any> = { ...data };
+        for (const [key, value] of Object.entries(postToSave)) {
+            if (Array.isArray(value)) {
+                postToSave[key] = (value as string[]).filter((v: string) => v.trim() !== '');
+            }
+        }
+        await AdminBlogAPI.addOrReplace(postToSave as any);
         alert(isAddMode.value ? '文章添加成功' : '文章更新成功');
         await loadPosts();
         cancelEdit();
@@ -274,7 +273,7 @@ const openDeleteDialog = (id?: string) => {
 const confirmDelete = async () => {
     deleting.value = true;
     try {
-        await AdminBlogAPI.delete({ ids: [deleteTargetId.value] });
+        await AdminBlogAPI.delete({ ids: [deleteTargetId.value] } as any);
         showDeleteConfirm.value = false;
         alert('删除成功');
         await loadPosts();
@@ -294,17 +293,24 @@ const loadPosts = async () => {
             limit: pageSize,
             page: currentPage.value
         };
-        
+
         // 同时获取文章数据和总页数
         const [response, pageResponse] = await Promise.all([
             AdminBlogAPI.getAllToPage(input),
             AdminBlogAPI.getTotalPages(pageSize)
         ]);
-        
+
         const data = await response.json();
-        posts.value = data.data || [];
-        totalCount.value = data.total || posts.value.length;
-        
+        const list = data.data || [];
+        posts.value = list;
+        totalCount.value = data.total || list.length;
+
+        // 从第一条数据推断表格列和表单字段
+        if (list.length > 0) {
+            tableColumns.value = generateTableColumns(list[0], ['html']);
+            postFields.value = generateFields(list[0], ['html']);
+        }
+
         // 从实时接口获取总页数
         const pageData = await pageResponse.json();
         totalPages.value = pageData.data || 0;
@@ -339,14 +345,6 @@ loadPosts();
     width: 100%;
     border-collapse: collapse;
 }
-
-/* 列宽定义 */
-.col-post-name { width: 10rem; }
-.col-post-date { width: 10rem; }
-.col-post-author { width: 7rem; }
-.col-post-content { width: 14rem; }
-.col-post-tag { width: 8rem; }
-.col-post-actions { width: 9rem; }
 
 .posts-table thead {
     background: var(--color-bg-light);
@@ -435,29 +433,17 @@ loadPosts();
     margin-left: 0;
 }
 
-.card-name {
+.card-field {
     margin: 0 0 8px 0;
-}
-
-.card-date {
-    color: var(--color-text-muted);
-    margin: 0 0 8px 0;
-}
-
-.card-authors {
-    margin: 0 0 8px 0;
-}
-
-.card-content-text {
     font-size: 13px;
     color: var(--color-text-secondary);
-    margin: 0 0 8px 0;
     line-height: 1.5;
     word-break: break-all;
 }
 
-.card-tags {
-    margin-bottom: 12px;
+.card-field-label {
+    font-weight: 600;
+    color: var(--color-text-muted);
 }
 
 /* 卡片操作按钮覆盖：水平布局 */

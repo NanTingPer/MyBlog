@@ -15,36 +15,39 @@
 
             <div class="table-container">
                 <table class="friendlink-table table-fixed">
-                    <colgroup>
-                        <col class="col-avatar">
-                        <col class="col-name">
-                        <col class="col-url">
-                        <col class="col-dictum">
-                        <col class="col-date">
-                        <col class="col-actions">
-                    </colgroup>
                     <thead>
                         <tr>
-                            <th>头像</th>
-                            <th>名称</th>
-                            <th>跳转链接</th>
-                            <th>格言</th>
-                            <th>创建时间</th>
+                            <th v-for="col in tableColumns" :key="col">{{ col }}</th>
                             <th>操作</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr v-for="link in filteredLinks" :key="link.id">
-                            <td>
-                                <div class="avatar">
-                                    <img v-if="link.avatar" :src="link.avatar" alt="" class="avatar-img">
-                                    <span v-else>{{ link.name?.charAt(0) }}</span>
-                                </div>
+                            <td v-for="col in tableColumns" :key="col">
+                                <!-- 头像列：图片展示 -->
+                                <template v-if="col === 'avatar'">
+                                    <div class="avatar">
+                                        <img v-if="link[col]" :src="link[col]" alt="" class="avatar-img">
+                                        <span v-else>{{ link.name?.charAt(0) }}</span>
+                                    </div>
+                                </template>
+                                <!-- URL列：可点击链接 -->
+                                <template v-else-if="col === 'url'">
+                                    <a :href="link[col]" target="_blank" class="link-url">{{ link[col] }}</a>
+                                </template>
+                                <!-- 时间列：格式化 -->
+                                <template v-else-if="col === 'createTime' || col === 'editTime'">
+                                    {{ formatDate(link[col]) }}
+                                </template>
+                                <!-- 数组列：标签展示 -->
+                                <template v-else-if="Array.isArray(link[col])">
+                                    <span v-for="(item, idx) in link[col]" :key="idx" class="tag-item">{{ item }}</span>
+                                </template>
+                                <!-- 默认列 -->
+                                <template v-else>
+                                    {{ link[col] }}
+                                </template>
                             </td>
-                            <td>{{ link.name }}</td>
-                            <td><a :href="link.url" target="_blank" class="link-url">{{ link.url }}</a></td>
-                            <td>{{ link.dictum }}</td>
-                            <td>{{ formatDate(link.createTime) }}</td>
                             <td class="actions">
                                 <button class="btn-edit" @click="showEditForm(link)">编辑</button>
                                 <button class="btn-delete" @click="openDeleteDialog(link.id)">删除</button>
@@ -74,10 +77,20 @@
                         <span v-else>{{ link.name?.charAt(0) }}</span>
                     </div>
                     <div class="card-content">
-                        <h3 class="card-name">{{ link.name }}</h3>
-                        <p class="card-url">{{ link.url }}</p>
-                        <p class="card-dictum">{{ link.dictum }}</p>
-                        <p class="card-date">{{ formatDate(link.createTime) }}</p>
+                        <template v-for="col in tableColumns" :key="col">
+                            <p v-if="col !== 'avatar'" class="card-field">
+                                <span class="card-field-label">{{ col }}: </span>
+                                <template v-if="col === 'createTime' || col === 'editTime'">
+                                    {{ formatDate(link[col]) }}
+                                </template>
+                                <template v-else-if="Array.isArray(link[col])">
+                                    {{ link[col].join(', ') }}
+                                </template>
+                                <template v-else>
+                                    {{ link[col] }}
+                                </template>
+                            </p>
+                        </template>
                     </div>
                     <div class="card-actions">
                         <button class="btn-edit-mobile" @click="showEditForm(link)">编辑</button>
@@ -123,39 +136,27 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import type { Friendslink } from '../../ts/types/friendlink/Friendslink';
-import type { DeleteByIdInput } from '../../ts/types/friendlink/DeleteByIdInput';
 import { FriendlinkAPI } from '../../ts/utils/FriendlinkAPI';
+import { generateFields, generateTableColumns } from '../../ts/utils/fieldUtils';
 import ObjectForm from '../../components/ObjectForm.vue';
 import type { FieldConfig } from '../../components/ObjectForm.vue';
 import ConfirmDialog from '../../components/ConfirmDialog.vue';
 
-/* ===== 字段配置 ===== */
-/** 友链表单字段配置，驱动 ObjectForm 自动渲染 */
-const friendlinkFields: FieldConfig[] = [
-    { key: 'name', label: '名称', type: 'text', required: true },
-    { key: 'url', label: '跳转链接', type: 'url', required: true },
-    { key: 'dictum', label: '格言', type: 'text' },
-    { key: 'avatar', label: '头像 URL', type: 'url' },
-    { key: 'id', label: 'ID', type: 'readonly', order: 99, hideOnAdd: true },
-    { key: 'createTime', label: '创建时间', type: 'readonly', order: 100, hideOnAdd: true },
-];
+/* ===== 动态字段配置 ===== */
+/** 表单字段配置，从第一条数据动态生成 */
+const friendlinkFields = ref<FieldConfig[]>([]);
+/** 表格列 key，从第一条数据动态生成 */
+const tableColumns = ref<string[]>([]);
 
 /* ===== 列表状态 ===== */
 const isEditing = ref(false);
 const isAddMode = ref(false);
 const searchKeyword = ref('');
 const currentPage = ref(1);
-const friendlinks = ref<Friendslink[]>([]);
+const friendlinks = ref<Record<string, any>[]>([]);
 
 /* ===== 表单状态 ===== */
-const formData = ref<Record<string, any>>({
-    id: undefined,
-    name: '',
-    url: '',
-    dictum: '',
-    avatar: ''
-});
+const formData = ref<Record<string, any>>({});
 const saving = ref(false);
 
 /* ===== 删除对话框状态 ===== */
@@ -185,22 +186,39 @@ const handleSearch = () => {
     currentPage.value = 1;
 };
 
+/** 根据数据动态生成空的表单初始值 */
+function buildEmptyForm(data: Record<string, any>): Record<string, any> {
+    const form: Record<string, any> = {};
+    for (const [key, value] of Object.entries(data)) {
+        if (Array.isArray(value)) {
+            form[key] = [];
+        } else if (typeof value === 'number') {
+            form[key] = 0;
+        } else if (typeof value === 'boolean') {
+            form[key] = false;
+        } else {
+            form[key] = '';
+        }
+    }
+    return form;
+}
+
 /* ===== 表单操作 ===== */
 /** 显示新增表单 */
 const showAddForm = () => {
     isAddMode.value = true;
     isEditing.value = true;
-    formData.value = {
-        id: undefined,
-        name: '',
-        url: '',
-        dictum: '',
-        avatar: ''
-    };
+    // 从当前字段配置生成空表单
+    const empty: Record<string, any> = {};
+    for (const f of friendlinkFields.value) {
+        if (f.type === 'array') empty[f.key] = [];
+        else empty[f.key] = '';
+    }
+    formData.value = empty;
 };
 
 /** 显示编辑表单 */
-const showEditForm = (link: Friendslink) => {
+const showEditForm = (link: Record<string, any>) => {
     isAddMode.value = false;
     isEditing.value = true;
     formData.value = { ...link };
@@ -218,7 +236,7 @@ const cancelEdit = () => {
 const saveFriendlink = async (data: Record<string, any>) => {
     saving.value = true;
     try {
-        await FriendlinkAPI.addOrUpdate(data as Friendslink);
+        await FriendlinkAPI.addOrUpdate(data as any);
         alert(isAddMode.value ? '友链添加成功' : '友链更新成功');
         await loadFriendlinks();
         cancelEdit();
@@ -242,8 +260,7 @@ const openDeleteDialog = (id?: string) => {
 const confirmDelete = async () => {
     deleting.value = true;
     try {
-        const input: DeleteByIdInput = { id: deleteTargetId.value };
-        await FriendlinkAPI.delete(input);
+        await FriendlinkAPI.delete({ id: deleteTargetId.value } as any);
         showDeleteConfirm.value = false;
         alert('删除成功');
         await loadFriendlinks();
@@ -260,7 +277,14 @@ const loadFriendlinks = async () => {
     try {
         const response = await FriendlinkAPI.getAll();
         const data = await response.json();
-        friendlinks.value = data.data || [];
+        const list = data.data || [];
+        friendlinks.value = list;
+
+        // 从第一条数据推断表格列和表单字段
+        if (list.length > 0) {
+            tableColumns.value = generateTableColumns(list[0]);
+            friendlinkFields.value = generateFields(list[0]);
+        }
     } catch (error) {
         console.error('加载友链失败:', error);
     }
@@ -280,12 +304,6 @@ loadFriendlinks();
     overflow: hidden;
 }
 
-.col-avatar { width: 5rem; }
-.col-name { width: 8rem; }
-.col-url { width: 14rem; }
-.col-dictum { width: 10rem; }
-.col-date { width: 9rem; }
-.col-actions { width: 9rem; }
 @media (max-width: 768px) {
     .friendlink-container {
         padding: 16px;
@@ -303,8 +321,8 @@ loadFriendlinks();
         display: block;
     }
 
-    .card-url {
-        font-size: 12px;
+    .card-field {
+        font-size: 13px;
         color: var(--color-text-secondary);
         margin: 0 0 4px 0;
         overflow: hidden;
@@ -312,13 +330,9 @@ loadFriendlinks();
         white-space: nowrap;
     }
 
-    .card-dictum {
-        font-size: 13px;
+    .card-field-label {
+        font-weight: 600;
         color: var(--color-text-muted);
-        margin: 0 0 4px 0;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
     }
 }
 
