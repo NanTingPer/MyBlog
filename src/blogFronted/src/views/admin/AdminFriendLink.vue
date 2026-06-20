@@ -214,6 +214,7 @@ const showAddForm = () => {
     const empty: Record<string, any> = {};
     for (const f of friendlinkFields.value) {
         if (f.type === 'array') empty[f.key] = [];
+        else if (f.type === 'select' && f.options?.length) empty[f.key] = f.options[0];
         else empty[f.key] = '';
     }
     formData.value = empty;
