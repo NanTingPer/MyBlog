@@ -27,13 +27,13 @@ const routes = [
         path: '/posts',
         name: 'adminPosts',
         component: AdminPosts,
-        meta: { requiresAuth: true }
+        meta: { requiresAuth: true, requiresAdmin: true }
     },
     {
         path: '/config',
         name: 'adminConfig',
         component: AdminConfig,
-        meta: { requiresAuth: true }
+        meta: { requiresAuth: true, requiresAdmin: true }
     }
 ];
 
@@ -44,11 +44,15 @@ const router = createRouter({
 
 router.beforeEach((to) => {
     const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+    const requiresAdmin = to.matched.some(record => record.meta.requiresAdmin);
     const isLoggedIn = sessionStore.isLoggedIn();
+    const isAdmin = sessionStore.isAdmin();
 
     if (requiresAuth && !isLoggedIn) {
         return '/login';
     } else if (to.path === '/login' && isLoggedIn) {
+        return '/friendlink';
+    } else if (requiresAdmin && !isAdmin) {
         return '/friendlink';
     }
 });

@@ -291,7 +291,7 @@ const loadStatusOptions = async () => {
 
 const loadFriendlinks = async () => {
     try {
-        const response = await FriendlinkAPI.getAll();
+        const response = await FriendlinkAPI.getUserLink();
         const data = await response.json();
         const list = data.data || [];
         friendlinks.value = list;

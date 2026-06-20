@@ -15,13 +15,13 @@
                     <img src="/友链图标.svg" class="nav-icon" alt="友链管理">
                     <span class="nav-text">友链管理</span>
                 </router-link>
-                <router-link to="/posts" class="nav-item"
+                <router-link v-if="isAdmin" to="/posts" class="nav-item"
                     :class="{ active: $route.name === 'adminPosts' }"
                     @click="sidebarOpen = false">
                     <img src="/文章图标.svg" class="nav-icon" alt="文章管理">
                     <span class="nav-text">文章管理</span>
                 </router-link>
-                <router-link to="/config" class="nav-item"
+                <router-link v-if="isAdmin" to="/config" class="nav-item"
                     :class="{ active: $route.name === 'adminConfig' }"
                     @click="sidebarOpen = false">
                     <img src="/设置图标.svg" class="nav-icon" alt="系统设置">
@@ -30,8 +30,8 @@
             </nav>
             <div class="sidebar-footer">
                 <div class="user-info">
-                    <div class="user-avatar">M</div>
-                    <div class="user-name">Admin</div>
+                    <div class="user-avatar">{{ userInitial }}</div>
+                    <div class="user-name">{{ userName }}</div>
                 </div>
             </div>
         </aside>
@@ -51,17 +51,37 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'; //computed, 
+import { ref, computed } from 'vue';
 import { sessionStore } from './ts/utils/sessionStore';
+import { AuthAPI } from './ts/utils/AuthAPI';
 
 const sidebarOpen = ref(false);
 const isLoginPage = ref(!sessionStore.isLoggedIn());
+const isAdmin = computed(() => sessionStore.isAdmin());
+const userName = computed(() => sessionStore.getUserName() || 'User');
+const userInitial = computed(() => userName.value.charAt(0).toUpperCase());
+
+/** 加载用户角色 */
+const loadUserRoles = async () => {
+    const roles = await AuthAPI.getUserRoles();
+    if (roles) {
+        sessionStore.setRoles(roles);
+    }
+};
+
 const j = () => {
     isLoginPage.value = !sessionStore.isLoggedIn();
+    if (!isLoginPage.value) {
+        loadUserRoles();
+    }
     sessionStore.removeJWTChangeCallback(j);
 };
 sessionStore.addJWTChangeCallback(j);
 
+// 如果已登录，立即加载角色
+if (sessionStore.isLoggedIn()) {
+    loadUserRoles();
+}
 </script>
 
 <style scoped>

@@ -13,6 +13,22 @@ export class FriendlinkAPI {
     }
 
     /**
+     * 根据当前用户Token获取友链（需要身份认证）
+     * Admin返回全部，普通用户返回自己的友链
+     */
+    public static async getUserLink(): Promise<Response> {
+        const authHeader = AuthAPI.getAuthorizationHeader();
+        const headers: Record<string, string> = {};
+        if (authHeader) {
+            headers["Authorization"] = authHeader;
+        }
+        return apiFetch(`${apiEndpoint}/getUserLink`, {
+            method: "GET",
+            headers
+        });
+    }
+
+    /**
      * 获取所有状态枚举字符串（需要身份认证）
      */
     public static async getStatuStrings(): Promise<Response> {

@@ -4,6 +4,7 @@ import { ref } from "vue";
 const JWT_KEY = 'mellow_admin_jwt';
 const PASSWORD_KEY = 'mellow_admin_password';
 const USERNAME_KEY = 'mellow_admin_username';
+const ROLES_KEY = 'mellow_admin_roles';
 let jwtToken = ref("");
 let callBacks : Array<() => void> = [];
 sessionStorage[JWT_KEY] = "";
@@ -52,10 +53,35 @@ export const sessionStore = {
         sessionStorage.removeItem(USERNAME_KEY);
     },
 
+    getRoles(): string[] {
+        const roles = sessionStorage.getItem(ROLES_KEY);
+        if (roles) {
+            try {
+                return JSON.parse(roles);
+            } catch {
+                return [];
+            }
+        }
+        return [];
+    },
+
+    setRoles(roles: string[]): void {
+        sessionStorage.setItem(ROLES_KEY, JSON.stringify(roles));
+    },
+
+    removeRoles(): void {
+        sessionStorage.removeItem(ROLES_KEY);
+    },
+
+    isAdmin(): boolean {
+        return this.getRoles().includes('Admin');
+    },
+
     clearAll(): void {
         this.removeJwt();
         this.removePassword();
         this.removeUserName();
+        this.removeRoles();
     },
 
     isLoggedIn(): boolean {

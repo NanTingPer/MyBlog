@@ -114,6 +114,36 @@ export class AuthAPI {
     }
 
     /**
+     * 获取当前用户角色列表（需要登录）
+     */
+    public static async getUserRoles(): Promise<string[] | null> {
+        const authHeader = this.getAuthorizationHeader();
+        if (!authHeader) {
+            return null;
+        }
+
+        try {
+            const response = await apiFetch(`${apiEndpoint}/getUserRoles`, {
+                method: "GET",
+                headers: {
+                    "Authorization": authHeader
+                }
+            });
+
+            if (response.status === 200) {
+                const data: BaseResult<string[]> = await response.json();
+                if (data.code === 200 && data.data) {
+                    return data.data;
+                }
+            }
+            return null;
+        } catch (error) {
+            console.error('获取用户角色失败:', error);
+            return null;
+        }
+    }
+
+    /**
      * 获取邮箱验证码
      */
     public static async getMailVerificationCode(mailAddress: string, userName?: string): Promise<BaseResult<{ id: string }> | null> {
