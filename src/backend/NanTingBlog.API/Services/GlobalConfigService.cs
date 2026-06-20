@@ -29,6 +29,7 @@ public class GlobalConfigService : GlobalConfigDto
 
         if (!File.Exists(FullPath)) {
             using (var fileStream = File.Create(FullPath)){ }
+            _update.Update(GlobalConfigDto.CreateDefault(), this);
             Save();
         }
     }
