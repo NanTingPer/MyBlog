@@ -300,6 +300,16 @@ const loadFriendlinks = async () => {
         if (list.length > 0) {
             tableColumns.value = generateTableColumns(list[0]);
             friendlinkFields.value = generateFields(list[0], [], selectOptions.value);
+        } else {
+            // 当没有数据时，提供默认字段配置
+            tableColumns.value = ['name', 'url', 'dictum', 'avatar', 'createTime'];
+            friendlinkFields.value = [
+                { key: 'name', label: '名称', type: 'text', required: true, order: -10 },
+                { key: 'url', label: '链接', type: 'text', required: true, order: 0 },
+                { key: 'dictum', label: '格言', type: 'textarea', order: 50 },
+                { key: 'avatar', label: '头像', type: 'text', order: 0 },
+                { key: 'createTime', label: '创建时间', type: 'readonly', hideOnAdd: true, order: 90 },
+            ];
         }
     } catch (error) {
         console.error('加载友链失败:', error);
