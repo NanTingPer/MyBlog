@@ -145,34 +145,17 @@ public class AuthenticationController(
             br.Code = 500; br.Msg = "邮箱无效";
             return Ok(br);
         }
+
+        if (userService.QueryAll().Any(f => f.MailAddress == input.MailAddress)) {
+            br.Code = 500; br.Msg = "邮箱无效";
+            return Ok(br);
+        }
+
         var codeId = await mailService.GetVerificatCode(input.MailAddress!, input.UserName ?? input.MailAddress!);
         br.Data!.Id = codeId.Id;
         return Ok(br);
     }
 
-
-    /// <summary>
-    /// 创建测试用管理员用户
-    /// </summary>
-    /// <returns></returns>
-#if DEBUG
-    [HttpPost("createTestAdminUser")]
-    public async Task<ActionResult<BaseResult<string>>> CreateTestAdminUser()
-    {
-        var newUser = new User()
-        {
-            Name = "admin",
-            Password = "admin123456",
-            Roles = [UserRole.User, UserRole.Admin]
-        };
-        try {
-            newUser.Password = passwordHasher.HashPassword(newUser, newUser.Password);
-            await userService.UpdateOrAddAsync(newUser);
-        } catch {
-        }
-        return Ok(BaseResult<string>.Create("Ok"));
-    }
-#endif
 #pragma warning disable CS1591 // 缺少对公共可见类型或成员的 XML 注释
     public class UserInput
     {
