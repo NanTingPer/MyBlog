@@ -84,6 +84,27 @@ public class FriendslinkController(FriendslinkService service) : ControllerBase
         );
     }
 
+    /// <summary>
+    /// 根据Token用户返回数据
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet("getUserLink")]
+    [Authorize(Policy = PolicyTypes.USER)]
+    public async Task<ActionResult<BaseResult<List<Friendslink>>>> GetUserLink()
+    {
+        if (HttpContext.IsAdmin()) {
+            return GetAll();
+        }
+
+        if (HttpContext.IsUser()) {
+            var uId = HttpContext.GetUserId();
+            if (uId != null) {
+                return Ok(BaseResult<List<Friendslink>>.Create([.. service.GetAll().Where(f => f.UserId == uId)]));
+            }
+        }
+        return Ok(BaseResult<List<Friendslink>>.Create([]));
+    }
+
     private async Task<ActionResult<BaseResult<string>>> Divide(
         Func<string?, Task<ActionResult<BaseResult<string>>>> admin, 
         Func<string?, Task<ActionResult<BaseResult<string>>>> user,
