@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
@@ -52,4 +52,56 @@ public class Friendslink
     /// </summary>
     [JsonPropertyName("createTime"), Column("createTime")]
     public string CreateTime { get; private set; } = DateTime.UtcNow.ToString("yyyy/MM/dd hh:mm:ss");
+
+    /// <summary>
+    /// 未通过文本
+    /// </summary>
+    [JsonPropertyName("failingText"), Column("failingText")]
+    public string FailingText { get; set; } = "";
+
+    /// <summary>
+    /// 申请状态
+    /// </summary>
+    [JsonPropertyName("state"), Column("state")]
+    public STATES State { get; set; } = STATES.Pending;
+
+    /// <summary>
+    /// 是否已被删除,true则是是的，false则是没有
+    /// </summary>
+    [JsonPropertyName("delete"), Column("delete")]
+    public bool Delete { get; set; } = false;
+
+    /// <summary>
+    /// 此友链的拥有者id
+    /// </summary>
+    [JsonPropertyName("userId"), Column("userId")]
+    [ForeignKey(nameof(User))]
+#pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑添加 "required" 修饰符或声明为可为 null。
+    public string UserId { get; set; }
+
+    /// <summary>
+    /// 用户查询结果
+    /// </summary>
+    [JsonIgnore]
+    public User User { get; set; }
+#pragma warning restore CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑添加 "required" 修饰符或声明为可为 null。
+}
+
+/// <summary>
+/// 申请状态
+/// </summary>
+public enum STATES
+{
+    /// <summary>
+    /// 待定
+    /// </summary>
+    Pending,
+    /// <summary>
+    /// 通过
+    /// </summary>
+    Passed,
+    /// <summary>
+    /// 未通过
+    /// </summary>
+    Failing
 }

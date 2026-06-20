@@ -43,9 +43,12 @@ public class BlogContext(GlobalConfigService gcs) : DbContext
         modelBuilder.Entity<PostInfo>()
             .HasKey(b => b.Id);
 
-        modelBuilder.Entity<Friendslink>()
-            .HasKey(f => f.Id);
-
+        modelBuilder.Entity<Friendslink>(entity => {
+            entity.HasKey(f => f.Id);
+            entity.HasIndex(f => f.UserId);
+            entity.Navigation(f => f.User).AutoInclude(); // 不autoinclude的话，要在查询的时候手动include，如果在查询时不需要用户信息，可以手动不include
+        });
+        
         modelBuilder.Entity<User>()
             .HasIndex(f => f.Name);
         modelBuilder.Entity<User>()
