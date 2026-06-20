@@ -76,8 +76,9 @@ public class Friendslink
     /// </summary>
     [JsonPropertyName("userId"), Column("userId")]
     [ForeignKey(nameof(User))]
+    [DefaultValue("a0000000-0000-0000-0000-000000000001")]
 #pragma warning disable CS8618 // 在退出构造函数时，不可为 null 的字段必须包含非 null 值。请考虑添加 "required" 修饰符或声明为可为 null。
-    public string UserId { get; set; }
+    public string UserId { get; set; } = "a0000000-0000-0000-0000-000000000001";
 
     /// <summary>
     /// 用户查询结果
