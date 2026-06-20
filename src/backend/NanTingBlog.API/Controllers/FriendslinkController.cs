@@ -105,6 +105,17 @@ public class FriendslinkController(FriendslinkService service) : ControllerBase
         return Ok(BaseResult<List<Friendslink>>.Create([]));
     }
 
+    /// <summary>
+    /// 获取状态字符串
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet("getStatuStrings")]
+    [Authorize(Policy = PolicyTypes.USER)]
+    public async Task<ActionResult<BaseResult<List<string>>>> GetStatuStrings()
+    {
+        return Ok(BaseResult<List<string>>.Create([.. Enum.GetValues<STATES>().Select(f => f.ToString())]));
+    }
+
     private async Task<ActionResult<BaseResult<string>>> Divide(
         Func<string?, Task<ActionResult<BaseResult<string>>>> admin, 
         Func<string?, Task<ActionResult<BaseResult<string>>>> user,
