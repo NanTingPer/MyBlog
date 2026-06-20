@@ -22,7 +22,7 @@ public class FriendslinkController(FriendslinkService service) : ControllerBase
         var allFriendlink = service.GetAll().Where(f => f.State == STATES.Passed) ;
         var result = new BaseResult<List<Friendslink>>()
         {
-            Data =[.. allFriendlink]
+            Data = [.. allFriendlink]
         };
         return Ok(result);
     }
@@ -93,7 +93,7 @@ public class FriendslinkController(FriendslinkService service) : ControllerBase
     public async Task<ActionResult<BaseResult<List<Friendslink>>>> GetUserLink()
     {
         if (HttpContext.IsAdmin()) {
-            return GetAll();
+            return BaseResult<List<Friendslink>>.Create(service.GetAll());
         }
 
         if (HttpContext.IsUser()) {
