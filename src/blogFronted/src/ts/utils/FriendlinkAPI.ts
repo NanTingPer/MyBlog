@@ -12,6 +12,21 @@ export class FriendlinkAPI {
         });
     }
 
+    /**
+     * 获取所有状态枚举字符串（需要身份认证）
+     */
+    public static async getStatuStrings(): Promise<Response> {
+        const authHeader = AuthAPI.getAuthorizationHeader();
+        const headers: Record<string, string> = {};
+        if (authHeader) {
+            headers["Authorization"] = authHeader;
+        }
+        return apiFetch(`${apiEndpoint}/getStatuStrings`, {
+            method: "GET",
+            headers
+        });
+    }
+
     public static async delete(input: DeleteByIdInput): Promise<Response> {
         const authHeader = AuthAPI.getAuthorizationHeader();
         const headers: Record<string, string> = {

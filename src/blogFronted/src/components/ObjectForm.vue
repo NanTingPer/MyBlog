@@ -89,6 +89,22 @@
                     </div>
                 </div>
 
+                <!-- select 下拉选择 -->
+                <select
+                    v-else-if="field.type === 'select'"
+                    :value="localData[field.key]"
+                    class="form-input form-select"
+                    :required="field.required"
+                    @change="updateField(field.key, ($event.target as HTMLSelectElement).value)"
+                >
+                    <option value="" disabled>{{ field.placeholder || `请选择${field.label}` }}</option>
+                    <option
+                        v-for="opt in (field.options || [])"
+                        :key="opt"
+                        :value="opt"
+                    >{{ opt }}</option>
+                </select>
+
                 <!-- array 数组编辑器 -->
                 <div v-else-if="field.type === 'array'" class="array-editor">
                     <!-- 当前数组值展示（标签形式） -->
@@ -157,16 +173,19 @@ import { ref, computed, watch } from 'vue';
  * @property placeholder - 输入框占位文本（默认根据 label 自动生成）
  * @property order - 排序权重，越小越靠前（默认 0）
  * @property hideOnAdd - 是否在新增模式下隐藏此字段（适用于 id、createTime 等）
+ * @property options - select 类型的下拉选项列表
  */
 export interface FieldConfig {
     key: string;
     label: string;
-    type: 'text' | 'url' | 'textarea' | 'array' | 'readonly' | 'hidden';
+    type: 'text' | 'url' | 'textarea' | 'array' | 'readonly' | 'hidden' | 'select';
     required?: boolean;
     placeholder?: string;
     order?: number;
     /** 是否在新增模式下隐藏此字段，编辑模式仍显示（适用于 id、createTime 等） */
     hideOnAdd?: boolean;
+    /** select 类型的下拉选项列表 */
+    options?: string[];
 }
 
 const props = withDefaults(defineProps<{
@@ -362,6 +381,12 @@ function handleCancel() {
 /* 布局样式（.form-section, .form-header, .form-title, .form-group, .form-input,
    .form-textarea, .form-actions, .btn-back, .btn-save, .btn-cancel, .friendlink-form）
    由外部 admin.css 全局样式提供，此处不重复定义 */
+
+/* 下拉选择框 */
+.form-select {
+    appearance: auto;
+    cursor: pointer;
+}
 
 /* 只读展示 */
 .form-readonly {

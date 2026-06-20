@@ -32,13 +32,22 @@ const READONLY_KEYS = new Set([
 ]);
 
 /**
+ * 下拉选择字段（需要外部传入 options）
+ */
+const SELECT_KEYS = new Set([
+    'state',
+]);
+
+/**
  * 从数据对象自动生成 ObjectForm 所需的 FieldConfig[]
  * @param data 后端返回的单条数据对象
  * @param extraHidden 额外需要隐藏的字段 key
+ * @param selectOptions select 字段的选项映射，key 为字段名，value 为选项列表
  */
 export function generateFields(
     data: Record<string, any>,
     extraHidden: string[] = [],
+    selectOptions: Record<string, string[]> = {},
 ): FieldConfig[] {
     const hidden = new Set([...HIDDEN_KEYS, ...extraHidden]);
     const fields: FieldConfig[] = [];
@@ -53,6 +62,10 @@ export function generateFields(
             order: inferOrder(key),
             hideOnAdd: READONLY_KEYS.has(key),
         };
+        // select 类型注入选项
+        if (field.type === 'select' && selectOptions[key]) {
+            field.options = selectOptions[key];
+        }
         fields.push(field);
     }
 
@@ -77,6 +90,7 @@ export function generateTableColumns(
  */
 function inferType(key: string, value: unknown): FieldConfig['type'] {
     if (READONLY_KEYS.has(key)) return 'readonly';
+    if (SELECT_KEYS.has(key)) return 'select';
     if (TEXTAREA_KEYS.has(key)) return 'textarea';
     if (Array.isArray(value)) return 'array';
     return 'text';

@@ -147,6 +147,8 @@ import ConfirmDialog from '../../components/ConfirmDialog.vue';
 const friendlinkFields = ref<FieldConfig[]>([]);
 /** 表格列 key，从第一条数据动态生成 */
 const tableColumns = ref<string[]>([]);
+/** select 字段的选项缓存（如 state 的枚举值） */
+const selectOptions = ref<Record<string, string[]>>({});
 
 /* ===== 列表状态 ===== */
 const isEditing = ref(false);
@@ -273,6 +275,19 @@ const confirmDelete = async () => {
 };
 
 /* ===== 数据加载 ===== */
+/** 加载状态枚举选项 */
+const loadStatusOptions = async () => {
+    try {
+        const res = await FriendlinkAPI.getStatuStrings();
+        const data = await res.json();
+        if (data.data) {
+            selectOptions.value = { state: data.data };
+        }
+    } catch (error) {
+        console.error('加载状态选项失败:', error);
+    }
+};
+
 const loadFriendlinks = async () => {
     try {
         const response = await FriendlinkAPI.getAll();
@@ -280,17 +295,18 @@ const loadFriendlinks = async () => {
         const list = data.data || [];
         friendlinks.value = list;
 
-        // 从第一条数据推断表格列和表单字段
+        // 从第一条数据推断表格列和表单字段（传入 select 选项）
         if (list.length > 0) {
             tableColumns.value = generateTableColumns(list[0]);
-            friendlinkFields.value = generateFields(list[0]);
+            friendlinkFields.value = generateFields(list[0], [], selectOptions.value);
         }
     } catch (error) {
         console.error('加载友链失败:', error);
     }
 };
 
-loadFriendlinks();
+// 先加载状态选项，再加载友链列表
+loadStatusOptions().then(() => loadFriendlinks());
 </script>
 
 <style scoped>
