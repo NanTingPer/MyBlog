@@ -57,7 +57,8 @@ public class BlogContext(GlobalConfigService gcs) : DbContext
                 Id = "a0000000-0000-0000-0000-000000000001",
                 Name = "default",
                 MailAddress = "system@localhost",
-                IsBanned = true
+                IsBanned = true,
+                CreateTime = DateTime.MinValue.Ticks
             };
             entity.HasData(defUser);
         });

@@ -46,22 +46,11 @@ namespace NanTingBlog.API.Migrations
                         .HasColumnName("createUnixEpochTick")
                         .HasJsonPropertyName("createUnixEpochTick");
 
-                    b.Property<bool>("Delete")
-                        .HasColumnType("boolean")
-                        .HasColumnName("delete")
-                        .HasJsonPropertyName("delete");
-
                     b.Property<string>("Dictum")
                         .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("dictum")
                         .HasJsonPropertyName("dictum");
-
-                    b.Property<string>("FailingText")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("failingText")
-                        .HasJsonPropertyName("failingText");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -69,28 +58,15 @@ namespace NanTingBlog.API.Migrations
                         .HasColumnName("name")
                         .HasJsonPropertyName("name");
 
-                    b.Property<int>("State")
-                        .HasColumnType("integer")
-                        .HasColumnName("state")
-                        .HasJsonPropertyName("state");
-
                     b.Property<string>("Url")
                         .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("url")
                         .HasJsonPropertyName("url");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("userId")
-                        .HasJsonPropertyName("userId");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
-
-                    b.ToTable("friendslink");
+                    b.ToTable("friendslink", (string)null);
                 });
 
             modelBuilder.Entity("NanTingBlog.API.Dtos.Blogs.PostInfo", b =>
@@ -152,7 +128,7 @@ namespace NanTingBlog.API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("posts");
+                    b.ToTable("posts", (string)null);
                 });
 
             modelBuilder.Entity("NanTingBlog.API.Dtos.User", b =>
@@ -195,18 +171,7 @@ namespace NanTingBlog.API.Migrations
 
                     b.HasIndex("Name");
 
-                    b.ToTable("user");
-                });
-
-            modelBuilder.Entity("NanTingBlog.API.Dtos.Blogs.Friendslink", b =>
-                {
-                    b.HasOne("NanTingBlog.API.Dtos.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
+                    b.ToTable("user", (string)null);
                 });
 #pragma warning restore 612, 618
         }
