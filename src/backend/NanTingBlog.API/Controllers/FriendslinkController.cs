@@ -19,10 +19,10 @@ public class FriendslinkController(FriendslinkService service) : ControllerBase
     [HttpGet("getall")]
     public ActionResult<BaseResult<List<Friendslink>>> GetAll()
     {
-        var allFriendlink = service.GetAll();
+        var allFriendlink = service.GetAll().Where(f => f.State == STATES.Passed) ;
         var result = new BaseResult<List<Friendslink>>()
         {
-            Data = allFriendlink
+            Data =[.. allFriendlink]
         };
         return Ok(result);
     }

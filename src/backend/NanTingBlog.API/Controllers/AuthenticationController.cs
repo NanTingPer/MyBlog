@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NanTingBlog.API.Dtos;
 using NanTingBlog.API.Services;
@@ -154,6 +155,17 @@ public class AuthenticationController(
         var codeId = await mailService.GetVerificatCode(input.MailAddress!, input.UserName ?? input.MailAddress!);
         br.Data!.Id = codeId.Id;
         return Ok(br);
+    }
+
+    /// <summary>
+    /// 获取用户角色，需要登录
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet("getUserRoles")]
+    [Authorize(Policy = PolicyTypes.USER)]
+    public async Task<ActionResult<BaseResult<List<string>>>> GetUserRoles()
+    {
+        return Ok(BaseResult<List<string>>.Create([.. HttpContext.GetUserRoles()?.Select(r => r.ToString()) ?? []]));
     }
 
 #pragma warning disable CS1591 // 缺少对公共可见类型或成员的 XML 注释
