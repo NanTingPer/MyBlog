@@ -32,13 +32,14 @@ public class JwtService(GlobalConfigService configService)
     public string CreateToken(User user)
     {
         var roleClaim = new Claim(CustomClaimTypes.USER_ROLE, JsonSerializer.Serialize(user.Roles));
-        var ssk = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configService.JwtKey));
+        var userIdClaim = new Claim(CustomClaimTypes.USER_ID, user.Id);
+        var ssk = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configService.JwtKey!));
         var scredntial = new SigningCredentials(ssk, SecurityAlgorithms.HmacSha256);
 
         var jwtSecurity = new JwtSecurityToken(
             issuer: configService.JwtIssuer, 
             audience: configService.JwtAudience, 
-            claims: [roleClaim], 
+            claims: [roleClaim, userIdClaim], 
             signingCredentials: scredntial,
             expires: DateTime.UtcNow.AddHours(2));
         return handler.WriteToken(jwtSecurity);

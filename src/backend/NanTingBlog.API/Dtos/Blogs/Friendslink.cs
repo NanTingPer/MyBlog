@@ -90,6 +90,7 @@ public class Friendslink
 /// <summary>
 /// 申请状态
 /// </summary>
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum STATES
 {
     /// <summary>

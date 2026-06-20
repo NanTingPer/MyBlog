@@ -45,6 +45,12 @@ public class User
     /// </summary>
     [JsonPropertyName("roles"), Column("roles"), Description("用户角色")]
     public List<UserRole> Roles { get; set; } = [UserRole.User];
+
+    /// <summary>
+    /// 用户是否被禁用
+    /// </summary>
+    [JsonPropertyName("isBanned"), Column("isBanned")]
+    public bool IsBanned { get; set; } = false;
 }
 
 /// <summary>

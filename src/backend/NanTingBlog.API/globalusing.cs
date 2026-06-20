@@ -1,0 +1,1 @@
+global using NanTingBlog.API.Extensions;

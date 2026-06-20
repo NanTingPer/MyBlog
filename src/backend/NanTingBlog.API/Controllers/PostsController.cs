@@ -3,7 +3,6 @@ using NanTingBlog.API.Dtos.Blogs;
 using NanTingBlog.API.Services;
 using System.Text.Json.Serialization;
 using NanTingBlog.API.Services.Blog;
-using NanTingBlog.API.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using NanTingBlog.API.Services.Identitys;
 
@@ -161,9 +160,7 @@ public class PostsController(PostsService service, MarkdownService markdown, Wat
     /// <summary>
     /// 删除给定id的文章
     /// </summary>
-#if RELEASE
     [Authorize(Policy = PolicyTypes.ADMIN)]
-#endif
     [HttpPost("delete")]
     public async Task<ActionResult<BaseResult<string>>> Delete([FromBody] DeleteInput input)
     {
@@ -214,9 +211,7 @@ public class PostsController(PostsService service, MarkdownService markdown, Wat
     /// 删除全部条目
     /// </summary>
     /// <returns></returns>
-#if RELEASE
     [Authorize(Policy = PolicyTypes.ADMIN)]
-#endif
     [HttpPost("deleteAll")]
     public async Task<ActionResult<BaseResult<string>>> DeleteAll()
     {
@@ -227,9 +222,7 @@ public class PostsController(PostsService service, MarkdownService markdown, Wat
     /// <summary>
     /// 以页获取文章，返回文章的全部内容
     /// </summary>
-#if RELEASE
     [Authorize(Policy = PolicyTypes.ADMIN)]
-#endif
     [HttpGet("getAllToPage")]
     public async Task<ActionResult<BaseResult<IReadOnlyCollection<PostInfo>>>> GetAllToPage([FromQuery] SearchBlogInput? input)
     {

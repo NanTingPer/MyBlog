@@ -48,10 +48,18 @@ public class BlogContext(GlobalConfigService gcs) : DbContext
             entity.HasIndex(f => f.UserId);
             entity.Navigation(f => f.User).AutoInclude(); // 不autoinclude的话，要在查询的时候手动include，如果在查询时不需要用户信息，可以手动不include
         });
-        
-        modelBuilder.Entity<User>()
-            .HasIndex(f => f.Name);
-        modelBuilder.Entity<User>()
-            .HasKey(f => f.Id);
+
+        modelBuilder.Entity<User>(entity => {
+            entity.HasIndex(u => u.Name);
+            entity.HasKey(u => u.Id);
+            var defUser = new User()
+            {
+                Id = "a0000000-0000-0000-0000-000000000001",
+                Name = "default",
+                MailAddress = "system@localhost",
+                IsBanned = true
+            };
+            entity.HasData(defUser);
+        });
     }
 }

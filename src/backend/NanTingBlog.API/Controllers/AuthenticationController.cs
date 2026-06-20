@@ -91,34 +91,36 @@ public class AuthenticationController(
     [HttpPost("login")]
     public async Task<ActionResult<BaseResult<string>>> GetToken([FromBody] UserInput input)
     {
-        var result = new BaseResult<string>();
+        var erroResult = BaseResult<string>.CreateError("未知错误");
+        var okResult = BaseResult<string>.Create("");
         if (input.UserName == null || input.Password == null || input.RsaId == null) {
-            result.Code = 500;
-            result.Msg = "必填参数未填写";
-            return Ok(result);
+            erroResult.Msg = "必填参数未填写";
+            return Ok(erroResult);
         }
         var user = await userService.GetUserByName(input.UserName);
         if (user == null) {
-            result.Code = 500;
-            result.Msg = "用户未找到";
-            return Ok(result);
+            erroResult.Msg = "用户未找到";
+            return Ok(erroResult);
+        }
+
+        if (user.IsBanned == true) {
+            erroResult.Msg = "用户被禁用";
+            return Ok(erroResult);
         }
 
         var origPassword = rsa.Decrypt(input.Password, input.RsaId);
         if (origPassword == null) {
-            result.Code = 500;
-            result.Msg = "非对称加密验证失败";
-            return Ok(result);
+            erroResult.Msg = "非对称加密验证失败";
+            return Ok(erroResult);
         }
         var verifcationResult = passwordHasher.VerifyHashedPassword(user, user.Password, origPassword);
         if (verifcationResult == Microsoft.AspNetCore.Identity.PasswordVerificationResult.Failed) {
-            result.Code = 500;
-            result.Msg = "身份验证失败";
-            return Ok(result);
+            erroResult.Msg = "身份验证失败";
+            return Ok(erroResult);
         }
 
-        result.Data = jwtService.CreateToken(user);
-        return Ok(result);
+        okResult.Data = jwtService.CreateToken(user);
+        return Ok(okResult);
     }
 
     /// <summary>
