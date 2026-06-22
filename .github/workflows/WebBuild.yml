@@ -9,7 +9,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18.x, 20.x, 22.x]
+        node-version: [22.x]
 
     steps:
     - uses: actions/checkout@v4
@@ -22,5 +22,7 @@ jobs:
     - name: Build
       run: |
         cd ./src/blogFronted
+        curl -o "./src/assets/js/prism.js" "https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"
+        curl -o "./src/assets/css/prism.css" "https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css"
         npm install
         npm run build
