@@ -189,21 +189,21 @@ const handleSearch = () => {
 };
 
 /** 根据数据动态生成空的表单初始值 */
-function buildEmptyForm(data: Record<string, any>): Record<string, any> {
-    const form: Record<string, any> = {};
-    for (const [key, value] of Object.entries(data)) {
-        if (Array.isArray(value)) {
-            form[key] = [];
-        } else if (typeof value === 'number') {
-            form[key] = 0;
-        } else if (typeof value === 'boolean') {
-            form[key] = false;
-        } else {
-            form[key] = '';
-        }
-    }
-    return form;
-}
+// function buildEmptyForm(data: Record<string, any>): Record<string, any> {
+//     const form: Record<string, any> = {};
+//     for (const [key, value] of Object.entries(data)) {
+//         if (Array.isArray(value)) {
+//             form[key] = [];
+//         } else if (typeof value === 'number') {
+//             form[key] = 0;
+//         } else if (typeof value === 'boolean') {
+//             form[key] = false;
+//         } else {
+//             form[key] = '';
+//         }
+//     }
+//     return form;
+// }
 
 /* ===== 表单操作 ===== */
 /** 显示新增表单 */
